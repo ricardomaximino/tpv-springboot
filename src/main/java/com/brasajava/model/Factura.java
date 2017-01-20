@@ -1,6 +1,7 @@
 package com.brasajava.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,6 +29,9 @@ public class Factura {
     private boolean abierta;
     private boolean pagada;
 
+    public Factura(){
+        cuentas = new ArrayList();
+    }
     public long getId() {
         return id;
     }

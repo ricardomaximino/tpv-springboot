@@ -1,6 +1,7 @@
 package com.brasajava.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -31,6 +32,10 @@ public class Producto {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Promocion> promociones;*/
     private boolean activo;
+    
+    public Producto(){
+        grupos = new ArrayList();
+    }
 
     public long getId() {
         return id;

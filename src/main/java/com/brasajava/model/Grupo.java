@@ -1,5 +1,6 @@
 package com.brasajava.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,6 +25,10 @@ public class Grupo {
             joinColumns = @JoinColumn(name = "GRUPO_ID",referencedColumnName = "ID"),
             inverseJoinColumns = @JoinColumn(name = "PRODUCTO_ID",referencedColumnName = "ID"))
     private List<Producto> productos;
+    
+    public Grupo(){
+        productos = new ArrayList();
+    }
 
     public long getId() {
         return id;

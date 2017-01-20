@@ -1,6 +1,7 @@
 package com.brasajava.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -23,6 +24,10 @@ public class Cuenta {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FACTURA_ID")
     private Factura factura;
+    
+    public Cuenta(){
+        ventas = new ArrayList();
+    }
 
     public long getId() {
         return id;

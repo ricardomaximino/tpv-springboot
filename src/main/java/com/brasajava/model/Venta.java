@@ -39,16 +39,8 @@ public class Venta {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
-    }
-
     public Producto getProducto() {
         return producto;
-    }
-
-    public void setProducto(Producto producto) {
-        this.producto = producto;
     }
 
     public Persona getVendedor() {
@@ -63,10 +55,6 @@ public class Venta {
         return total;
     }
 
-    public void setTotal(BigDecimal total) {
-        this.total = total;
-    }
-
     public Cuenta getCuenta() {
         return cuenta;
     }
@@ -75,6 +63,12 @@ public class Venta {
         this.cuenta = cuenta;
     }
 
-    
-    
+    public void setVenta(int cantidad,Producto producto){
+        if(cantidad > 0 && producto != null){
+            this.cantidad = cantidad;
+            this.producto = producto;
+            total = producto.getPrecioMasIva().setScale(2,BigDecimal.ROUND_HALF_DOWN).multiply(new BigDecimal(cantidad));
+            
+        }
+    }
 }
