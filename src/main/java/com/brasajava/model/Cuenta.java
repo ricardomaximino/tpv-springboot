@@ -28,6 +28,10 @@ public class Cuenta {
     public Cuenta(){
         ventas = new ArrayList();
     }
+    public Cuenta(String name){
+        this();
+        this.name = name;
+    }
 
     public long getId() {
         return id;

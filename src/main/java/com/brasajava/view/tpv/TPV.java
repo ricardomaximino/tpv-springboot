@@ -5,25 +5,11 @@
  */
 package com.brasajava.view.tpv;
 
-import com.brasajava.model.Cliente;
-import com.brasajava.model.Cuenta;
-import com.brasajava.model.Factura;
 import com.brasajava.model.Grupo;
-import com.brasajava.model.Persona;
 import com.brasajava.model.Producto;
-import com.brasajava.model.Usuario;
-import com.brasajava.model.Venta;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.table.TableModel;
 
 /**
@@ -32,51 +18,28 @@ import javax.swing.table.TableModel;
  */
 public class TPV extends javax.swing.JFrame {
 
-    private int ventas = 1;
-    private int cantidad = 1;
-    
-    private Map<String, Producto> productos;
-    private Map<String, Grupo> grupos;
-    private Map<String, Cuenta> cuentas;
-
-    private int generoHeight = 0;
-    private final int generoXPosition = 0;
-    private int generoYPosition = 0;
-    private final List<JComponent> generoComponentList;
-    private int generoCount = 0;
-
-    private int productoHeight = 0;
-    private int productoWidth = 0;
-    private int productoXPosition = 0;
-    private int productoYPosition = 0;
-    private final List<JComponent> productoComponentList;
-    private int productoCount = 0;
-
-    private final int cuentaHeight = 0;
-    private int cuentaXPosition = 0;
-    private int cuentaYPosition = 0;
-    private final List<JComponent> cuentaComponentList;
-    private int cuentaCount = 0;
+    private TpvModel tpvModel;
 
     /**
      * Creates new form TPV
      */
     public TPV() {
-        generoComponentList = new ArrayList<>();
-        productoComponentList = new ArrayList<>();
-        cuentaComponentList = new ArrayList<>();
-        productos = new HashMap<>();
-        grupos = new HashMap<>();
+
         initComponents();
         setColumnModel();
-        GeneroModel miModel = new GeneroModel();
-        miModel.setCuentaPanel(panelCuenta);
-        miModel.setGrupoPanel(panelGenero);
-        miModel.setProductoPanel(panelProducto);
-        miModel.setLabelTotal(lblTotalValue);
-        miModel.setModel((CajaTableModel)tabla.getModel());
-        miModel.setGrupoList(createGruops());
-        miModel.crear();
+        setTpvModel();
+        
+    }
+    
+    private void setTpvModel(){
+        tpvModel = new TpvModel();
+        tpvModel.setCuentaPanel(panelCuenta);
+        tpvModel.setGrupoPanel(panelGenero);
+        tpvModel.setProductoPanel(panelProducto);
+        tpvModel.setLabelTotal(lblTotalValue);
+        tpvModel.setModel((CajaTableModel)tabla.getModel());
+        tpvModel.setGrupoList(createGruops());
+        tpvModel.crear();
     }
 
     @SuppressWarnings("unchecked")
@@ -85,11 +48,6 @@ public class TPV extends javax.swing.JFrame {
 
         jButton32 = new javax.swing.JButton();
         panelToolBar = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
         scrollCuenta = new javax.swing.JScrollPane();
         panelCuenta = new javax.swing.JPanel();
         scrollGenero = new javax.swing.JScrollPane();
@@ -127,69 +85,15 @@ public class TPV extends javax.swing.JFrame {
 
         panelToolBar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jButton2.setText("Adiciona Producto");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-
-        jButton1.setText("Adiciona Genero");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton3.setText("Adicionar Cuenta");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
-        jButton4.setText("Adicionar Venta");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
-            }
-        });
-
-        jButton5.setText("Automatico");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout panelToolBarLayout = new javax.swing.GroupLayout(panelToolBar);
         panelToolBar.setLayout(panelToolBarLayout);
         panelToolBarLayout.setHorizontalGroup(
             panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelToolBarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton5)
-                .addGap(565, 565, 565))
+            .addGap(0, 1154, Short.MAX_VALUE)
         );
         panelToolBarLayout.setVerticalGroup(
             panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelToolBarLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4)
-                    .addComponent(jButton5))
-                .addContainerGap(66, Short.MAX_VALUE))
+            .addGap(0, 100, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout panelCuentaLayout = new javax.swing.GroupLayout(panelCuenta);
@@ -254,6 +158,11 @@ public class TPV extends javax.swing.JFrame {
 
         btnMas.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnMas.setText("+");
+        btnMas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMasActionPerformed(evt);
+            }
+        });
 
         btn7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn7.setText("7");
@@ -473,180 +382,11 @@ public class TPV extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JButton generoButton = new JButton(generoCount + "");
-        generoButton.setSize(200, 200);
-        generoComponentList.add(generoButton);
-        reorganizaGenero();
-        generoCount++;
-    }//GEN-LAST:event_jButton1ActionPerformed
-
-    private void reorganizaGenero() {
-        generoYPosition = 0;
-        generoHeight = 0;
-        panelGenero.removeAll();
-
-        for (Component c : generoComponentList) {
-            c.setLocation(generoXPosition, generoYPosition);
-            panelGenero.add(c);
-            generoYPosition += c.getHeight();
-
-            if (panelGenero.getHeight() < generoYPosition) {
-                int w = panelGenero.getWidth();
-
-                panelGenero.setMaximumSize(new java.awt.Dimension(200, 32767));
-                panelGenero.setPreferredSize(new java.awt.Dimension(200, generoYPosition));
-
-                GroupLayout panelLayout = (GroupLayout) panelGenero.getLayout();
-                panelGenero.setLayout(panelLayout);
-                panelLayout.setHorizontalGroup(
-                        panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGap(0, w, Short.MAX_VALUE)
-                );
-                panelLayout.setVerticalGroup(
-                        panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGap(0, generoYPosition, Short.MAX_VALUE)
-                );
-            }
-        }
-        panelGenero.repaint();
-    }
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JButton b = new JButton(productoCount + "");
-        b.setSize(200, 200);
-        productoComponentList.add(b);
-        reoganizaProducto();
-        productoCount++;
-
-
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        JButton b = new JButton(cuentaCount + "");
-        b.setSize(200, 200);
-        cuentaComponentList.add(b);
-        reorganizaCuenta();
-        cuentaCount++;
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        addVenta();
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        generoComponentList.clear();
-        for (Grupo g : createGruops()) {
-            JButton generoButton = new JButton(g.getNombre());
-            generoButton.setSize(200, 200);
-            generoButton.addActionListener(this::generoAction);
-            generoComponentList.add(generoButton);
-            generoButton.setActionCommand(g.getNombre());
-            grupos.put(g.getNombre(), g);
-        }
-        reorganizaGenero();
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void generoAction(ActionEvent e) {
-        Grupo g = grupos.get(((JButton) e.getSource()).getActionCommand());
-        productoComponentList.clear();
-        for (Producto p : g.getProductos()) {
-            JButton b = new JButton(p.getName());
-            b.addActionListener(this::productoAction);
-            b.setActionCommand(p.getName());
-            b.setSize(200, 200);
-            productoComponentList.add(b);
-            reoganizaProducto();
-            productos.put(p.getName(), p);
-        }
-    }
-    private void productoAction(ActionEvent e){
-        Producto p = productos.get(((JButton)e.getSource()).getActionCommand());
-        CajaTableModel model = (CajaTableModel)tabla.getModel();
-        Cuenta c = model.getCuenta();
-        List<Venta> list = c.getVentas();
-        Venta v = new Venta();
-        v.setCuenta(c);
-        v.setVenta(cantidad, p);
-        list.add(v);
-        
-        BigDecimal total = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_DOWN);
-        for (Venta venta : list) {
-            total = total.add(venta.getTotal().setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        }
-        lblTotalValue.setText(total.toString());
-        model.fireTableDataChanged();
-    }
-
-    private void reorganizaCuenta() {
-        cuentaYPosition = 0;
-        cuentaXPosition = 0;
-        panelCuenta.removeAll();
-
-        for (Component c : cuentaComponentList) {
-            c.setLocation(cuentaXPosition, cuentaYPosition);
-            panelCuenta.add(c);
-            cuentaXPosition += c.getWidth();
-
-            if (panelCuenta.getHeight() < cuentaXPosition) {
-                int h = panelCuenta.getHeight();
-
-                panelCuenta.setMaximumSize(new Dimension(32767, 172));
-                panelCuenta.setPreferredSize(new Dimension(cuentaXPosition, 172));
-
-                GroupLayout panelLayout = (GroupLayout) panelCuenta.getLayout();
-                panelCuenta.setLayout(panelLayout);
-                panelLayout.setHorizontalGroup(
-                        panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGap(0, cuentaXPosition, Short.MAX_VALUE)
-                );
-                panelLayout.setVerticalGroup(
-                        panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGap(0, h, Short.MAX_VALUE)
-                );
-            }
-        }
-        panelCuenta.repaint();
-    }
-
-    private void reoganizaProducto() {
-        productoXPosition = 0;
-        productoYPosition = 0;
-        productoHeight = 0;
-        productoWidth = 0;
-        panelProducto.removeAll();
-
-        for (Component c : productoComponentList) {
-            c.setLocation(productoXPosition, productoYPosition);
-            panelProducto.add(c);
-
-            productoXPosition += c.getWidth();
-
-            if (panelProducto.getWidth() < productoXPosition + c.getWidth()) {
-                productoYPosition += c.getHeight();
-                productoXPosition = 0;
-            }
-
-            if (panelProducto.getHeight() < productoYPosition + c.getHeight()) {
-                int w = panelProducto.getWidth();
-
-                GroupLayout panelProductoLayout = (GroupLayout) panelProducto.getLayout();
-                panelProducto.setLayout(panelProductoLayout);
-                panelProductoLayout.setHorizontalGroup(
-                        panelProductoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGap(0, w, Short.MAX_VALUE)
-                );
-                panelProductoLayout.setVerticalGroup(
-                        panelProductoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGap(0, productoYPosition + c.getHeight(), Short.MAX_VALUE)
-                );
-            }
-        }
-        panelProducto.repaint();
-    }
-
+    private void btnMasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMasActionPerformed
+        tpvModel.crearCuenta();
+    }//GEN-LAST:event_btnMasActionPerformed
     private TableModel getModel() {
-        TableModel model = new CajaTableModel();
-        return model;
+        return new CajaTableModel();
     }
 
     private void setColumnModel() {
@@ -667,65 +407,6 @@ public class TPV extends javax.swing.JFrame {
             }
         }
 
-    }
-
-    public void addVenta() {
-        CajaTableModel model = (CajaTableModel) tabla.getModel();
-
-        Persona usu = new Usuario();
-        usu.setNombre("Ricardo Maximino");
-
-        Persona cli = new Cliente();
-        cli.setNombre("Africa");
-
-        Producto p = new Producto();
-        p.setActivo(true);
-        p.setAlmacen(200);
-        p.setCusto(BigDecimal.valueOf(0.95));
-        p.setDescripcion("Bote de Coca Cola de 330ml");
-        p.setId(1);
-        p.setIva(20);
-        p.setMargen(30);
-        p.setName("Coca-Cola");
-        p.setPrecioMasIva(new BigDecimal(1.73).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        p.setPrecioSinIva(BigDecimal.valueOf(1.05));
-
-        Grupo g = new Grupo();
-        g.setDescripcion("Refrescos de todas las clases");
-        g.setId(1);
-        g.setNombre("Refrescos");
-        g.getProductos().add(p);
-        p.getGrupos().add(g);
-
-        Factura f = new Factura();
-        f.setAbierta(true);
-        f.setId(1);
-        f.setPagada(false);
-        f.setUsuario(usu);
-        f.setCliente(cli);
-
-        Cuenta c = model.getCuenta();
-        c.setFactura(f);
-        c.setId(1);
-        c.setName("Cuenta UNO");
-
-        f.getCuentas().add(c);
-
-        Venta v = new Venta();
-        v.setVenta(ventas, p);
-        v.setId(ventas);
-        v.setCuenta(c);
-
-        c.getVentas().add(v);
-
-        BigDecimal total = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_DOWN);
-        for (Venta venta : c.getVentas()) {
-            total = total.add(venta.getTotal().setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        }
-        ventas++;
-
-        lblTotalValue.setText(total.toString());
-        model.fireTableDataChanged();
     }
 
     /**
@@ -780,12 +461,7 @@ public class TPV extends javax.swing.JFrame {
     private javax.swing.JButton btnMenos;
     private javax.swing.JButton btnPagar;
     private javax.swing.JButton btnPagarRapido;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton32;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblTotalLabel;

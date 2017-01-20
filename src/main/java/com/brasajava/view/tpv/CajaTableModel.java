@@ -11,7 +11,7 @@ public class CajaTableModel extends AbstractTableModel implements Internationali
     private String[] title;
 
     public CajaTableModel() {
-        cuenta = new Cuenta();
+        cuenta = new Cuenta("0");
         title = new String[4];
         title[0] = "UNID.";
         title[1] = "DESC.";
