@@ -3,6 +3,7 @@ package com.brasajava.model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,14 +24,14 @@ public class Factura {
     @OneToOne(fetch = FetchType.EAGER,targetEntity = Usuario.class)
     @JoinColumn(name = "USUARIO_ID")
     private Persona usuario;
-    @OneToMany(mappedBy = "factura")
+    @OneToMany(mappedBy = "factura", fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<Cuenta> cuentas;
     private BigDecimal total;
-    private boolean abierta;
-    private boolean pagada;
+    private boolean cobrada;
 
     public Factura(){
         cuentas = new ArrayList();
+        total = new BigDecimal("0.00");
     }
     public long getId() {
         return id;
@@ -72,21 +73,12 @@ public class Factura {
         this.total = total;
     }
 
-    public boolean isAbierta() {
-        return abierta;
+    public boolean isCobrada() {
+        return cobrada;
     }
 
-    public void setAbierta(boolean abierta) {
-        this.abierta = abierta;
-    }
-
-    public boolean isPagada() {
-        return pagada;
-    }
-
-    public void setPagada(boolean pagada) {
-        this.pagada = pagada;
-    }
-    
+    public void setCobrada(boolean cobrada) {
+        this.cobrada = cobrada;
+    }    
     
 }

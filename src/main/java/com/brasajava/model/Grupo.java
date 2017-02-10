@@ -25,6 +25,7 @@ public class Grupo {
             joinColumns = @JoinColumn(name = "GRUPO_ID",referencedColumnName = "ID"),
             inverseJoinColumns = @JoinColumn(name = "PRODUCTO_ID",referencedColumnName = "ID"))
     private List<Producto> productos;
+    private String image;
     
     public Grupo(){
         productos = new ArrayList();
@@ -60,6 +61,14 @@ public class Grupo {
 
     public void setProductos(List<Producto> productos) {
         this.productos = productos;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
     
     

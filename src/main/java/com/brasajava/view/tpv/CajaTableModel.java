@@ -52,7 +52,7 @@ public class CajaTableModel extends AbstractTableModel implements Internationali
 
     @Override
     public boolean isCellEditable(int row, int col) {
-        return false;
+        return true;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class CajaTableModel extends AbstractTableModel implements Internationali
                 obj = venta.getCantidad();
                 break;
             case 1:
-                obj = venta.getProducto().getName();
+                obj = venta.getProducto().getNombre();
                 break;
             case 2:
                 obj = venta.getProducto().getPrecioMasIva();

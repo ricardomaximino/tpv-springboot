@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -15,23 +16,18 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private String name;
+    private String nombre;
     private String descripcion;
     private int almacen;
-    @ManyToMany(mappedBy = "productos")
+    @ManyToMany(mappedBy = "productos",fetch = FetchType.EAGER)
     private List<Grupo> grupos;
     private BigDecimal custo;
     private double margen;
     private double iva;
     private BigDecimal precioSinIva;
     private BigDecimal precioMasIva;
-    /*@ManyToMany(targetEntity = PromocionLeve3X2.class)
-    @JoinTable(name = "PRODUCTO_PROMOCION",
-            joinColumns = @JoinColumn(name = "PRODUCTO_ID",referencedColumnName = "ID"),
-            inverseJoinColumns = @JoinColumn(name = "PROMOCION_ID", referencedColumnName = "ID"))
-    @LazyCollection(LazyCollectionOption.FALSE)
-    private List<Promocion> promociones;*/
     private boolean activo;
+    private String image;
     
     public Producto(){
         grupos = new ArrayList();
@@ -45,12 +41,12 @@ public class Producto {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getNombre() {
+        return nombre;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getDescripcion() {
@@ -131,6 +127,14 @@ public class Producto {
 
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
     
     

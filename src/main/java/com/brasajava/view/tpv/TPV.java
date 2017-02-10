@@ -1,15 +1,20 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.tpv;
 
+import com.brasajava.model.Cliente;
 import com.brasajava.model.Grupo;
+import com.brasajava.model.Persona;
 import com.brasajava.model.Producto;
+import com.brasajava.model.Usuario;
+import com.brasajava.model.Venta;
+import java.awt.Point;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
 
 /**
@@ -19,6 +24,9 @@ import javax.swing.table.TableModel;
 public class TPV extends javax.swing.JFrame {
 
     private TpvModel tpvModel;
+    private Persona cliente;
+    private Persona usuario; 
+    private Busqueda busqueda;
 
     /**
      * Creates new form TPV
@@ -28,19 +36,62 @@ public class TPV extends javax.swing.JFrame {
         initComponents();
         setColumnModel();
         setTpvModel();
+        txtCuenta.setText(((CajaTableModel) tabla.getModel()).getCuenta().getNombre());
+        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        lblCantidad.setName("false");
+        cliente = new Cliente();
+        cliente.setNif("1");
+        cliente.setNombre("Africa");
+        usuario = new Usuario();
+        usuario.setNif("2");
+        usuario.setNombre("Ricardo");
+        busqueda = new Busqueda(this);
         
+
+    }
+
+    public Persona getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Persona cliente) {
+        this.cliente = cliente;
+    }
+
+    public Persona getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Persona usuario) {
+        this.usuario = usuario;
     }
     
-    private void setTpvModel(){
-        tpvModel = new TpvModel();
+    private void setTpvModel() {
+        tpvModel = new TpvModel(tabla);
+        tpvModel.setScrollTabla(scrollTabla);
         tpvModel.setCuentaPanel(panelCuenta);
         tpvModel.setGrupoPanel(panelGenero);
         tpvModel.setProductoPanel(panelProducto);
         tpvModel.setLabelTotal(lblTotalValue);
-        tpvModel.setModel((CajaTableModel)tabla.getModel());
+        tpvModel.setTxtCuenta(txtCuenta);
+        tpvModel.setLblCantidad(lblCantidad);
         tpvModel.setGrupoList(createGruops());
-        tpvModel.crear();
+        tpvModel.crearGrupos();
     }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -48,6 +99,8 @@ public class TPV extends javax.swing.JFrame {
 
         jButton32 = new javax.swing.JButton();
         panelToolBar = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         scrollCuenta = new javax.swing.JScrollPane();
         panelCuenta = new javax.swing.JPanel();
         scrollGenero = new javax.swing.JScrollPane();
@@ -57,7 +110,7 @@ public class TPV extends javax.swing.JFrame {
         btn1 = new javax.swing.JButton();
         btn2 = new javax.swing.JButton();
         btn3 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
+        btnCE = new javax.swing.JButton();
         btn4 = new javax.swing.JButton();
         btn5 = new javax.swing.JButton();
         btn6 = new javax.swing.JButton();
@@ -67,34 +120,71 @@ public class TPV extends javax.swing.JFrame {
         btn9 = new javax.swing.JButton();
         btnMenos = new javax.swing.JButton();
         btn0 = new javax.swing.JButton();
-        btnComa = new javax.swing.JButton();
         btnBorrar = new javax.swing.JButton();
         btnPagar = new javax.swing.JButton();
-        btnPagarRapido = new javax.swing.JButton();
+        btnNuevaCuenta = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         lblTotalLabel = new javax.swing.JLabel();
         lblTotalValue = new javax.swing.JLabel();
         scrollTabla = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        txtCuenta = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        lblCantidad = new javax.swing.JLabel();
+        btnTicket = new javax.swing.JButton();
         scrollProducto = new javax.swing.JScrollPane();
         panelProducto = new javax.swing.JPanel();
 
         jButton32.setText("jButton32");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setIconImage(new ImageIcon(this.getClass().getResource("/images/icon.png")).getImage());
 
         panelToolBar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jButton1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jButton1.setText("Cliente");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        jButton2.setText("Usuario");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelToolBarLayout = new javax.swing.GroupLayout(panelToolBar);
         panelToolBar.setLayout(panelToolBarLayout);
         panelToolBarLayout.setHorizontalGroup(
             panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1154, Short.MAX_VALUE)
+            .addGroup(panelToolBarLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jButton2)
+                .addContainerGap(444, Short.MAX_VALUE))
         );
+
+        panelToolBarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton1, jButton2});
+
         panelToolBarLayout.setVerticalGroup(
             panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
+            .addGroup(panelToolBarLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addContainerGap())
         );
+
+        panelToolBarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButton1, jButton2});
 
         javax.swing.GroupLayout panelCuentaLayout = new javax.swing.GroupLayout(panelCuenta);
         panelCuenta.setLayout(panelCuentaLayout);
@@ -118,7 +208,7 @@ public class TPV extends javax.swing.JFrame {
         panelGenero.setLayout(panelGeneroLayout);
         panelGeneroLayout.setHorizontalGroup(
             panelGeneroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 204, Short.MAX_VALUE)
+            .addGap(0, 221, Short.MAX_VALUE)
         );
         panelGeneroLayout.setVerticalGroup(
             panelGeneroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -134,27 +224,62 @@ public class TPV extends javax.swing.JFrame {
         btn1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn1.setText("1");
         btn1.setPreferredSize(new java.awt.Dimension(89, 23));
+        btn1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn1ActionPerformed(evt);
+            }
+        });
 
         btn2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn2.setText("2");
         btn2.setPreferredSize(new java.awt.Dimension(89, 23));
+        btn2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn2ActionPerformed(evt);
+            }
+        });
 
         btn3.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn3.setText("3");
         btn3.setPreferredSize(new java.awt.Dimension(89, 23));
+        btn3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn3ActionPerformed(evt);
+            }
+        });
 
-        jButton7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jButton7.setText("X");
-        jButton7.setPreferredSize(new java.awt.Dimension(89, 23));
+        btnCE.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        btnCE.setText("CE");
+        btnCE.setPreferredSize(new java.awt.Dimension(89, 23));
+        btnCE.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCEActionPerformed(evt);
+            }
+        });
 
         btn4.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn4.setText("4");
+        btn4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn4ActionPerformed(evt);
+            }
+        });
 
         btn5.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn5.setText("5");
+        btn5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn5ActionPerformed(evt);
+            }
+        });
 
         btn6.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn6.setText("6");
+        btn6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn6ActionPerformed(evt);
+            }
+        });
 
         btnMas.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnMas.setText("+");
@@ -166,30 +291,67 @@ public class TPV extends javax.swing.JFrame {
 
         btn7.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn7.setText("7");
+        btn7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn7ActionPerformed(evt);
+            }
+        });
 
         btn8.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn8.setText("8");
+        btn8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn8ActionPerformed(evt);
+            }
+        });
 
         btn9.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn9.setText("9");
+        btn9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn9ActionPerformed(evt);
+            }
+        });
 
         btnMenos.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnMenos.setText("-");
+        btnMenos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMenosActionPerformed(evt);
+            }
+        });
 
         btn0.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btn0.setText("0");
-
-        btnComa.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        btnComa.setText(",");
+        btn0.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn0ActionPerformed(evt);
+            }
+        });
 
         btnBorrar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnBorrar.setText("BORRAR");
+        btnBorrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBorrarActionPerformed(evt);
+            }
+        });
 
         btnPagar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         btnPagar.setText("PAGAR");
+        btnPagar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPagarActionPerformed(evt);
+            }
+        });
 
-        btnPagarRapido.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
-        btnPagarRapido.setText("PAGAR RAPIDO");
+        btnNuevaCuenta.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        btnNuevaCuenta.setText("NUEVA CUENTA");
+        btnNuevaCuenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNuevaCuentaActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -228,7 +390,6 @@ public class TPV extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelTecladoLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panelTecladoLayout.createSequentialGroup()
                         .addComponent(btn1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -236,7 +397,7 @@ public class TPV extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnCE, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelTecladoLayout.createSequentialGroup()
                         .addComponent(btn4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -253,20 +414,19 @@ public class TPV extends javax.swing.JFrame {
                         .addComponent(btn9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnMenos))
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(panelTecladoLayout.createSequentialGroup()
                         .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnPagar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btn0, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(panelTecladoLayout.createSequentialGroup()
-                                .addComponent(btnComa)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnBorrar))
-                            .addComponent(btnPagarRapido, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                        .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnNuevaCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBorrar, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap())
         );
 
-        panelTecladoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnBorrar, btnComa, btnMas, btnMenos, jButton7});
+        panelTecladoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnCE, btnMas, btnMenos});
 
         panelTecladoLayout.setVerticalGroup(
             panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -278,7 +438,7 @@ public class TPV extends javax.swing.JFrame {
                     .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btn3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btn2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btnCE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn4)
@@ -293,38 +453,112 @@ public class TPV extends javax.swing.JFrame {
                     .addComponent(btnMenos))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btn0)
-                        .addComponent(btnComa))
+                    .addComponent(btn0)
                     .addComponent(btnBorrar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelTecladoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnPagar)
-                    .addComponent(btnPagarRapido)))
+                    .addComponent(btnNuevaCuenta)))
         );
 
-        panelTecladoLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnBorrar, btnComa, btnMas, btnMenos, btnPagar, btnPagarRapido, jButton7});
+        panelTecladoLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnBorrar, btnCE, btnMas, btnMenos, btnNuevaCuenta, btnPagar});
 
         tabla.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tabla.setModel(getModel());
+        tabla.setRowHeight(50);
         scrollTabla.setViewportView(tabla);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setText("NOMBRE DE LA CUENTA");
+
+        txtCuenta.setBackground(java.awt.SystemColor.control);
+        txtCuenta.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtCuenta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        txtCuenta.setBorder(null);
+        txtCuenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCuentaActionPerformed(evt);
+            }
+        });
+        txtCuenta.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtCuentaKeyPressed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel2.setText("CANTIDAD");
+
+        lblCantidad.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblCantidad.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblCantidad.setText("1");
+        lblCantidad.setName("false"); // NOI18N
+
+        btnTicket.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        btnTicket.setText("Ticket");
+        btnTicket.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTicketActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(txtCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(lblCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnTicket)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnTicket, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtCuenta)
+                            .addComponent(lblCantidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addContainerGap())
+        );
 
         javax.swing.GroupLayout panelCajaLayout = new javax.swing.GroupLayout(panelCaja);
         panelCaja.setLayout(panelCajaLayout);
         panelCajaLayout.setHorizontalGroup(
             panelCajaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCajaLayout.createSequentialGroup()
+            .addGroup(panelCajaLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelCajaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelTeclado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                .addGroup(panelCajaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(panelTeclado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelCajaLayout.setVerticalGroup(
             panelCajaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCajaLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 80, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelTeclado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -334,11 +568,11 @@ public class TPV extends javax.swing.JFrame {
         panelProducto.setLayout(panelProductoLayout);
         panelProductoLayout.setHorizontalGroup(
             panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 510, Short.MAX_VALUE)
+            .addGap(0, 519, Short.MAX_VALUE)
         );
         panelProductoLayout.setVerticalGroup(
             panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 446, Short.MAX_VALUE)
+            .addGap(0, 1013, Short.MAX_VALUE)
         );
 
         scrollProducto.setViewportView(panelProducto);
@@ -349,42 +583,183 @@ public class TPV extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(panelCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelToolBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(panelCaja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(scrollProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(scrollProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(scrollGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(scrollCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                        .addComponent(scrollGenero, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(scrollCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(panelToolBar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(panelToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelCaja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(panelToolBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(scrollProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                             .addComponent(scrollGenero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(scrollCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(panelCaja, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(scrollCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnMasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMasActionPerformed
+    private void btnTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTicketActionPerformed
+        tpvModel.marcarTicket();
+    }//GEN-LAST:event_btnTicketActionPerformed
+
+    private void txtCuentaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCuentaKeyPressed
+        if(evt.getKeyCode() == 10 ){
+            tpvModel.cambiarNombre(txtCuenta.getText());
+        }
+    }//GEN-LAST:event_txtCuentaKeyPressed
+
+    private void txtCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCuentaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCuentaActionPerformed
+
+    private void btnNuevaCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevaCuentaActionPerformed
         tpvModel.crearCuenta();
+    }//GEN-LAST:event_btnNuevaCuentaActionPerformed
+
+    private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
+        Pagar pagar = new Pagar(this, tpvModel.pagar(), cliente, usuario,tpvModel);
+        pagar.setLocationRelativeTo(null);
+        pagar.setVisible(true);
+    }//GEN-LAST:event_btnPagarActionPerformed
+
+    private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
+        tpvModel.borrarCuenta();
+    }//GEN-LAST:event_btnBorrarActionPerformed
+
+    private void btn0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn0ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn0ActionPerformed
+
+    private void btnMenosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenosActionPerformed
+        int row = tabla.getSelectedRow();
+        if (row >= 0) {
+            CajaTableModel model = (CajaTableModel) tabla.getModel();
+            Venta v = model.getCuenta().getVentas().get(row);
+            int cantidad = v.getCantidad() - Integer.parseInt(lblCantidad.getText());
+            int confirmacion = -3;
+            if (cantidad < 1) {
+                confirmacion = JOptionPane.showConfirmDialog(this, "Desea eliminar este articulo?");
+                if (confirmacion == JOptionPane.OK_OPTION) {
+                    model.getCuenta().getVentas().remove(v);
+                    tpvModel.getVentasMap().remove(v.getProducto());
+                    if (model.getCuenta().getVentas().size() > 0) {
+                        Venta venta = model.getCuenta().getVentas().get(model.getCuenta().getVentas().size() - 1);
+                        fireDataChage(venta);
+                    } else {
+                        model.fireTableDataChanged();
+                    }
+                    tpvModel.sumaTotal(model.getCuenta().getVentas());
+                }
+            } else {
+                v.setVenta(cantidad, v.getProducto());
+                fireDataChage(v);
+            }
+        }
+        resetCantidad();
+    }//GEN-LAST:event_btnMenosActionPerformed
+
+    private void btn9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn9ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn9ActionPerformed
+
+    private void btn8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn8ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn8ActionPerformed
+
+    private void btn7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn7ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn7ActionPerformed
+
+    private void btnMasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMasActionPerformed
+        int row = tabla.getSelectedRow();
+        if (row >= 0) {
+            CajaTableModel model = (CajaTableModel) tabla.getModel();
+            Venta v = model.getCuenta().getVentas().get(row);
+            v.setVenta(v.getCantidad() + Integer.parseInt(lblCantidad.getText()), v.getProducto());
+            model.fireTableDataChanged();
+            tpvModel.sumaTotal(model.getCuenta().getVentas());
+            int index = model.getCuenta().getVentas().indexOf(v);
+            tabla.setRowSelectionInterval(index, index);
+
+        }
+        resetCantidad();
     }//GEN-LAST:event_btnMasActionPerformed
+
+    private void resetCantidad(){
+        lblCantidad.setText("1");
+        lblCantidad.setName("false");
+    }
+    private void btn6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn6ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn6ActionPerformed
+
+    private void btn5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn5ActionPerformed
+
+    private void btn4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn4ActionPerformed
+
+    private void btnCEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCEActionPerformed
+        resetCantidad();
+    }//GEN-LAST:event_btnCEActionPerformed
+
+    private void btn3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn3ActionPerformed
+
+    private void btn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn2ActionPerformed
+
+    private void btn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1ActionPerformed
+        tecladoAction(evt);
+    }//GEN-LAST:event_btn1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        busqueda.setLocationRelativeTo(null);
+        busqueda.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        busqueda.setLocationRelativeTo(null);
+        busqueda.setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void fireDataChage(Venta v) {
+        CajaTableModel model = (CajaTableModel) tabla.getModel();
+        model.fireTableDataChanged();
+        tpvModel.sumaTotal(model.getCuenta().getVentas());
+        int index = model.getCuenta().getVentas().indexOf(v);
+        tabla.setRowSelectionInterval(index, index);
+    }
+    private void tecladoAction(java.awt.event.ActionEvent evt) {
+        JButton b = (JButton) evt.getSource();
+        if (lblCantidad.getName().equals("true")) {
+            lblCantidad.setText(lblCantidad.getText() + b.getText());
+        } else if (!b.getText().equals("0")) {
+            lblCantidad.setText(b.getText());
+            lblCantidad.setName("true");
+        }
+    }
+
     private TableModel getModel() {
         return new CajaTableModel();
     }
@@ -393,16 +768,16 @@ public class TPV extends javax.swing.JFrame {
         for (int i = 0; i < 4; i++) {
             switch (i) {
                 case 0:
-                    tabla.getColumnModel().getColumn(i).setPreferredWidth(5);
+                    tabla.getColumnModel().getColumn(0).setPreferredWidth(5);
                     break;
                 case 1:
-                    tabla.getColumnModel().getColumn(i).setPreferredWidth(200);
+                    tabla.getColumnModel().getColumn(1).setPreferredWidth(200);
                     break;
                 case 2:
-                    tabla.getColumnModel().getColumn(i).setPreferredWidth(20);
+                    tabla.getColumnModel().getColumn(2).setPreferredWidth(20);
                     break;
                 case 3:
-                    tabla.getColumnModel().getColumn(i).setPreferredWidth(20);
+                    tabla.getColumnModel().getColumn(3).setPreferredWidth(20);
                     break;
             }
         }
@@ -439,7 +814,9 @@ public class TPV extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TPV().setVisible(true);
+                TPV tpv = new TPV();
+                tpv.setExtendedState(JFrame.MAXIMIZED_BOTH);
+                tpv.setVisible(true);
             }
         });
     }
@@ -456,14 +833,20 @@ public class TPV extends javax.swing.JFrame {
     private javax.swing.JButton btn8;
     private javax.swing.JButton btn9;
     private javax.swing.JButton btnBorrar;
-    private javax.swing.JButton btnComa;
+    private javax.swing.JButton btnCE;
     private javax.swing.JButton btnMas;
     private javax.swing.JButton btnMenos;
+    private javax.swing.JButton btnNuevaCuenta;
     private javax.swing.JButton btnPagar;
-    private javax.swing.JButton btnPagarRapido;
+    private javax.swing.JButton btnTicket;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton32;
-    private javax.swing.JButton jButton7;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel lblCantidad;
     private javax.swing.JLabel lblTotalLabel;
     private javax.swing.JLabel lblTotalValue;
     private javax.swing.JPanel panelCaja;
@@ -477,23 +860,40 @@ public class TPV extends javax.swing.JFrame {
     private javax.swing.JScrollPane scrollProducto;
     private javax.swing.JScrollPane scrollTabla;
     private javax.swing.JTable tabla;
+    private javax.swing.JTextField txtCuenta;
     // End of variables declaration//GEN-END:variables
 
     private List<Grupo> createGruops() {
         Producto pro1 = new Producto();
         pro1.setId(1);
-        pro1.setName("Coca-Cola");
+        pro1.setNombre("Coca-Cola");
         pro1.setPrecioMasIva(new BigDecimal(1.33).setScale(2, BigDecimal.ROUND_HALF_DOWN));
+        pro1.setImage("hitUva.png");
 
         Producto pro2 = new Producto();
         pro2.setId(2);
-        pro2.setName("Fanta Laranja");
+        pro2.setNombre("Fanta Laranja");
         pro2.setPrecioMasIva(new BigDecimal(1.33).setScale(2, BigDecimal.ROUND_HALF_DOWN));
+        pro2.setImage("hitPina.png");
 
         Producto pro3 = new Producto();
         pro3.setId(3);
-        pro3.setName("Dolly");
+        pro3.setNombre("Dolly");
         pro3.setPrecioMasIva(new BigDecimal(1.13).setScale(2, BigDecimal.ROUND_HALF_DOWN));
+        pro3.setImage("hitManzana.png");
+
+        Producto pro4 = new Producto();
+        pro4.setId(4);
+        pro4.setNombre("Frizz");
+        pro4.setPrecioMasIva(new BigDecimal(1.00).setScale(2, BigDecimal.ROUND_HALF_DOWN));
+        pro4.setImage("frizz.png");
+
+        Producto pro5 = new Producto();
+        pro5.setId(5);
+        pro5.setNombre("Ciel");
+        pro5.setPrecioMasIva(new BigDecimal(1.64).setScale(2, BigDecimal.ROUND_HALF_DOWN));
+        pro5.setImage("ciel.png");
+    
 
         Grupo refrescos = new Grupo();
         refrescos.setId(1);
@@ -501,37 +901,40 @@ public class TPV extends javax.swing.JFrame {
         refrescos.getProductos().add(pro1);
         refrescos.getProductos().add(pro2);
         refrescos.getProductos().add(pro3);
+        refrescos.getProductos().add(pro4);
+        refrescos.getProductos().add(pro5);
 
         Producto pro21 = new Producto();
         pro21.setId(21);
-        pro21.setName("Solo");
+        pro21.setNombre("Solo");
         pro21.setPrecioMasIva(new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_DOWN));
+        pro21.setImage("solo.png");
 
         Producto pro22 = new Producto();
         pro22.setId(22);
-        pro22.setName("Cortado");
+        pro22.setNombre("Cortado");
         pro22.setPrecioMasIva(new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_DOWN));
 
         Producto pro23 = new Producto();
         pro23.setId(23);
-        pro23.setName("Cafe con Leite");
+        pro23.setNombre("Cafe con Leite");
         pro23.setPrecioMasIva(new BigDecimal(1.20).setScale(2, BigDecimal.ROUND_HALF_DOWN));
 
         Producto pro24 = new Producto();
         pro24.setId(24);
-        pro24.setName("Solo largo");
+        pro24.setNombre("Solo largo");
         pro24.setPrecioMasIva(new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_DOWN));
 
         Producto pro25 = new Producto();
         pro25.setId(25);
-        pro25.setName("Bombom");
+        pro25.setNombre("Bombom");
         pro25.setPrecioMasIva(new BigDecimal(1.2).setScale(2, BigDecimal.ROUND_HALF_DOWN));
 
         Producto pro26 = new Producto();
         pro26.setId(26);
-        pro26.setName("Cafe con Leite");
+        pro26.setNombre("Cafe con Leite");
         pro26.setPrecioMasIva(new BigDecimal(1.20).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        
+
         Grupo cafes = new Grupo();
         cafes.setId(2);
         cafes.setNombre("Cafes");
@@ -542,20 +945,19 @@ public class TPV extends javax.swing.JFrame {
         cafes.getProductos().add(pro25);
         cafes.getProductos().add(pro26);
 
-        
         Producto pro31 = new Producto();
         pro31.setId(31);
-        pro31.setName("1/2 Tostada con Aceite");
+        pro31.setNombre("1/2 Tostada con Aceite");
         pro31.setPrecioMasIva(new BigDecimal(0.60).setScale(2, BigDecimal.ROUND_HALF_DOWN));
 
         Producto pro32 = new Producto();
         pro32.setId(32);
-        pro32.setName("1/2 Tostada con Fiambre");
+        pro32.setNombre("1/2 Tostada con Fiambre");
         pro32.setPrecioMasIva(new BigDecimal(1.10).setScale(2, BigDecimal.ROUND_HALF_DOWN));
 
         Producto pro33 = new Producto();
         pro33.setId(33);
-        pro33.setName("1/2 Tostada con doble Fiambre");
+        pro33.setNombre("1/2 Tostada con doble Fiambre");
         pro33.setPrecioMasIva(new BigDecimal(1.13).setScale(2, BigDecimal.ROUND_HALF_DOWN));
 
         Grupo tostadas = new Grupo();

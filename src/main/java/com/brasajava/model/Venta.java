@@ -1,6 +1,7 @@
 package com.brasajava.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,6 +27,12 @@ public class Venta {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CUENTA_ID")
     private Cuenta cuenta;
+    private LocalDate fecha;
+    
+    public Venta(){
+        total = new BigDecimal("0.00");
+        fecha = LocalDate.now();
+    }
 
     public long getId() {
         return id;
@@ -71,4 +78,13 @@ public class Venta {
             
         }
     }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+   
 }
