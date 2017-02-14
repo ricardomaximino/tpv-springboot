@@ -69,6 +69,17 @@ public interface ServicioPersona<T> {
      /**
       * Este metodo fue pensado para listar todos los registros de la tabla
       * referente a la clase especificada utilizando Generics &lt;T&gt;, y 
+      * filtrado por la sequencia de caracteres del parametro introducido.
+      * @param nombre del tipo String;
+      * @return del tipo java.lang.Iterable&lt;T&gt;.
+      * <p>La idea general de este metodo es:</p>
+      * dao.buscarRegistroPorNombre(parametro);
+      */
+     Iterable<T> findByNombreLike(String nombre);
+     
+     /**
+      * Este metodo fue pensado para listar todos los registros de la tabla
+      * referente a la clase especificada utilizando Generics &lt;T&gt;, y 
       * filtrado por el parametro introducido.
       * @param primerApellido del tipo String;
       * @return del tipo java.lang.Iterable&lt;T&gt;.

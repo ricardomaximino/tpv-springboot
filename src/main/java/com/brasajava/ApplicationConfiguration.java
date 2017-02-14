@@ -19,7 +19,11 @@ import com.brasajava.model.Persona;
 import com.brasajava.model.Usuario;
 import com.brasajava.view.persona.ListaPersona;
 import com.brasajava.view.persona.tablemodel.MiTableModel;
+import com.brasajava.view.persona.tablemodel.MiTableModelNifNombre;
 import com.brasajava.view.persona.tablemodel.TableModelAll;
+import com.brasajava.view.producto.ProductoGrupo;
+import com.brasajava.view.tpv.BusquedaDePersona;
+import com.brasajava.view.tpv.TPV;
 import java.time.LocalDate;
 import org.springframework.context.annotation.Scope;
 
@@ -104,4 +108,28 @@ public class ApplicationConfiguration {
         listaPersona.setName("null");
         return listaPersona;
     }
+    
+    @Bean
+    @Scope("prototype")
+    public MiTableModel tableModelNifNombre(MessageSource messageSource,ApplicationLocale applicationLocale){
+        return new MiTableModelNifNombre(messageSource, applicationLocale);
+    }
+    
+    @Bean
+    public BusquedaDePersona busquedaDePersona(ApplicationContext context, TPV tpv){
+        return new BusquedaDePersona(tpv, context);
+    }
+    
+    @Bean 
+    public TPV tpv(ApplicationContext context){
+        return new TPV(context, null, null);
+    }
+    
+    @Bean
+    public ProductoGrupo productoGrupo(ApplicationContext context){
+        ProductoGrupo productoGrupo = new ProductoGrupo(context);
+        productoGrupo.setPreferredSize(new Dimension(200, 200));
+        return productoGrupo;
+    }
+        
 }

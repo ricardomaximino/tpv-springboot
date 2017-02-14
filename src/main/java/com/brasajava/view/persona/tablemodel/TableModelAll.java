@@ -14,13 +14,13 @@ public class TableModelAll extends MiTableModel{
     
     public TableModelAll(MessageSource messageSource, ApplicationLocale applicationLocale){
         super(messageSource, applicationLocale);
-        String s = new String();
         this.titulos = new String[13];
         configTitulos();
     }
 
     public TableModelAll(MessageSource messageSource, ApplicationLocale applicationLocale, List<Persona> datos) {
         super(messageSource, applicationLocale, datos);
+        this.titulos = new String[13];
         configTitulos();
     }
 

@@ -1,6 +1,7 @@
 package com.brasajava.service;
 
 import com.brasajava.dao.UsuarioDAO;
+import com.brasajava.model.Cliente;
 import com.brasajava.model.Usuario;
 import java.time.LocalDate;
 import java.time.Month;
@@ -56,6 +57,11 @@ public class ServicioUsuario implements ServicioPersona<Usuario> {
     @Override
     public Iterable<Usuario> findByNombre(String nombre) {
         return dao.findByNombre(nombre);
+    }
+
+    @Override
+    public Iterable<Usuario> findByNombreLike(String nombre){
+        return dao.findByNombreLike(nombre);
     }
 
     @Override

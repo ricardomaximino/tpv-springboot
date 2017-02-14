@@ -28,6 +28,8 @@ public class Cuenta {
     private Factura factura;
     @Transient
     private boolean ticket;
+    @Transient
+    private boolean ajustada;
     private boolean cobrada;
     
     public Cuenta(){
@@ -93,6 +95,14 @@ public class Cuenta {
 
     public void setCobrada(boolean cobrada) {
         this.cobrada = cobrada;
+    }
+
+    public boolean isAjustada() {
+        return ajustada;
+    }
+
+    public void setAjustada(boolean ajustada) {
+        this.ajustada = ajustada;
     }
     
     public void addVenta(Venta venta){

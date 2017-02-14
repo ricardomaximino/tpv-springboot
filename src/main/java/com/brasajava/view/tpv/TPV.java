@@ -1,52 +1,103 @@
 package com.brasajava.view.tpv;
 
-import com.brasajava.model.Cliente;
+import com.brasajava.model.Cuenta;
 import com.brasajava.model.Grupo;
 import com.brasajava.model.Persona;
 import com.brasajava.model.Producto;
-import com.brasajava.model.Usuario;
 import com.brasajava.model.Venta;
-import java.awt.Point;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.swing.AbstractButton;
+import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
+import org.springframework.context.ApplicationContext;
 
 /**
+ * Esta clase representa el TPV virtual.
  *
- * @author Ricardo
+ * @author Ricardo Maximino
  */
 public class TPV extends javax.swing.JFrame {
 
-    private TpvModel tpvModel;
     private Persona cliente;
-    private Persona usuario; 
-    private Busqueda busqueda;
+    private Persona usuario;
+    private BusquedaDePersona busqueda;
+    private ApplicationContext context;
+
+    //Grupo
+    List<Grupo> grupoList;
+    List<Component> grupoButtonList;
+    Map<String, Grupo> grupoMap;
+    int grupoWidth;
+    int grupoHeight;
+
+    //Producto
+    List<Component> productoButtonList;
+    Map<String, Producto> productoMap;
+    int productoWidth;
+    int productoHeight;
+
+    //para registrar la posicion del scroll donde sea visible la linea de cada 
+    //producto.
+    Map<Cuenta, CuentaMap> cuentasMap;
+
+    //
+    int cantidad;
+
+    //Cuenta
+    List<Component> cuentaButtonList;
+    Map<String, Cuenta> cuentaMap;
+    int cuentaWidth;
+    int cuentaHeight;
+    int cuentaCount;
 
     /**
-     * Creates new form TPV
+     * Este es el único contructor para crear una instancia de esa clase.
+     *
+     * @param context
+     * @param cliente
+     * @param usuario
      */
-    public TPV() {
+    public TPV(ApplicationContext context, Persona cliente, Persona usuario) {
+        this.context = context;
+        this.cliente = cliente;
+        this.usuario = usuario;
 
         initComponents();
         setColumnModel();
-        setTpvModel();
+
+        //ButtonList
+        grupoButtonList = new ArrayList();
+        productoButtonList = new ArrayList();
+        cuentaButtonList = new ArrayList();
+        //Map
+        grupoMap = new HashMap<>();
+        productoMap = new HashMap<>();
+        cuentaMap = new HashMap<>();
+        cuentasMap = new HashMap<>();
+        //int
+        grupoHeight = productoHeight = cuentaHeight = 200;
+        grupoWidth = productoWidth = cuentaWidth = 200;
+        cantidad = 1;
+        cuentaCount = 1;
+
         txtCuenta.setText(((CajaTableModel) tabla.getModel()).getCuenta().getNombre());
         tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lblCantidad.setName("false");
-        cliente = new Cliente();
-        cliente.setNif("1");
-        cliente.setNombre("Africa");
-        usuario = new Usuario();
-        usuario.setNif("2");
-        usuario.setNombre("Ricardo");
-        busqueda = new Busqueda(this);
-        
+        this.usuario = usuario;
 
     }
 
@@ -65,33 +116,301 @@ public class TPV extends javax.swing.JFrame {
     public void setUsuario(Persona usuario) {
         this.usuario = usuario;
     }
-    
-    private void setTpvModel() {
-        tpvModel = new TpvModel(tabla);
-        tpvModel.setScrollTabla(scrollTabla);
-        tpvModel.setCuentaPanel(panelCuenta);
-        tpvModel.setGrupoPanel(panelGenero);
-        tpvModel.setProductoPanel(panelProducto);
-        tpvModel.setLabelTotal(lblTotalValue);
-        tpvModel.setTxtCuenta(txtCuenta);
-        tpvModel.setLblCantidad(lblCantidad);
-        tpvModel.setGrupoList(createGruops());
-        tpvModel.crearGrupos();
+
+    public BusquedaDePersona getBusqueda() {
+        return busqueda;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+    public void setBusqueda(BusquedaDePersona busqueda) {
+        this.busqueda = busqueda;
+    }
+
+    public List<Grupo> getGrupoList() {
+        return grupoList;
+    }
+
+    public void setGrupoList(List<Grupo> grupoList) {
+        this.grupoList = grupoList;
+        crearGrupos(grupoList);
+    }
+
+    //Grupos
+    /**
+     * Este metodo es el arranque del tpv ya que es el responsable de añadir los
+     * grupos con los productos al TPV virtual.
+     *
+     * @param grupoList del tipo
+     * java.util.List&lt;com.brasajava.model.Grupo&gt;.
+     */
+    private void crearGrupos(List<Grupo> grupoList) {
+        grupoButtonList.clear();
+        for (Grupo g : grupoList) {
+            JButton button = new JButton(g.getNombre());
+            button.setSize(grupoWidth, grupoHeight);
+            button.addActionListener(this::grupoButtonAction);
+            grupoButtonList.add(button);
+            button.setActionCommand(g.getId() + "");
+            grupoMap.put(g.getId() + "", g);
+        }
+        reorganizaGrupo();
+    }
+
+    private void grupoButtonAction(ActionEvent e) {
+        Grupo g = grupoMap.get(((JButton) e.getSource()).getActionCommand());
+        productoButtonList.clear();
+        for (Producto p : g.getProductos()) {
+            JButton button = new JButton(p.getNombre());
+            button.addActionListener(this::productoButtonAction);
+            button.setActionCommand(p.getId() + "");
+            button.setSize(productoWidth, productoHeight);
+            if (p.getImage() != null && !p.getImage().isEmpty()) {
+                Image image = new ImageIcon(getClass().getResource("/images/" + p.getImage())).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
+                button.setIcon(new ImageIcon(image));
+                button.setVerticalTextPosition(AbstractButton.BOTTOM);
+                button.setHorizontalTextPosition(AbstractButton.CENTER);
+            }
+            button.setToolTipText(p.getNombre() + " " + p.getPrecioMasIva());
+            productoButtonList.add(button);
+            reoganizaProducto();
+            productoMap.put(p.getId() + "", p);
+        }
+    }
+
+    private void reorganizaGrupo() {
+        int grupoYPosition = 0;
+        int grupoXPosition = 0;
+        panelGrupo.removeAll();
+
+        for (Component c : grupoButtonList) {
+            c.setLocation(grupoXPosition, grupoYPosition);
+            panelGrupo.add(c);
+            grupoYPosition += c.getHeight();
+
+            if (panelGrupo.getHeight() < grupoYPosition) {
+                int w = panelGrupo.getWidth();
+
+                panelGrupo.setMaximumSize(new java.awt.Dimension(200, 32767));
+                panelGrupo.setPreferredSize(new java.awt.Dimension(200, grupoYPosition));
+
+                GroupLayout panelLayout = (GroupLayout) panelGrupo.getLayout();
+                panelGrupo.setLayout(panelLayout);
+                panelLayout.setHorizontalGroup(
+                        panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, w, Short.MAX_VALUE)
+                );
+                panelLayout.setVerticalGroup(
+                        panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, grupoYPosition, Short.MAX_VALUE)
+                );
+            }
+        }
+        panelGrupo.repaint();
+    }
+    //Grupo
+
+    //Producto
+    //cada linea, en la tabla, para cada producto
+    private void productoButtonAction(ActionEvent e) {
+        converteCantidad();
+
+        Producto p = productoMap.get(((JButton) e.getSource()).getActionCommand());
+        Cuenta c = ((CajaTableModel) tabla.getModel()).getCuenta();
+        if (!cuentasMap.containsKey(c)) {
+            cuentasMap.put(c, new CuentaMap());
+        }
+        Map<Producto, Venta> ventasMap = cuentasMap.get(c).getMap();
+        Map<Venta, Integer> pointMap = cuentasMap.get(c).getPointMap();
+        List<Venta> ventas = c.getVentas();
+
+        Venta v = ventasMap.get(p);
+        if (v != null) {
+            v.setVenta(v.getCantidad() + cantidad, p);
+        } else {
+            v = new Venta();
+            v.setCuenta(c);
+            v.setVenta(cantidad, p);
+            ventasMap.put(p, v);
+            ventas.add(v);
+        }
+
+        ((CajaTableModel) tabla.getModel()).fireTableDataChanged();
+        tabla.setRowSelectionInterval(ventas.indexOf(v), ventas.indexOf(v));
+
+        if (!pointMap.containsKey(v)) {
+            int max = scrollTabla.getVerticalScrollBar().getMaximum();
+            pointMap.put(v, max);
+            Rectangle celRect = tabla.getCellRect(ventas.indexOf(v), 0, true);
+            tabla.scrollRectToVisible(celRect);
+        } else {
+            scrollTabla.getVerticalScrollBar().setValue(pointMap.get(v));
+        }
+        c.setTotal(sumaTotal(ventas));
+        resetCantidad();
+
+    }
+
+    private void reoganizaProducto() {
+        int productoXPosition = 0;
+        int productoYPosition = 0;
+        panelProducto.removeAll();
+
+        for (Component c : productoButtonList) {
+            c.setLocation(productoXPosition, productoYPosition);
+            panelProducto.add(c);
+
+            productoXPosition += c.getWidth();
+
+            if (panelProducto.getWidth() < productoXPosition + c.getWidth()) {
+                productoYPosition += c.getHeight();
+                productoXPosition = 0;
+            }
+
+            if (panelProducto.getHeight() < productoYPosition + c.getHeight()) {
+                int w = panelProducto.getWidth();
+
+                GroupLayout panelProductoLayout = (GroupLayout) panelProducto.getLayout();
+                panelProducto.setLayout(panelProductoLayout);
+                panelProductoLayout.setHorizontalGroup(
+                        panelProductoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, w, Short.MAX_VALUE)
+                );
+                panelProductoLayout.setVerticalGroup(
+                        panelProductoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, productoYPosition + c.getHeight(), Short.MAX_VALUE)
+                );
+            }
+        }
+        panelProducto.repaint();
+    }
+    //Producto
+
+    //Cantidades
+    private void converteCantidad() {
+        cantidad = Integer.parseInt(lblCantidad.getText());
+        lblCantidad.setName("false");
+    }
+
+    private void resetCantidad() {
+        cantidad = 1;
+        lblCantidad.setText(cantidad + "");
+        lblCantidad.setName("false");
+    }
+    //Cantidades
+
+    //Cuenta
+    private void guardaCuenta() {
+        Cuenta cuenta = ((CajaTableModel) tabla.getModel()).getCuenta();
+        if (cuenta.getVentas().size() > 0 || cuenta.isAjustada()) {
+            if (!cuenta.isCobrada()) {
+                cuentaMap.put(cuenta.getNombre(), cuenta);
+                JButton b = new JButton(cuenta.getNombre());
+                b.setActionCommand(cuenta.getNombre());
+                b.setSize(cuentaWidth, cuentaHeight);
+                b.addActionListener(this::cuentaButtonAction);
+                if (cuenta.isTicket()) {
+                    b.setBackground(Color.green);
+                }
+                cuentaButtonList.add(b);
+                reorganizaCuenta();
+            }
+        }
+    }
+
+    private void reorganizaCuenta() {
+        int cuentaYPosition = 0;
+        int cuentaXPosition = 0;
+        panelCuenta.removeAll();
+
+        for (Component c : cuentaButtonList) {
+            c.setLocation(cuentaXPosition, cuentaYPosition);
+            panelCuenta.add(c);
+            cuentaXPosition += c.getWidth();
+
+            if (panelCuenta.getHeight() < cuentaXPosition) {
+                int h = panelCuenta.getHeight();
+
+                panelCuenta.setMaximumSize(new Dimension(32767, 172));
+                panelCuenta.setPreferredSize(new Dimension(cuentaXPosition, 172));
+
+                GroupLayout panelLayout = (GroupLayout) panelCuenta.getLayout();
+                panelCuenta.setLayout(panelLayout);
+                panelLayout.setHorizontalGroup(
+                        panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, cuentaXPosition, Short.MAX_VALUE)
+                );
+                panelLayout.setVerticalGroup(
+                        panelLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addGap(0, h, Short.MAX_VALUE)
+                );
+            }
+        }
+        panelCuenta.repaint();
+    }
+
+    private void cuentaButtonAction(ActionEvent e) {
+        JButton b = (JButton) e.getSource();
+        Cuenta c = cuentaMap.get(b.getActionCommand());
+        cuentaMap.remove(c.getNombre());
+        cuentaButtonList.remove(b);
+        abrirCuenta(c);
+    }
+
+    private void nuevaCuenta() {
+        CajaTableModel model = (CajaTableModel) tabla.getModel();
+        model.setCuenta(new Cuenta(cuentaCount + ""));
+        lblTotalValue.setText("0,00");
+        cuentaCount++;
+        model.fireTableDataChanged();
+        txtCuenta.setText(model.getCuenta().getNombre());
+    }
+
+    public void abrirCuenta(Cuenta c) {
+        CajaTableModel model = (CajaTableModel) tabla.getModel();
+        guardaCuenta();
+        model.setCuenta(c);
+        model.fireTableDataChanged();
+        reorganizaCuenta();
+        lblTotalValue.setText(sumaTotal(c.getVentas()).toString());
+        txtCuenta.setText(c.getNombre());
+    }
+
+    public void crearCuenta() {
+        guardaCuenta();
+        nuevaCuenta();
+    }
+
+    //Arreglar internationalization
+    private void borrarCuenta() {
+        Cuenta c = ((CajaTableModel) tabla.getModel()).getCuenta();
+        int jop = JOptionPane.showConfirmDialog(panelProducto, "Desea Borrar esta Cuenta " + c.getNombre() + "?", "Confirmación", JOptionPane.YES_OPTION);
+        if (jop == JOptionPane.YES_OPTION) {
+            nuevaCuenta();
+            c = null;
+        }
+    }
+
+    private void cambiarNombreDeLaCuenta(String nombre) {
+        Cuenta cuenta = ((CajaTableModel) tabla.getModel()).getCuenta();
+        cuenta.setNombre(nombre);
+        cuenta.setAjustada(true);
+    }
+
+    private Cuenta sumarCuentaParaPagar() {
+        Cuenta c = ((CajaTableModel) tabla.getModel()).getCuenta();
+        c.setTotal(sumaTotal(c.getVentas()));
+        return c;
+    }
+    //Cuenta
+
+    //Total
+    private BigDecimal sumaTotal(List<Venta> ventas) {
+        BigDecimal total = new BigDecimal(0).setScale(2, BigDecimal.ROUND_HALF_DOWN);
+        for (Venta ve : ventas) {
+            total = total.add(ve.getTotal().setScale(2, BigDecimal.ROUND_HALF_DOWN));
+        }
+        return total;
+    }
+    //Total
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -104,7 +423,7 @@ public class TPV extends javax.swing.JFrame {
         scrollCuenta = new javax.swing.JScrollPane();
         panelCuenta = new javax.swing.JPanel();
         scrollGenero = new javax.swing.JScrollPane();
-        panelGenero = new javax.swing.JPanel();
+        panelGrupo = new javax.swing.JPanel();
         panelCaja = new javax.swing.JPanel();
         panelTeclado = new javax.swing.JPanel();
         btn1 = new javax.swing.JButton();
@@ -201,21 +520,21 @@ public class TPV extends javax.swing.JFrame {
 
         scrollGenero.setPreferredSize(new java.awt.Dimension(200, 100));
 
-        panelGenero.setMaximumSize(new java.awt.Dimension(100, 32767));
-        panelGenero.setPreferredSize(new java.awt.Dimension(200, 400));
+        panelGrupo.setMaximumSize(new java.awt.Dimension(100, 32767));
+        panelGrupo.setPreferredSize(new java.awt.Dimension(200, 400));
 
-        javax.swing.GroupLayout panelGeneroLayout = new javax.swing.GroupLayout(panelGenero);
-        panelGenero.setLayout(panelGeneroLayout);
-        panelGeneroLayout.setHorizontalGroup(
-            panelGeneroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout panelGrupoLayout = new javax.swing.GroupLayout(panelGrupo);
+        panelGrupo.setLayout(panelGrupoLayout);
+        panelGrupoLayout.setHorizontalGroup(
+            panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 221, Short.MAX_VALUE)
         );
-        panelGeneroLayout.setVerticalGroup(
-            panelGeneroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        panelGrupoLayout.setVerticalGroup(
+            panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, Short.MAX_VALUE, Short.MAX_VALUE)
         );
 
-        scrollGenero.setViewportView(panelGenero);
+        scrollGenero.setViewportView(panelGrupo);
 
         panelCaja.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -615,12 +934,12 @@ public class TPV extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnTicketActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTicketActionPerformed
-        tpvModel.marcarTicket();
+        ((CajaTableModel) tabla.getModel()).getCuenta().setTicket(true);
     }//GEN-LAST:event_btnTicketActionPerformed
 
     private void txtCuentaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCuentaKeyPressed
-        if(evt.getKeyCode() == 10 ){
-            tpvModel.cambiarNombre(txtCuenta.getText());
+        if (evt.getKeyCode() == 10) {
+            cambiarNombreDeLaCuenta(txtCuenta.getText());
         }
     }//GEN-LAST:event_txtCuentaKeyPressed
 
@@ -629,21 +948,21 @@ public class TPV extends javax.swing.JFrame {
     }//GEN-LAST:event_txtCuentaActionPerformed
 
     private void btnNuevaCuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevaCuentaActionPerformed
-        tpvModel.crearCuenta();
+        crearCuenta();
     }//GEN-LAST:event_btnNuevaCuentaActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        Pagar pagar = new Pagar(this, tpvModel.pagar(), cliente, usuario,tpvModel);
+        Pagar pagar = new Pagar(this, sumarCuentaParaPagar(), cliente, usuario, this);
         pagar.setLocationRelativeTo(null);
         pagar.setVisible(true);
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
-        tpvModel.borrarCuenta();
+        borrarCuenta();
     }//GEN-LAST:event_btnBorrarActionPerformed
 
     private void btn0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn0ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn0ActionPerformed
 
     private void btnMenosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMenosActionPerformed
@@ -657,14 +976,15 @@ public class TPV extends javax.swing.JFrame {
                 confirmacion = JOptionPane.showConfirmDialog(this, "Desea eliminar este articulo?");
                 if (confirmacion == JOptionPane.OK_OPTION) {
                     model.getCuenta().getVentas().remove(v);
-                    tpvModel.getVentasMap().remove(v.getProducto());
+                    Map<Producto, Venta> ventasMap = cuentasMap.get(model.getCuenta()).getMap();
+                    ventasMap.remove(v.getProducto());
                     if (model.getCuenta().getVentas().size() > 0) {
                         Venta venta = model.getCuenta().getVentas().get(model.getCuenta().getVentas().size() - 1);
                         fireDataChage(venta);
                     } else {
                         model.fireTableDataChanged();
                     }
-                    tpvModel.sumaTotal(model.getCuenta().getVentas());
+                    sumaTotal(model.getCuenta().getVentas());
                 }
             } else {
                 v.setVenta(cantidad, v.getProducto());
@@ -675,15 +995,15 @@ public class TPV extends javax.swing.JFrame {
     }//GEN-LAST:event_btnMenosActionPerformed
 
     private void btn9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn9ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn9ActionPerformed
 
     private void btn8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn8ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn8ActionPerformed
 
     private void btn7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn7ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn7ActionPerformed
 
     private void btnMasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMasActionPerformed
@@ -693,7 +1013,7 @@ public class TPV extends javax.swing.JFrame {
             Venta v = model.getCuenta().getVentas().get(row);
             v.setVenta(v.getCantidad() + Integer.parseInt(lblCantidad.getText()), v.getProducto());
             model.fireTableDataChanged();
-            tpvModel.sumaTotal(model.getCuenta().getVentas());
+            sumaTotal(model.getCuenta().getVentas());
             int index = model.getCuenta().getVentas().indexOf(v);
             tabla.setRowSelectionInterval(index, index);
 
@@ -701,20 +1021,16 @@ public class TPV extends javax.swing.JFrame {
         resetCantidad();
     }//GEN-LAST:event_btnMasActionPerformed
 
-    private void resetCantidad(){
-        lblCantidad.setText("1");
-        lblCantidad.setName("false");
-    }
     private void btn6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn6ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn6ActionPerformed
 
     private void btn5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn5ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn5ActionPerformed
 
     private void btn4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn4ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn4ActionPerformed
 
     private void btnCEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCEActionPerformed
@@ -722,35 +1038,48 @@ public class TPV extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCEActionPerformed
 
     private void btn3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn3ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn3ActionPerformed
 
     private void btn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn2ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn2ActionPerformed
 
     private void btn1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn1ActionPerformed
-        tecladoAction(evt);
+        tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        busqueda.setLocationRelativeTo(null);
-        busqueda.setVisible(true);
+        if (busqueda != null) {
+            busqueda.setLocationRelativeTo(null);
+            busqueda.setVisible(true);
+        } else {
+            busqueda = context.getBean(BusquedaDePersona.class);
+            busqueda.setLocationRelativeTo(null);
+            busqueda.setVisible(true);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        busqueda.setLocationRelativeTo(null);
-        busqueda.setVisible(true);
+        if (busqueda != null) {
+            busqueda.setLocationRelativeTo(null);
+            busqueda.setVisible(true);
+        } else {
+            busqueda = context.getBean(BusquedaDePersona.class);
+            busqueda.setLocationRelativeTo(null);
+            busqueda.setVisible(true);
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void fireDataChage(Venta v) {
         CajaTableModel model = (CajaTableModel) tabla.getModel();
         model.fireTableDataChanged();
-        tpvModel.sumaTotal(model.getCuenta().getVentas());
+        sumaTotal(model.getCuenta().getVentas());
         int index = model.getCuenta().getVentas().indexOf(v);
         tabla.setRowSelectionInterval(index, index);
     }
-    private void tecladoAction(java.awt.event.ActionEvent evt) {
+
+    private void tecladoVirtualAction(java.awt.event.ActionEvent evt) {
         JButton b = (JButton) evt.getSource();
         if (lblCantidad.getName().equals("true")) {
             lblCantidad.setText(lblCantidad.getText() + b.getText());
@@ -784,43 +1113,6 @@ public class TPV extends javax.swing.JFrame {
 
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TPV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TPV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TPV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TPV.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                TPV tpv = new TPV();
-                tpv.setExtendedState(JFrame.MAXIMIZED_BOTH);
-                tpv.setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn0;
     private javax.swing.JButton btn1;
@@ -851,7 +1143,7 @@ public class TPV extends javax.swing.JFrame {
     private javax.swing.JLabel lblTotalValue;
     private javax.swing.JPanel panelCaja;
     private javax.swing.JPanel panelCuenta;
-    private javax.swing.JPanel panelGenero;
+    private javax.swing.JPanel panelGrupo;
     private javax.swing.JPanel panelProducto;
     private javax.swing.JPanel panelTeclado;
     private javax.swing.JPanel panelToolBar;
@@ -862,7 +1154,7 @@ public class TPV extends javax.swing.JFrame {
     private javax.swing.JTable tabla;
     private javax.swing.JTextField txtCuenta;
     // End of variables declaration//GEN-END:variables
-
+/*
     private List<Grupo> createGruops() {
         Producto pro1 = new Producto();
         pro1.setId(1);
@@ -974,4 +1266,5 @@ public class TPV extends javax.swing.JFrame {
 
         return generos;
     }
+     */
 }

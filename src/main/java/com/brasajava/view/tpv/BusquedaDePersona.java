@@ -5,23 +5,58 @@
  */
 package com.brasajava.view.tpv;
 
+import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.interfaces.Internationalizable;
+import com.brasajava.view.persona.tablemodel.MiTableModel;
 import javax.swing.ImageIcon;
+import javax.swing.JTable;
+import javax.swing.table.TableModel;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 
 /**
  *
  * @author Ricardo
  */
-public class Busqueda extends javax.swing.JDialog {
+public class BusquedaDePersona extends javax.swing.JDialog implements Internationalizable{
 
+    private final ApplicationContext context;
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
+    
     private TPV tpv;
     /**
      * Creates new form Busqueda
      * @param tpv
      */
-    public Busqueda(TPV tpv) {
+    public BusquedaDePersona(TPV tpv,ApplicationContext context) {
         super(tpv, true);
         this.tpv = tpv;
+        this.context = context;
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
         initComponents();
+    }
+
+    public JTable getTabla() {
+        return tabla;
+    }
+
+    public void setTabla(JTable tabla) {
+        this.tabla = tabla;
+    }
+    
+    
+    @Override
+    public void refreshLanguage() {
+      this.setTitle(messageSource.getMessage(this.getName(), null, applicationLocale.getLocale()));
+
+        MiTableModel model = context.getBean("tableModelNifNombre", MiTableModel.class);
+        TableModel oldModel = tabla.getModel();
+        if (oldModel instanceof MiTableModel) {
+            model.setDatos(((MiTableModel) oldModel).getDatos());
+        }
+        tabla.setModel(model);
     }
 
     /**
@@ -149,4 +184,5 @@ public class Busqueda extends javax.swing.JDialog {
     private javax.swing.JTextField txtNIF;
     private javax.swing.JTextField txtNombre;
     // End of variables declaration//GEN-END:variables
+
 }

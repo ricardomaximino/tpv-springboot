@@ -10,6 +10,7 @@ import com.brasajava.model.Factura;
 import com.brasajava.model.Persona;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import javax.swing.ImageIcon;
@@ -30,7 +31,7 @@ public class Pagar extends javax.swing.JDialog {
     private final Persona usuario;
     private BigDecimal entregado;
     private BigDecimal cambio;
-    private final TpvModel tpvModel;
+    private final TPV tpv;
 
     /**
      * Creates new form Pagar
@@ -41,13 +42,13 @@ public class Pagar extends javax.swing.JDialog {
      * @param usuario
      * @param tpvModel
      */
-    public Pagar(java.awt.Frame parent, Cuenta cuenta, Persona cliente, Persona usuario,TpvModel tpvModel) {
+    public Pagar(java.awt.Frame parent, Cuenta cuenta, Persona cliente, Persona usuario,TPV tpv) {
         super(parent, true);
         initComponents();
         this.cuenta = cuenta;
         this.cliente = cliente;
         this.usuario = usuario;
-        this.tpvModel = tpvModel;
+        this.tpv = tpv;
         noPagaRapito = false;
         factura = new Factura();
         prepara();
@@ -56,7 +57,7 @@ public class Pagar extends javax.swing.JDialog {
     @Override
     public void dispose(){
         if(!cobrado){
-            tpvModel.abrirCuenta(cuenta);
+            tpv.abrirCuenta(cuenta);
         }  
         super.dispose();
     }
@@ -206,6 +207,11 @@ public class Pagar extends javax.swing.JDialog {
         btn50Euros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/cincuentaEuros.png"))); // NOI18N
         btn50Euros.setActionCommand("dinero");
         btn50Euros.setName("50.00"); // NOI18N
+        btn50Euros.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btn50EurosKeyPressed(evt);
+            }
+        });
 
         btn20Euros.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/vinteEuros.png"))); // NOI18N
         btn20Euros.setActionCommand("dinero");
@@ -370,6 +376,16 @@ public class Pagar extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     
+    private void btnCEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCEActionPerformed
+        entregado = new BigDecimal("0.00");
+        entregado.setScale(2, RoundingMode.HALF_DOWN);
+        hacerCuentas();
+    }//GEN-LAST:event_btnCEActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
         entregado = new BigDecimal(lblEntregado.getText());
         entregado.setScale(2, RoundingMode.HALF_DOWN);
@@ -381,12 +397,12 @@ public class Pagar extends javax.swing.JDialog {
             factura.setUsuario(usuario);
             factura.setTotal(cuenta.getTotal());
             factura.getCuentas().add(cuenta);
-            
+
             //guardar no BD
-            
+
             //imprimir
-            
-            tpvModel.nuevaCuenta();
+
+            tpv.crearCuenta();
             cobrado = true;
             this.dispose();
         } else {
@@ -394,15 +410,9 @@ public class Pagar extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_btnOkActionPerformed
 
-    private void btnCEActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCEActionPerformed
-        entregado = new BigDecimal("0.00");
-        entregado.setScale(2, RoundingMode.HALF_DOWN);
-        hacerCuentas();
-    }//GEN-LAST:event_btnCEActionPerformed
-
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_btnCancelarActionPerformed
+    private void btn50EurosKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btn50EurosKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn50EurosKeyPressed
 
     private void hacerCuentas(){
         cambio = entregado.subtract(cuenta.getTotal());
@@ -410,6 +420,9 @@ public class Pagar extends javax.swing.JDialog {
         lblCambio.setText(cambio.toString());
     }
 
+    private void esc(KeyEvent evt){
+        JOptionPane.showMessageDialog(this, evt.getKeyCode() + "");
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn10Centimos;
     private javax.swing.JButton btn10Euros;

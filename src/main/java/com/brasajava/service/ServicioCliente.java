@@ -55,6 +55,11 @@ public class ServicioCliente implements ServicioPersona<Cliente> {
     public Iterable<Cliente> findByNombre(String nombre) {
         return dao.findByNombre(nombre);
     }
+    
+    @Override
+    public Iterable<Cliente> findByNombreLike(String nombre){
+        return dao.findByNombreLike(nombre);
+    }
 
     @Override
     public Iterable<Cliente> findByPrimerApellido(String primerApellido) {

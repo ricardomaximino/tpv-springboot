@@ -1,6 +1,5 @@
 package com.brasajava.view.principal;
 
-import com.brasajava.model.Producto;
 import com.brasajava.view.producto.ProductoGrupo;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -45,10 +44,6 @@ public class MainFrame extends javax.swing.JFrame {
         this.add(desktopPane,BorderLayout.CENTER);
         this.setVisible(false);
         pack();
-        ProductoGrupo p = new ProductoGrupo();
-        p.setPreferredSize(new Dimension(200, 200));
-        desktopPane.add(p);
-        p.setVisible(true);
     }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

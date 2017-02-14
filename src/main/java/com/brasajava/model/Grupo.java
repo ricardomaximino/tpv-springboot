@@ -71,5 +71,9 @@ public class Grupo {
         this.image = image;
     }
     
+    @Override
+    public String toString(){
+        return nombre;
+    }
     
 }

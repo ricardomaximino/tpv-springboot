@@ -50,6 +50,15 @@ public interface ClienteDAO extends CrudRepository<Cliente, Long>{
     
     /**
      * Este metodo esta pensado para listar todos lo registros de la tabla 
+     * correspondiente de la base de datos donde la columna nombre contenga
+     * una sequencia de caracteres igual al parametro introducido.
+     * @param nombre del tipo String.
+     * @return del tipo java.util.List&lt;com.brasajava.model.Cliente&gt;.
+     */
+    List<Cliente> findByNombreLike(String nombre);
+    
+    /**
+     * Este metodo esta pensado para listar todos lo registros de la tabla 
      * correspondiente de la base de datos donde la columna activo sea
      * igual al parametro introducido.
      * @param activo del tipo boolean.

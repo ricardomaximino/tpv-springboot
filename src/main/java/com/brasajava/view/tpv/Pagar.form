@@ -281,6 +281,9 @@
             <Property name="actionCommand" type="java.lang.String" value="dinero"/>
             <Property name="name" type="java.lang.String" value="50.00" noResource="true"/>
           </Properties>
+          <Events>
+            <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="btn50EurosKeyPressed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn20Euros">
           <Properties>
