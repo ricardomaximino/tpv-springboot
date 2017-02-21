@@ -21,7 +21,10 @@ import com.brasajava.view.persona.ListaPersona;
 import com.brasajava.view.persona.tablemodel.MiTableModel;
 import com.brasajava.view.persona.tablemodel.MiTableModelNifNombre;
 import com.brasajava.view.persona.tablemodel.TableModelAll;
-import com.brasajava.view.producto.ProductoGrupo;
+import com.brasajava.view.producto.BuscarGrupo;
+import com.brasajava.view.producto.BuscarProducto;
+import com.brasajava.view.producto.GrupoView;
+import com.brasajava.view.producto.ProductoView;
 import com.brasajava.view.tpv.BusquedaDePersona;
 import com.brasajava.view.tpv.TPV;
 import java.time.LocalDate;
@@ -126,10 +129,47 @@ public class ApplicationConfiguration {
     }
     
     @Bean
-    public ProductoGrupo productoGrupo(ApplicationContext context){
-        ProductoGrupo productoGrupo = new ProductoGrupo(context);
-        productoGrupo.setPreferredSize(new Dimension(200, 200));
-        return productoGrupo;
+    @Scope("prototype")
+    public ProductoView productoView(ApplicationContext context){
+        ProductoView producto = new ProductoView(context);
+        return producto;
     }
-        
+    
+    @Bean
+    @Scope("prototype")
+    public GrupoView grupoView(ApplicationContext context){
+        GrupoView grupo = new GrupoView(context);
+        return grupo;
+    }
+    
+    @Bean
+    @Scope("prototype")
+    public BuscarProducto buscarProducto(MainFrame main,ApplicationContext context){
+        BuscarProducto lista = new BuscarProducto(main,context);
+        lista.setLocationRelativeTo(null);
+        lista.setModal(false);
+        return lista;
+    }
+    
+    @Bean
+    public BuscarProducto buscarProductoParaAñadir(MainFrame main,ApplicationContext context){
+        BuscarProducto lista = new BuscarProducto(main,context);
+        lista.setLocationRelativeTo(null);
+        return lista;
+    }
+   
+    @Bean
+    @Scope("prototype")
+    public BuscarGrupo buscarGrupo(MainFrame main,ApplicationContext context){
+        BuscarGrupo lista = new BuscarGrupo(main,context);
+        lista.setLocationRelativeTo(null);
+        lista.setModal(false);
+        return lista;
+    }
+    @Bean
+    public BuscarGrupo buscarGrupoParaAñadir(MainFrame main,ApplicationContext context){
+        BuscarGrupo lista = new BuscarGrupo(main,context);
+        lista.setLocationRelativeTo(null);
+        return lista;
+    }
 }

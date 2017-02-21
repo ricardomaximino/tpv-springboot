@@ -36,14 +36,13 @@ public class Pagar extends javax.swing.JDialog {
     /**
      * Creates new form Pagar
      *
-     * @param parent
      * @param cuenta
      * @param cliente
      * @param usuario
      * @param tpvModel
      */
-    public Pagar(java.awt.Frame parent, Cuenta cuenta, Persona cliente, Persona usuario,TPV tpv) {
-        super(parent, true);
+    public Pagar(Cuenta cuenta, Persona cliente, Persona usuario,TPV tpv) {
+        super(tpv, true);
         initComponents();
         this.cuenta = cuenta;
         this.cliente = cliente;
@@ -53,13 +52,6 @@ public class Pagar extends javax.swing.JDialog {
         factura = new Factura();
         prepara();
         activarCartera();
-    }
-    @Override
-    public void dispose(){
-        if(!cobrado){
-            tpv.abrirCuenta(cuenta);
-        }  
-        super.dispose();
     }
 
     private void prepara() {

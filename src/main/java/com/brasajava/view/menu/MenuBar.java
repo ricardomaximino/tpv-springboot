@@ -23,9 +23,11 @@ import com.brasajava.util.interfaces.Command;
 import com.brasajava.view.menu.command.DesktopController;
 import com.brasajava.view.persona.command.ShowPersonaCommand;
 import com.brasajava.view.principal.MainFrame;
-import com.brasajava.view.producto.ProductoGrupo;
+import com.brasajava.view.producto.BuscarGrupo;
+import com.brasajava.view.producto.BuscarProducto;
+import com.brasajava.view.producto.GrupoView;
+import com.brasajava.view.producto.ProductoView;
 import com.brasajava.view.tpv.TPV;
-import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Locale;
 import javax.swing.JFrame;
@@ -63,7 +65,10 @@ public class MenuBar extends JMenuBar implements Internationalizable {
     private static final String ACCION_INGLES = "idiomaInglesCommand";
     private static final String ACCION_ESPANOL = "idiomaEspanolCommand";
     private static final String ACCION_ABRIR_TPV = "abrirTPV";
-    private static final String ACCION_ABRIR_PRODUCTO_GRUPO = "abrirProductoGrupo";
+    private static final String ACCION_ANADIR_PRODUCTO = "añadirProducto";
+    private static final String ACCION_ANADIR_GRUPO = "añadirGrupo";
+    private static final String ACCION_BUSCAR_PRODUCTO = "buscarProducto";
+    private static final String ACCION_BUSCAR_GRUPO = "buscarGrupo";
     private static final String ACCION_NULLA = "NULLA";
 
     /**
@@ -210,9 +215,23 @@ public class MenuBar extends JMenuBar implements Internationalizable {
         
         //Producto/Grupo
         JMenu productoGrupo = createMenu("menu_ProductoGrupo", GRUPO_PRODUCTO_GRUPO, ACCION_NULLA);
-        JMenuItem productoGrupoItem = createMenuItem("menu_ProductoGrupo", GRUPO_PRODUCTO_GRUPO, ACCION_ABRIR_PRODUCTO_GRUPO);
-        productoGrupo.add(productoGrupoItem);
-        productoGrupoItem.addActionListener(this::productoGrupo);
+            //nuevo Producto
+        JMenuItem nuevoProducto = createMenuItem("menuItem_AddProduct", GRUPO_PRODUCTO_GRUPO, ACCION_ANADIR_PRODUCTO);
+        nuevoProducto.addActionListener(this::productoGrupo);
+        productoGrupo.add(nuevoProducto);
+            //nuevo Grupo
+        JMenuItem nuevoGrupo = createMenuItem("menuItem_AddGroup", GRUPO_PRODUCTO_GRUPO, ACCION_ANADIR_GRUPO);
+        nuevoGrupo.addActionListener(this::productoGrupo);
+        productoGrupo.add(nuevoGrupo);
+            //buscarProducto
+        JMenuItem bucarProducto = createMenuItem("menuItem_SearchProduct", GRUPO_PRODUCTO_GRUPO, ACCION_BUSCAR_PRODUCTO);
+        bucarProducto.addActionListener(this::productoGrupo);
+        productoGrupo.add(bucarProducto);
+            //buscarGrupo
+        JMenuItem bucarGrupo = createMenuItem("menuItem_SearchGroup", GRUPO_PRODUCTO_GRUPO, ACCION_BUSCAR_GRUPO);
+        bucarGrupo.addActionListener(this::productoGrupo);
+        productoGrupo.add(bucarGrupo);
+        
         this.add(productoGrupo);
     }
 
@@ -232,25 +251,27 @@ public class MenuBar extends JMenuBar implements Internationalizable {
     }
     
     private void productoGrupo(ActionEvent e){
-        ProductoGrupo p = context.getBean(ProductoGrupo.class);
-        Producto pro1 = new Producto();
-        pro1.setId(1);
-        pro1.setNombre("Hit Uva");
-        pro1.setActivo(true);
-        pro1.setAlmacen(200);
-        pro1.setCusto(new BigDecimal("1.00"));
-        pro1.setDescripcion("This is the description of Hit Uva");
-        pro1.setIva(10);
-        pro1.setMargen(100);
-        pro1.setPrecioSinIva(new BigDecimal("2.00"));
-        pro1.setPrecioMasIva(new BigDecimal("2.20"));
-        pro1.setImage("hitUva.png");
-        Grupo g = new Grupo();
-        g.setNombre("Mi Grupo");
-        pro1.getGrupos().add(g);
-        p.setProducto(pro1);
-        context.getBean(MainFrame.class).getDesktopPane().add(p);
-        p.setVisible(true);
+        MiMenuItem item = (MiMenuItem)e.getSource();
+       switch(item.getCommandActionName()){
+            case ACCION_ANADIR_PRODUCTO:
+                ProductoView pv = context.getBean(ProductoView.class);
+                pv.setProducto(new Producto());
+                context.getBean(MainFrame.class).getDesktopPane().add(pv);
+                pv.setVisible(true);
+            break;
+            case ACCION_ANADIR_GRUPO:
+                GrupoView gv = context.getBean(GrupoView.class);
+                gv.setGrupo(new Grupo());
+                context.getBean(MainFrame.class).getDesktopPane().add(gv);
+                gv.setVisible(true);
+            break;
+            case ACCION_BUSCAR_PRODUCTO:
+                 context.getBean("buscarProducto",BuscarProducto.class).setVisible(true);
+            break;
+            case ACCION_BUSCAR_GRUPO:
+                context.getBean("buscarGrupo",BuscarGrupo.class).setVisible(true);
+            break;
+        }
     }
     
     private void buscaPersona(ActionEvent e) {

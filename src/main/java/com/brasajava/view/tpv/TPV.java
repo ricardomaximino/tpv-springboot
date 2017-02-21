@@ -145,12 +145,21 @@ public class TPV extends javax.swing.JFrame {
     private void crearGrupos(List<Grupo> grupoList) {
         grupoButtonList.clear();
         for (Grupo g : grupoList) {
-            JButton button = new JButton(g.getNombre());
-            button.setSize(grupoWidth, grupoHeight);
-            button.addActionListener(this::grupoButtonAction);
-            grupoButtonList.add(button);
-            button.setActionCommand(g.getId() + "");
-            grupoMap.put(g.getId() + "", g);
+            if (g.isActivo()) {
+                JButton button = new JButton(g.getNombre());
+                button.setSize(grupoWidth, grupoHeight);
+                button.addActionListener(this::grupoButtonAction);
+                grupoButtonList.add(button);
+                button.setActionCommand(g.getId() + "");
+                grupoMap.put(g.getId() + "", g);
+                if (g.getImage() != null && !g.getImage().isEmpty()) {
+                    Image image = new ImageIcon(getClass().getResource("/images/" + g.getImage())).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
+                    button.setIcon(new ImageIcon(image));
+                    button.setVerticalTextPosition(AbstractButton.BOTTOM);
+                    button.setHorizontalTextPosition(AbstractButton.CENTER);
+                }
+                button.setToolTipText(g.getNombre() + " " + g.getProductos().size());
+            }
         }
         reorganizaGrupo();
     }
@@ -159,20 +168,22 @@ public class TPV extends javax.swing.JFrame {
         Grupo g = grupoMap.get(((JButton) e.getSource()).getActionCommand());
         productoButtonList.clear();
         for (Producto p : g.getProductos()) {
-            JButton button = new JButton(p.getNombre());
-            button.addActionListener(this::productoButtonAction);
-            button.setActionCommand(p.getId() + "");
-            button.setSize(productoWidth, productoHeight);
-            if (p.getImage() != null && !p.getImage().isEmpty()) {
-                Image image = new ImageIcon(getClass().getResource("/images/" + p.getImage())).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
-                button.setIcon(new ImageIcon(image));
-                button.setVerticalTextPosition(AbstractButton.BOTTOM);
-                button.setHorizontalTextPosition(AbstractButton.CENTER);
+            if (p.isActivo()) {
+                JButton button = new JButton(p.getNombre());
+                button.addActionListener(this::productoButtonAction);
+                button.setActionCommand(p.getId() + "");
+                button.setSize(productoWidth, productoHeight);
+                if (p.getImage() != null && !p.getImage().isEmpty()) {
+                    Image image = new ImageIcon(getClass().getResource("/images/" + p.getImage())).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
+                    button.setIcon(new ImageIcon(image));
+                    button.setVerticalTextPosition(AbstractButton.BOTTOM);
+                    button.setHorizontalTextPosition(AbstractButton.CENTER);
+                }
+                button.setToolTipText(p.getNombre() + " " + p.getPrecioMasIva());
+                productoButtonList.add(button);
+                reoganizaProducto();
+                productoMap.put(p.getId() + "", p);
             }
-            button.setToolTipText(p.getNombre() + " " + p.getPrecioMasIva());
-            productoButtonList.add(button);
-            reoganizaProducto();
-            productoMap.put(p.getId() + "", p);
         }
     }
 
@@ -245,6 +256,7 @@ public class TPV extends javax.swing.JFrame {
             scrollTabla.getVerticalScrollBar().setValue(pointMap.get(v));
         }
         c.setTotal(sumaTotal(ventas));
+        lblTotalValue.setText(c.getTotal().toString());
         resetCantidad();
 
     }
@@ -952,7 +964,7 @@ public class TPV extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNuevaCuentaActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        Pagar pagar = new Pagar(this, sumarCuentaParaPagar(), cliente, usuario, this);
+        Pagar pagar = new Pagar(sumarCuentaParaPagar(), cliente, usuario, this);
         pagar.setLocationRelativeTo(null);
         pagar.setVisible(true);
     }//GEN-LAST:event_btnPagarActionPerformed

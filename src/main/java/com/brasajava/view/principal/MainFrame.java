@@ -1,6 +1,6 @@
 package com.brasajava.view.principal;
 
-import com.brasajava.view.producto.ProductoGrupo;
+import com.brasajava.view.producto.ProductoView;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;

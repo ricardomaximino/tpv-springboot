@@ -6,7 +6,6 @@
 package com.brasajava.view.producto;
 
 import com.brasajava.model.Grupo;
-import com.brasajava.model.Producto;
 import com.brasajava.util.interfaces.Internationalizable;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,24 +15,24 @@ import javax.swing.table.AbstractTableModel;
  *
  * @author Ricardo
  */
-public class ProductoTableModel extends AbstractTableModel implements Internationalizable{
-    private List<Producto> listaDeProducto;
+public class GrupoTableModel extends AbstractTableModel implements Internationalizable{
+    private List<Grupo> listaDeGrupo;
     private String [] titulos;
    //falta internationalization
-    public ProductoTableModel(){
-        listaDeProducto = new ArrayList<>();
+    public GrupoTableModel(){
+        listaDeGrupo = new ArrayList<>();
         titulos = new String[3];
         titulos[0]= "COD.";
         titulos[1]= "NOMBRE";
         titulos[2]= "PRECIO + I.V.A.";
     }
 
-    public List<Producto> getListaDeProducto() {
-        return listaDeProducto;
+    public List<Grupo> getListaDeGrupo() {
+        return listaDeGrupo;
     }
 
-    public void setListaDeProducto(List<Producto> listaDeProducto) {
-        this.listaDeProducto = listaDeProducto;
+    public void setListaDeGrupo(List<Grupo> listaDeGrupo) {
+        this.listaDeGrupo = listaDeGrupo;
     }
     
 
@@ -49,7 +48,7 @@ public class ProductoTableModel extends AbstractTableModel implements Internatio
 
     @Override
     public int getRowCount() {
-        return listaDeProducto.size();
+        return listaDeGrupo.size();
     }
 
     @Override
@@ -72,13 +71,13 @@ public class ProductoTableModel extends AbstractTableModel implements Internatio
         Object obj = null;
         switch(columnIndex){
             case 0:
-                obj = listaDeProducto.get(rowIndex).getId();
+                obj = listaDeGrupo.get(rowIndex).getId();
                 break;
             case 1:
-                obj = listaDeProducto.get(rowIndex).getNombre();
+                obj = listaDeGrupo.get(rowIndex).getNombre();
                 break;
             case 2:
-                obj = listaDeProducto.get(rowIndex).getPrecioMasIva().toString();
+                obj = listaDeGrupo.get(rowIndex).getProductos().size();
                 break;
         }
         return obj;

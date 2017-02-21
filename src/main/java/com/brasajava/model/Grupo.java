@@ -2,6 +2,7 @@ package com.brasajava.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -26,6 +27,7 @@ public class Grupo {
             inverseJoinColumns = @JoinColumn(name = "PRODUCTO_ID",referencedColumnName = "ID"))
     private List<Producto> productos;
     private String image;
+    private boolean activo;
     
     public Grupo(){
         productos = new ArrayList();
@@ -69,6 +71,14 @@ public class Grupo {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
     
     @Override
