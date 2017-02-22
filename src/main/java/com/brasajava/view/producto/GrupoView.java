@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -56,6 +58,7 @@ public class GrupoView extends javax.swing.JInternalFrame {
             model.getListaDeProducto().add(pro);
             model.fireTableDataChanged();
         } else {
+            //Internationalization
             JOptionPane.showMessageDialog(this, "já tem");
         }
     }
@@ -129,7 +132,7 @@ public class GrupoView extends javax.swing.JInternalFrame {
         if (evt.getButton() == 3) {
             if (tablaParaPruductoGrupo.getSelectedRow() == -1) {
                 menuItemQuitar.setEnabled(false);
-            }else{
+            } else {
                 menuItemQuitar.setEnabled(true);
             }
             popUpMenu.show(this, evt.getX() + 45, evt.getY() + 315);
@@ -148,6 +151,8 @@ public class GrupoView extends javax.swing.JInternalFrame {
         popUpMenu = new javax.swing.JPopupMenu();
         menuItemAñadir = new javax.swing.JMenuItem();
         menuItemQuitar = new javax.swing.JMenuItem();
+        popUpMenuImagen = new javax.swing.JPopupMenu();
+        menuItemQuitarImagen = new javax.swing.JMenuItem();
         panelGrupo = new javax.swing.JPanel();
         lblCodigoGrupo = new javax.swing.JLabel();
         lblNombreGrupo = new javax.swing.JLabel();
@@ -179,6 +184,14 @@ public class GrupoView extends javax.swing.JInternalFrame {
         });
         popUpMenu.add(menuItemQuitar);
 
+        menuItemQuitarImagen.setText("Quitar Imagen");
+        menuItemQuitarImagen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemQuitarImagenActionPerformed(evt);
+            }
+        });
+        popUpMenuImagen.add(menuItemQuitarImagen);
+
         setClosable(true);
         setIconifiable(true);
         setPreferredSize(new java.awt.Dimension(517, 532));
@@ -195,7 +208,6 @@ public class GrupoView extends javax.swing.JInternalFrame {
         lblImageGrupo.setText("IMAGEN");
 
         lblMolduraGrupo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblMolduraGrupo.setText("IMAGEN");
         lblMolduraGrupo.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         lblMolduraGrupo.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         lblMolduraGrupo.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -296,11 +308,10 @@ public class GrupoView extends javax.swing.JInternalFrame {
                         .addComponent(lblDescripcionGrupo)
                         .addGap(18, 18, 18)
                         .addComponent(txtDescripcionGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblMolduraGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(panelGrupoLayout.createSequentialGroup()
-                            .addGap(180, 180, 180)
-                            .addComponent(ckbActivo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(panelGrupoLayout.createSequentialGroup()
+                        .addGap(180, 180, 180)
+                        .addComponent(ckbActivo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lblMolduraGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -339,23 +350,39 @@ public class GrupoView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnNuevoYGuardarGrupoActionPerformed
 
     private void lblMolduraGrupoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMolduraGrupoMouseClicked
-        JFileChooser fc = new JFileChooser();
-        int respuesta = fc.showOpenDialog(this);
-        if (respuesta == JFileChooser.APPROVE_OPTION) {
-            grupoImage = fc.getSelectedFile().getName();
+        if (evt.getButton() == 1) {
+            JFileChooser fc = new JFileChooser(getClass().getResource("/images/").getPath(), FileSystemView.getFileSystemView());
+            //Internationalization
+            fc.setDialogTitle("Seleccionar Imagen para el grupo " + grupo.getNombre());
+            fc.setFileFilter(new FileNameExtensionFilter("Imagenes", "jpg","gif","png","jpeg"));
+            int respuesta = fc.showOpenDialog(this);
+            if (respuesta == JFileChooser.APPROVE_OPTION) {
+                grupoImage = fc.getSelectedFile().getName();
+            }
         }
+
+        if (evt.getButton() == 3) {
+            if (grupoImage != null && grupoImage.isEmpty()) {
+                menuItemQuitarImagen.setEnabled(false);
+                
+            } else {
+                menuItemQuitarImagen.setEnabled(true);
+            }
+            popUpMenuImagen.show(this,evt.getX()+255, evt.getY()+105);
+        }
+
     }//GEN-LAST:event_lblMolduraGrupoMouseClicked
 
     private void tablaParaPruductoGrupoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaParaPruductoGrupoMouseClicked
         popUpMenu(evt);
-            Producto p;
+        Producto p;
         if (evt.getClickCount() == 2) {
             ProductoTableModel model = (ProductoTableModel) tablaParaPruductoGrupo.getModel();
             p = model.getListaDeProducto().get(tablaParaPruductoGrupo.getSelectedRow());
-                ProductoView pv = context.getBean(ProductoView.class);
-                pv.setProducto(p);
-                context.getBean(MainFrame.class).getDesktopPane().add(pv);
-                pv.setVisible(true);
+            ProductoView pv = context.getBean(ProductoView.class);
+            pv.setProducto(p);
+            context.getBean(MainFrame.class).getDesktopPane().add(pv);
+            pv.setVisible(true);
         }
     }//GEN-LAST:event_tablaParaPruductoGrupoMouseClicked
 
@@ -377,6 +404,11 @@ public class GrupoView extends javax.swing.JInternalFrame {
         model.fireTableRowsDeleted(row, row);
     }//GEN-LAST:event_menuItemQuitarActionPerformed
 
+    private void menuItemQuitarImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemQuitarImagenActionPerformed
+        grupoImage = "";
+        lblMolduraGrupo.setIcon(null);
+    }//GEN-LAST:event_menuItemQuitarImagenActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnActualizarYCancelarGrupo;
@@ -390,8 +422,10 @@ public class GrupoView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblNombreGrupo;
     private javax.swing.JMenuItem menuItemAñadir;
     private javax.swing.JMenuItem menuItemQuitar;
+    private javax.swing.JMenuItem menuItemQuitarImagen;
     private javax.swing.JPanel panelGrupo;
     private javax.swing.JPopupMenu popUpMenu;
+    private javax.swing.JPopupMenu popUpMenuImagen;
     private javax.swing.JScrollPane scrollTabla;
     private javax.swing.JTable tablaParaPruductoGrupo;
     private javax.swing.JTextField txtDescripcionGrupo;

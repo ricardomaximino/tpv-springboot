@@ -17,6 +17,9 @@ import java.math.BigDecimal;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -56,6 +59,9 @@ public class ProductoView extends javax.swing.JInternalFrame {
     public void add(Grupo grup) {
         if (!listModel.contains(grup)) {
             listModel.addElement(grup);
+        }else{
+            //Internationalization
+            JOptionPane.showMessageDialog(this, "já tem");
         }
     }
 
@@ -172,7 +178,7 @@ public class ProductoView extends javax.swing.JInternalFrame {
             } else {
                 menuItemQuitar.setEnabled(true);
             }
-            popUpMenu.show(this, evt.getX() + 45, evt.getY() + 315);
+            popUpMenuGrupos.show(this, evt.getX() + 45, evt.getY() + 315);
         }
     }
 
@@ -185,9 +191,11 @@ public class ProductoView extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        popUpMenu = new javax.swing.JPopupMenu();
+        popUpMenuGrupos = new javax.swing.JPopupMenu();
         menuItemAñadir = new javax.swing.JMenuItem();
         menuItemQuitar = new javax.swing.JMenuItem();
+        popUpMenuImagen = new javax.swing.JPopupMenu();
+        menuItemQuitarImagen = new javax.swing.JMenuItem();
         panelProducto = new javax.swing.JPanel();
         lblCodigoProducto = new javax.swing.JLabel();
         lblNombreProducto = new javax.swing.JLabel();
@@ -222,7 +230,7 @@ public class ProductoView extends javax.swing.JInternalFrame {
                 menuItemAñadirActionPerformed(evt);
             }
         });
-        popUpMenu.add(menuItemAñadir);
+        popUpMenuGrupos.add(menuItemAñadir);
 
         menuItemQuitar.setText("QUITAR");
         menuItemQuitar.addActionListener(new java.awt.event.ActionListener() {
@@ -230,7 +238,15 @@ public class ProductoView extends javax.swing.JInternalFrame {
                 menuItemQuitarActionPerformed(evt);
             }
         });
-        popUpMenu.add(menuItemQuitar);
+        popUpMenuGrupos.add(menuItemQuitar);
+
+        menuItemQuitarImagen.setText("Quitar Imagen");
+        menuItemQuitarImagen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemQuitarImagenActionPerformed(evt);
+            }
+        });
+        popUpMenuImagen.add(menuItemQuitarImagen);
 
         setClosable(true);
         setIconifiable(true);
@@ -451,18 +467,32 @@ public class ProductoView extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnActualizarYCancelarProductoActionPerformed
 
     private void lblMolduraProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMolduraProductoMouseClicked
-        JFileChooser fc = new JFileChooser();
-        int respuesta = fc.showOpenDialog(this);
-        if (respuesta == JFileChooser.APPROVE_OPTION) {
-            productoImage = fc.getSelectedFile().getName();
+        if (evt.getButton() == 1) {
+            JFileChooser fc = new JFileChooser(getClass().getResource("/images/").getPath(),FileSystemView.getFileSystemView());
+            //Internationalization
+            fc.setDialogTitle("Seleccionar Imagen para el producto " + producto.getNombre());
+            fc.setFileFilter(new FileNameExtensionFilter("Imagenes", "jpg","gif","png","jpeg"));
+            int respuesta = fc.showOpenDialog(this);
+            if (respuesta == JFileChooser.APPROVE_OPTION) {
+                productoImage = fc.getSelectedFile().getName();
+            }
+        } 
+        
+        if (evt.getButton() == 3) {
+            if(productoImage != null && productoImage.isEmpty()){
+                menuItemQuitarImagen.setEnabled(false);
+            }else{
+                menuItemQuitarImagen.setEnabled(true);
+            }
+            popUpMenuImagen.show(this,evt.getX()+250, evt.getY()+300);
         }
     }//GEN-LAST:event_lblMolduraProductoMouseClicked
 
     private void listProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listProductoMouseClicked
         popUpMenu(evt);
-        if(evt.getClickCount() == 2){
+        if (evt.getClickCount() == 2) {
             int index = listProducto.getSelectedIndex();
-            if(index > -1){
+            if (index > -1) {
                 Grupo grupo = listModel.getElementAt(index);
                 GrupoView gv = context.getBean(GrupoView.class);
                 gv.setGrupo(grupo);
@@ -483,6 +513,11 @@ public class ProductoView extends javax.swing.JInternalFrame {
         int index = listProducto.getSelectedIndex();
         listModel.removeElementAt(index);
     }//GEN-LAST:event_menuItemQuitarActionPerformed
+
+    private void menuItemQuitarImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemQuitarImagenActionPerformed
+        productoImage = "";
+        lblMolduraProducto.setIcon(null);
+    }//GEN-LAST:event_menuItemQuitarImagenActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -505,8 +540,10 @@ public class ProductoView extends javax.swing.JInternalFrame {
     private javax.swing.JList<Grupo> listProducto;
     private javax.swing.JMenuItem menuItemAñadir;
     private javax.swing.JMenuItem menuItemQuitar;
+    private javax.swing.JMenuItem menuItemQuitarImagen;
     private javax.swing.JPanel panelProducto;
-    private javax.swing.JPopupMenu popUpMenu;
+    private javax.swing.JPopupMenu popUpMenuGrupos;
+    private javax.swing.JPopupMenu popUpMenuImagen;
     private javax.swing.JScrollPane scrollList;
     private javax.swing.JTextField txtAlmacen;
     private javax.swing.JTextField txtCustoDelProducto;

@@ -21,7 +21,7 @@ import org.springframework.context.ApplicationContext;
 public class BuscarProducto extends javax.swing.JDialog {
 
     private List<Producto> listaDeProductos;
-    private ApplicationContext context;
+    private final ApplicationContext context;
     private String str;
     private boolean isChar;
     private GrupoView grupoView;
@@ -37,11 +37,14 @@ public class BuscarProducto extends javax.swing.JDialog {
         ((ProductoTableModel) tabla.getModel()).getListaDeProducto().addAll(listaDeProductos);
     }
     public void refresh(){
+        ProductoTableModel model = (ProductoTableModel)tabla.getModel();
         listaDeProductos.clear();
         for (Producto p : context.getBean(ServicioProducto.class).findAll()) {
             listaDeProductos.add(p);
         }
-        ((ProductoTableModel) tabla.getModel()).getListaDeProducto().addAll(listaDeProductos);
+        model.getListaDeProducto().clear();
+        model.getListaDeProducto().addAll(listaDeProductos);
+        model.fireTableDataChanged();
     }
 
     public BuscarProducto(JFrame parent, ApplicationContext context, List<Producto> list) {
@@ -225,6 +228,7 @@ public class BuscarProducto extends javax.swing.JDialog {
                 pv.setProducto(p);
                 context.getBean(MainFrame.class).getDesktopPane().add(pv);
                 pv.setVisible(true);
+                this.dispose();
             }
         }
     }//GEN-LAST:event_tablaMouseClicked

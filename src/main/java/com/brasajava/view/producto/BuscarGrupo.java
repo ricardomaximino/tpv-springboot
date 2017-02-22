@@ -47,11 +47,14 @@ public class BuscarGrupo extends javax.swing.JDialog {
     }
     
     public void refresh(){
+        GrupoTableModel model = (GrupoTableModel)tabla.getModel();
         listaDeGrupos.clear();
         for (Grupo g : context.getBean(ServicioGrupo.class).findAll()) {
             listaDeGrupos.add(g);
         }
-        ((GrupoTableModel) tabla.getModel()).getListaDeGrupo().addAll(listaDeGrupos);
+        model.getListaDeGrupo().clear();
+        model.getListaDeGrupo().addAll(listaDeGrupos);
+        model.fireTableDataChanged();
     }
 
     public List<Grupo> getListaDeProductos() {
