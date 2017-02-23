@@ -7,37 +7,62 @@ package com.brasajava.view.producto;
 
 import com.brasajava.model.Producto;
 import com.brasajava.service.ServicioProducto;
+import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.interfaces.Internationalizable;
 import com.brasajava.view.principal.MainFrame;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 
 /**
  *
  * @author Ricardo
  */
-public class BuscarProducto extends javax.swing.JDialog {
+public class BuscarProducto extends javax.swing.JDialog implements Internationalizable {
 
     private List<Producto> listaDeProductos;
     private final ApplicationContext context;
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
+    private final ShowProductoGrupoCommand showCommand;
     private String str;
     private boolean isChar;
     private GrupoView grupoView;
 
     public BuscarProducto(JFrame parent, ApplicationContext context) {
         super(parent, true);
-        initComponents();
         this.context = context;
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
+        this.showCommand = context.getBean(ShowProductoGrupoCommand.class);
         listaDeProductos = new ArrayList();
         for (Producto p : context.getBean(ServicioProducto.class).findAll()) {
             listaDeProductos.add(p);
         }
+        initComponents();
+        setWithInternationalization();
         ((ProductoTableModel) tabla.getModel()).getListaDeProducto().addAll(listaDeProductos);
+        ((ProductoTableModel) tabla.getModel()).fireTableDataChanged();
     }
-    public void refresh(){
-        ProductoTableModel model = (ProductoTableModel)tabla.getModel();
+
+    public BuscarProducto(JFrame parent, ApplicationContext context, List<Producto> list) {
+        super(parent, true);
+        this.context = context;
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
+        this.showCommand = context.getBean(ShowProductoGrupoCommand.class);
+        this.listaDeProductos = list;
+        initComponents();    
+        setWithInternationalization();
+        ((ProductoTableModel) tabla.getModel()).getListaDeProducto().addAll(listaDeProductos);
+        ((ProductoTableModel) tabla.getModel()).fireTableDataChanged();
+    }
+
+    public void refresh() {
+        ProductoTableModel model = (ProductoTableModel) tabla.getModel();
         listaDeProductos.clear();
         for (Producto p : context.getBean(ServicioProducto.class).findAll()) {
             listaDeProductos.add(p);
@@ -45,14 +70,6 @@ public class BuscarProducto extends javax.swing.JDialog {
         model.getListaDeProducto().clear();
         model.getListaDeProducto().addAll(listaDeProductos);
         model.fireTableDataChanged();
-    }
-
-    public BuscarProducto(JFrame parent, ApplicationContext context, List<Producto> list) {
-        super(parent, true);
-        initComponents();
-        this.context = context;
-        this.listaDeProductos = list;
-        ((ProductoTableModel) tabla.getModel()).getListaDeProducto().addAll(listaDeProductos);
     }
 
     public List<Producto> getListaDeProductos() {
@@ -93,8 +110,9 @@ public class BuscarProducto extends javax.swing.JDialog {
 
     }
 
+
     private ProductoTableModel getModel() {
-        return new ProductoTableModel();
+        return context.getBean(ProductoTableModel.class);
     }
 
     /**
@@ -224,10 +242,7 @@ public class BuscarProducto extends javax.swing.JDialog {
             if (this.isModal()) {
                 grupoView.add(p);
             } else {
-                ProductoView pv = context.getBean(ProductoView.class);
-                pv.setProducto(p);
-                context.getBean(MainFrame.class).getDesktopPane().add(pv);
-                pv.setVisible(true);
+                showCommand.show(p);
                 this.dispose();
             }
         }
@@ -240,4 +255,13 @@ public class BuscarProducto extends javax.swing.JDialog {
     private javax.swing.JTable tabla;
     private javax.swing.JTextField txtPorNombre;
     // End of variables declaration//GEN-END:variables
+
+    private void setWithInternationalization(){
+        lblPorNombre.setText(messageSource.getMessage("label_SearchProductByName", null,applicationLocale.getLocale()));
+    }
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+        ((ProductoTableModel)tabla.getModel()).refreshLanguage();
+    }
 }

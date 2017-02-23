@@ -8,6 +8,9 @@ package com.brasajava.view.producto;
 import com.brasajava.model.Grupo;
 import com.brasajava.model.Producto;
 import com.brasajava.service.ServicioGrupo;
+import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.PrototypeContext;
+import com.brasajava.util.interfaces.Internationalizable;
 import com.brasajava.view.principal.MainFrame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -18,16 +21,22 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 
 /**
  *
  * @author Ricardo
  */
-public class GrupoView extends javax.swing.JInternalFrame {
+public class GrupoView extends javax.swing.JInternalFrame implements Internationalizable{
 
     private Grupo grupo;
     private final ApplicationContext context;
-
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
+    private final ShowProductoGrupoCommand showCommand;
+    private String dialogTitle;
+    private String filterDescription;
+    private String message_YA_EXISTE;
     private String grupoImage;
 
     private static final String GUARDAR = "GUARDAR";
@@ -40,7 +49,11 @@ public class GrupoView extends javax.swing.JInternalFrame {
      */
     public GrupoView(ApplicationContext context) {
         this.context = context;
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
+        this.showCommand = context.getBean(ShowProductoGrupoCommand.class);
         initComponents();
+        setWithInternationalization();
     }
 
     public Grupo getGrupo() {
@@ -59,8 +72,15 @@ public class GrupoView extends javax.swing.JInternalFrame {
             model.fireTableDataChanged();
         } else {
             //Internationalization
-            JOptionPane.showMessageDialog(this, "já tem");
+            JOptionPane.showMessageDialog(this, message_YA_EXISTE);
         }
+    }
+    
+    @Override
+    public void dispose(){
+        PrototypeContext pc = context.getBean(PrototypeContext.class);
+        pc.remove(this);
+        super.dispose();
     }
 
     private long parseLong(String txt) {
@@ -111,7 +131,7 @@ public class GrupoView extends javax.swing.JInternalFrame {
     }
 
     private ProductoTableModel getTableModel() {
-        return new ProductoTableModel();
+        return context.getBean(ProductoTableModel.class);
     }
 
     private void btnGrupoAction(ActionEvent evt) {
@@ -352,9 +372,8 @@ public class GrupoView extends javax.swing.JInternalFrame {
     private void lblMolduraGrupoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMolduraGrupoMouseClicked
         if (evt.getButton() == 1) {
             JFileChooser fc = new JFileChooser(getClass().getResource("/images/").getPath(), FileSystemView.getFileSystemView());
-            //Internationalization
-            fc.setDialogTitle("Seleccionar Imagen para el grupo " + grupo.getNombre());
-            fc.setFileFilter(new FileNameExtensionFilter("Imagenes", "jpg","gif","png","jpeg"));
+            fc.setDialogTitle(dialogTitle + " " + grupo.getNombre());
+            fc.setFileFilter(new FileNameExtensionFilter(filterDescription, "jpg","gif","png","jpeg"));
             int respuesta = fc.showOpenDialog(this);
             if (respuesta == JFileChooser.APPROVE_OPTION) {
                 grupoImage = fc.getSelectedFile().getName();
@@ -379,10 +398,7 @@ public class GrupoView extends javax.swing.JInternalFrame {
         if (evt.getClickCount() == 2) {
             ProductoTableModel model = (ProductoTableModel) tablaParaPruductoGrupo.getModel();
             p = model.getListaDeProducto().get(tablaParaPruductoGrupo.getSelectedRow());
-            ProductoView pv = context.getBean(ProductoView.class);
-            pv.setProducto(p);
-            context.getBean(MainFrame.class).getDesktopPane().add(pv);
-            pv.setVisible(true);
+            showCommand.show(p);
         }
     }//GEN-LAST:event_tablaParaPruductoGrupoMouseClicked
 
@@ -431,4 +447,30 @@ public class GrupoView extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtDescripcionGrupo;
     private javax.swing.JTextField txtNombreGrupo;
     // End of variables declaration//GEN-END:variables
+
+    private void setWithInternationalization(){
+        btnActualizarYCancelarGrupo.setText(messageSource.getMessage("button_Cancel", null,applicationLocale.getLocale()));
+        btnNuevoYGuardarGrupo.setText(messageSource.getMessage("button_Save", null,applicationLocale.getLocale()));
+        
+        lblCodigoGrupo.setText(messageSource.getMessage("label_Code", null,applicationLocale.getLocale()));
+        lblNombreGrupo.setText(messageSource.getMessage("label_Name", null,applicationLocale.getLocale()));
+        lblDescripcionGrupo.setText(messageSource.getMessage("label_Description", null,applicationLocale.getLocale()));
+        lblImageGrupo.setText(messageSource.getMessage("label_Image", null,applicationLocale.getLocale()));
+        
+        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null,applicationLocale.getLocale()));
+        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null,applicationLocale.getLocale()));
+        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null,applicationLocale.getLocale()) + " " +
+                messageSource.getMessage("label_Image", null,applicationLocale.getLocale()));
+        
+        dialogTitle = messageSource.getMessage("message_SelectImageForTheGroup", null,applicationLocale.getLocale());
+        filterDescription = messageSource.getMessage("label_Image", null,applicationLocale.getLocale());
+        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null,applicationLocale.getLocale());
+        
+        ckbActivo.setText(context.getMessage("label_ActiveGroup", null,applicationLocale.getLocale()));
+    }
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+        ((ProductoTableModel)tablaParaPruductoGrupo.getModel()).refreshLanguage();
+    }
 }

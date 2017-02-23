@@ -9,6 +9,9 @@ import com.brasajava.model.Grupo;
 import com.brasajava.model.Producto;
 import com.brasajava.service.ServicioGrupo;
 import com.brasajava.service.ServicioProducto;
+import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.PrototypeContext;
+import com.brasajava.util.interfaces.Internationalizable;
 import com.brasajava.view.principal.MainFrame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -21,17 +24,23 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 
 /**
  *
  * @author Ricardo
  */
-public class ProductoView extends javax.swing.JInternalFrame {
+public class ProductoView extends javax.swing.JInternalFrame implements Internationalizable{
 
     private Producto producto;
     private DefaultListModel<Grupo> listModel;
     private final ApplicationContext context;
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
 
+    private String dialogTitle;
+    private String filterDescription;
+    private String message_YA_EXISTE;
     private String productoImage;
 
     private static final String GUARDAR = "GUARDAR";
@@ -44,7 +53,10 @@ public class ProductoView extends javax.swing.JInternalFrame {
      */
     public ProductoView(ApplicationContext context) {
         this.context = context;
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
         initComponents();
+        setWithInternationalization();
     }
 
     public Producto getProducto() {
@@ -61,8 +73,15 @@ public class ProductoView extends javax.swing.JInternalFrame {
             listModel.addElement(grup);
         }else{
             //Internationalization
-            JOptionPane.showMessageDialog(this, "já tem");
+            JOptionPane.showMessageDialog(this, message_YA_EXISTE);
         }
+    }
+    
+    @Override
+    public void dispose(){
+        PrototypeContext pc = context.getBean(PrototypeContext.class);
+        pc.remove(this);
+        super.dispose();
     }
 
     private void setProductoFields() {
@@ -205,8 +224,8 @@ public class ProductoView extends javax.swing.JInternalFrame {
         lblPrecioConIva = new javax.swing.JLabel();
         lblIva = new javax.swing.JLabel();
         lblAlmacen = new javax.swing.JLabel();
-        lblGruposProducto = new javax.swing.JLabel();
-        lblImagenProducto = new javax.swing.JLabel();
+        lblGrupos = new javax.swing.JLabel();
+        lblImagen = new javax.swing.JLabel();
         lblMolduraProducto = new javax.swing.JLabel();
         lblCodigoProductoValue = new javax.swing.JLabel();
         txtNombreProducto = new javax.swing.JTextField();
@@ -251,7 +270,7 @@ public class ProductoView extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
 
-        lblCodigoProducto.setText("COD.");
+        lblCodigoProducto.setText("CÓDIGO");
 
         lblNombreProducto.setText("NOMBRE");
 
@@ -267,13 +286,12 @@ public class ProductoView extends javax.swing.JInternalFrame {
 
         lblAlmacen.setText("ALMACEN");
 
-        lblGruposProducto.setText("GRUPOS");
+        lblGrupos.setText("GRUPOS");
 
-        lblImagenProducto.setText("IMAGEN");
+        lblImagen.setText("IMAGEN");
 
         lblMolduraProducto.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         java.awt.Image image = new javax.swing.ImageIcon(getClass().getResource("/images/hitPina.png")).getImage().getScaledInstance(200, 200, java.awt.Image.SCALE_SMOOTH);
-        lblMolduraProducto.setText("IMAGEN");
         lblMolduraProducto.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         lblMolduraProducto.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         lblMolduraProducto.setPreferredSize(new java.awt.Dimension(200, 200));
@@ -335,12 +353,12 @@ public class ProductoView extends javax.swing.JInternalFrame {
                 .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelProductoLayout.createSequentialGroup()
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblCodigoProducto)
                             .addComponent(lblNombreProducto)
                             .addComponent(lblDescripcionDelProducto)
                             .addComponent(lblCustoDelProducto)
                             .addComponent(lblPrecioSinIva)
-                            .addComponent(lblPrecioConIva))
+                            .addComponent(lblPrecioConIva)
+                            .addComponent(lblCodigoProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(25, 25, 25)
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelProductoLayout.createSequentialGroup()
@@ -363,8 +381,9 @@ public class ProductoView extends javax.swing.JInternalFrame {
                     .addGroup(panelProductoLayout.createSequentialGroup()
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelProductoLayout.createSequentialGroup()
-                                .addComponent(lblCodigoProductoValue, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(49, 49, 49)
+                                .addGap(58, 58, 58)
+                                .addComponent(lblCodigoProductoValue, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(btnActualizarYCancelarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(58, 58, 58)
                                 .addComponent(btnNuevoYGuardarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -372,7 +391,7 @@ public class ProductoView extends javax.swing.JInternalFrame {
                                 .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panelProductoLayout.createSequentialGroup()
                                         .addGap(55, 55, 55)
-                                        .addComponent(lblGruposProducto))
+                                        .addComponent(lblGrupos))
                                     .addComponent(scrollList, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(39, 39, 39)
                                 .addComponent(lblMolduraProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -380,7 +399,7 @@ public class ProductoView extends javax.swing.JInternalFrame {
                     .addGroup(panelProductoLayout.createSequentialGroup()
                         .addComponent(ckbActivo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(lblImagenProducto)
+                        .addComponent(lblImagen)
                         .addGap(101, 101, 101)))
                 .addContainerGap())
         );
@@ -394,9 +413,8 @@ public class ProductoView extends javax.swing.JInternalFrame {
                 .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(panelProductoLayout.createSequentialGroup()
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(lblCodigoProducto)
-                                .addComponent(lblCodigoProductoValue, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblCodigoProductoValue, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblCodigoProducto)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnActualizarYCancelarProducto)
                                 .addComponent(btnNuevoYGuardarProducto)))
@@ -428,11 +446,11 @@ public class ProductoView extends javax.swing.JInternalFrame {
                             .addComponent(txtAlmacen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(ckbActivo))
-                    .addComponent(lblImagenProducto))
+                    .addComponent(lblImagen))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
                 .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panelProductoLayout.createSequentialGroup()
-                        .addComponent(lblGruposProducto)
+                        .addComponent(lblGrupos)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(scrollList))
                     .addComponent(lblMolduraProducto, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE))
@@ -469,9 +487,8 @@ public class ProductoView extends javax.swing.JInternalFrame {
     private void lblMolduraProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMolduraProductoMouseClicked
         if (evt.getButton() == 1) {
             JFileChooser fc = new JFileChooser(getClass().getResource("/images/").getPath(),FileSystemView.getFileSystemView());
-            //Internationalization
-            fc.setDialogTitle("Seleccionar Imagen para el producto " + producto.getNombre());
-            fc.setFileFilter(new FileNameExtensionFilter("Imagenes", "jpg","gif","png","jpeg"));
+            fc.setDialogTitle(dialogTitle + " " + producto.getNombre());
+            fc.setFileFilter(new FileNameExtensionFilter(filterDescription, "jpg","gif","png","jpeg"));
             int respuesta = fc.showOpenDialog(this);
             if (respuesta == JFileChooser.APPROVE_OPTION) {
                 productoImage = fc.getSelectedFile().getName();
@@ -529,8 +546,8 @@ public class ProductoView extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblCodigoProductoValue;
     private javax.swing.JLabel lblCustoDelProducto;
     private javax.swing.JLabel lblDescripcionDelProducto;
-    private javax.swing.JLabel lblGruposProducto;
-    private javax.swing.JLabel lblImagenProducto;
+    private javax.swing.JLabel lblGrupos;
+    private javax.swing.JLabel lblImagen;
     private javax.swing.JLabel lblIva;
     private javax.swing.JLabel lblMargenDelProducto;
     private javax.swing.JLabel lblMolduraProducto;
@@ -554,4 +571,36 @@ public class ProductoView extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtPrecioMasIva;
     private javax.swing.JTextField txtPrecioSinIva;
     // End of variables declaration//GEN-END:variables
+
+    private void setWithInternationalization(){
+        btnActualizarYCancelarProducto.setText(messageSource.getMessage("button_Cancel", null,applicationLocale.getLocale()));
+        btnNuevoYGuardarProducto.setText(messageSource.getMessage("button_Save", null,applicationLocale.getLocale()));
+        
+        lblCodigoProducto.setText(messageSource.getMessage("label_Code", null,applicationLocale.getLocale()));
+        lblNombreProducto.setText(messageSource.getMessage("label_Name", null,applicationLocale.getLocale()));
+        lblDescripcionDelProducto.setText(messageSource.getMessage("label_Description", null,applicationLocale.getLocale()));
+        lblCustoDelProducto.setText(messageSource.getMessage("label_CostPrice", null,applicationLocale.getLocale()));
+        lblMargenDelProducto.setText(messageSource.getMessage("label_Margin", null,applicationLocale.getLocale()));
+        lblPrecioSinIva.setText(messageSource.getMessage("label_PriceWithoutTax", null,applicationLocale.getLocale()));
+        lblIva.setText(messageSource.getMessage("label_Tax", null,applicationLocale.getLocale()));
+        lblPrecioConIva.setText(messageSource.getMessage("label_PriceWithTax", null,applicationLocale.getLocale()));
+        lblAlmacen.setText(messageSource.getMessage("label_Stock", null,applicationLocale.getLocale()));
+        lblGrupos.setText(messageSource.getMessage("label_Groups", null,applicationLocale.getLocale()));
+        lblImagen.setText(messageSource.getMessage("label_Image", null,applicationLocale.getLocale()));
+        
+        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null,applicationLocale.getLocale()));
+        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null,applicationLocale.getLocale()));
+        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null,applicationLocale.getLocale()) + " " +
+                messageSource.getMessage("label_Image", null,applicationLocale.getLocale()));
+        
+        dialogTitle = messageSource.getMessage("message_SelectImageForTheProduct", null,applicationLocale.getLocale());
+        filterDescription = messageSource.getMessage("label_Image", null,applicationLocale.getLocale());
+        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null,applicationLocale.getLocale());
+        
+        ckbActivo.setText(messageSource.getMessage("label_ActiveProduct", null,applicationLocale.getLocale()));
+    }
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+    }
 }

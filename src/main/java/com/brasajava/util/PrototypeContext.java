@@ -1,9 +1,13 @@
 package com.brasajava.util;
 
+import com.brasajava.model.Grupo;
 import com.brasajava.model.Persona;
+import com.brasajava.model.Producto;
 import com.brasajava.util.interfaces.Internationalizable;
 import com.brasajava.view.principal.MainFrame;
 import com.brasajava.view.persona.FramePersona;
+import com.brasajava.view.producto.GrupoView;
+import com.brasajava.view.producto.ProductoView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +28,8 @@ import org.springframework.stereotype.Component;
 public class PrototypeContext implements Internationalizable{
     List<Object> allPrototypes;
     Map<Persona,FramePersona> mapPersonaFrame;
+    Map<Producto,ProductoView> mapProductoFrame;
+    Map<Grupo,GrupoView> mapGrupoFrame;
     ApplicationContext context;
     
     /**
@@ -34,6 +40,8 @@ public class PrototypeContext implements Internationalizable{
         this.context = context;
         allPrototypes = new ArrayList<>();
         mapPersonaFrame = new HashMap<>();
+        mapProductoFrame = new HashMap<>();
+        mapGrupoFrame = new HashMap<>();
     }
     
     /**
@@ -56,6 +64,44 @@ public class PrototypeContext implements Internationalizable{
     }
     
     /**
+     * Este metodo chequea si hay algun objeto en el map utilizando como key
+     * el producto pasado como parametro.
+     * @param producto del tipo com.brasajava.model.Producto.
+     * @return com.brasajava.view.persona.ProductoView.
+     */
+    public ProductoView putProducto(Producto producto){
+        if(mapProductoFrame.containsKey(producto)){
+            return mapProductoFrame.get(producto);
+        }else{
+            ProductoView frame = context.getBean(ProductoView.class);
+            frame.setProducto(producto);
+            context.getBean(MainFrame.class).getDesktopPane().add(frame);
+            mapProductoFrame.put(producto, frame);
+            allPrototypes.add(frame);
+            return frame;
+        }
+    }
+    
+    /**
+     * Este metodo chequea si hay algun objeto en el map utilizando como key
+     * el grupo pasado como parametro.
+     * @param grupo del tipo com.brasajava.model.Grupo.
+     * @return com.brasajava.view.persona.GrupoView.
+     */
+    public GrupoView putGrupo(Grupo grupo){
+        if(mapGrupoFrame.containsKey(grupo)){
+            return mapGrupoFrame.get(grupo);
+        }else{
+            GrupoView frame = context.getBean(GrupoView.class);
+            frame.setGrupo(grupo);
+            context.getBean(MainFrame.class).getDesktopPane().add(frame);
+            mapGrupoFrame.put(grupo, frame);
+            allPrototypes.add(frame);
+            return frame;
+        }
+    }
+    
+    /**
      * Este metodo guarda un referencia de un objeto con scope = prototype 
      * principalmentes para el cambio de idiomas.
      * @param obj del tipo java.lang.Object.
@@ -64,7 +110,7 @@ public class PrototypeContext implements Internationalizable{
         allPrototypes.add(obj);
     }
     /**
-     * Este metodo remove, en caso de que hay toda y cualquer referencia al
+     * Este metodo remove, en caso de que haya toda y cualquer referencia al
      * objeto pasado como parametro.
      * @param obj del tipo java.lang.Object.
      */
@@ -72,6 +118,12 @@ public class PrototypeContext implements Internationalizable{
         allPrototypes.remove(obj);
         if(obj instanceof FramePersona){
             mapPersonaFrame.remove(((FramePersona)obj).getPersona(),(FramePersona)obj);
+        }
+        if(obj instanceof ProductoView){
+            mapProductoFrame.remove(((ProductoView)obj).getProducto(),(ProductoView)obj);
+        }
+        if(obj instanceof GrupoView){
+            mapGrupoFrame.remove(((GrupoView)obj).getGrupo(),(GrupoView)obj);
         }
     }
     /**

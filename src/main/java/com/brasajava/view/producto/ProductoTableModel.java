@@ -5,12 +5,14 @@
  */
 package com.brasajava.view.producto;
 
-import com.brasajava.model.Grupo;
 import com.brasajava.model.Producto;
+import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.interfaces.Internationalizable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 
 /**
  *
@@ -19,13 +21,15 @@ import javax.swing.table.AbstractTableModel;
 public class ProductoTableModel extends AbstractTableModel implements Internationalizable{
     private List<Producto> listaDeProducto;
     private String [] titulos;
-   //falta internationalization
-    public ProductoTableModel(){
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
+
+    public ProductoTableModel(MessageSource messageSource,ApplicationLocale applicationLocale){
+        this.messageSource = messageSource;
+        this.applicationLocale = applicationLocale;
         listaDeProducto = new ArrayList<>();
         titulos = new String[3];
-        titulos[0]= "COD.";
-        titulos[1]= "NOMBRE";
-        titulos[2]= "PRECIO + I.V.A.";
+        setWithInternationalization();
     }
 
     public List<Producto> getListaDeProducto() {
@@ -34,6 +38,7 @@ public class ProductoTableModel extends AbstractTableModel implements Internatio
 
     public void setListaDeProducto(List<Producto> listaDeProducto) {
         this.listaDeProducto = listaDeProducto;
+        this.fireTableDataChanged();
     }
     
 
@@ -43,6 +48,7 @@ public class ProductoTableModel extends AbstractTableModel implements Internatio
 
     public void setTitulos(String[] titulos) {
         this.titulos = titulos;
+        this.fireTableStructureChanged();
     }
     
     
@@ -84,9 +90,15 @@ public class ProductoTableModel extends AbstractTableModel implements Internatio
         return obj;
     }
 
+    private void setWithInternationalization(){
+        titulos[0]= messageSource.getMessage("label_Code", null, applicationLocale.getLocale());
+        titulos[1]= messageSource.getMessage("label_Name", null, applicationLocale.getLocale());
+        titulos[2]= messageSource.getMessage("label_PriceWithTax", null, applicationLocale.getLocale());
+    }
     @Override
     public void refreshLanguage() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setWithInternationalization();
+        fireTableStructureChanged();
     }
     
 }

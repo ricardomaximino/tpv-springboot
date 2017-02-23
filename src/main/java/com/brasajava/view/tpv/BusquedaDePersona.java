@@ -49,7 +49,7 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
     
     @Override
     public void refreshLanguage() {
-      this.setTitle(messageSource.getMessage(this.getName(), null, applicationLocale.getLocale()));
+      //this.setTitle(messageSource.getMessage(this.getName(), null, applicationLocale.getLocale()));
 
         MiTableModel model = context.getBean("tableModelNifNombre", MiTableModel.class);
         TableModel oldModel = tabla.getModel();

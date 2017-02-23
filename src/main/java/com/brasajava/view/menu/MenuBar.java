@@ -22,11 +22,9 @@ import org.springframework.context.MessageSource;
 import com.brasajava.util.interfaces.Command;
 import com.brasajava.view.menu.command.DesktopController;
 import com.brasajava.view.persona.command.ShowPersonaCommand;
-import com.brasajava.view.principal.MainFrame;
 import com.brasajava.view.producto.BuscarGrupo;
 import com.brasajava.view.producto.BuscarProducto;
-import com.brasajava.view.producto.GrupoView;
-import com.brasajava.view.producto.ProductoView;
+import com.brasajava.view.producto.ShowProductoGrupoCommand;
 import com.brasajava.view.tpv.TPV;
 import java.util.Iterator;
 import java.util.Locale;
@@ -252,18 +250,13 @@ public class MenuBar extends JMenuBar implements Internationalizable {
     
     private void productoGrupo(ActionEvent e){
         MiMenuItem item = (MiMenuItem)e.getSource();
+        ShowProductoGrupoCommand spg = context.getBean(ShowProductoGrupoCommand.class);
        switch(item.getCommandActionName()){
             case ACCION_ANADIR_PRODUCTO:
-                ProductoView pv = context.getBean(ProductoView.class);
-                pv.setProducto(new Producto());
-                context.getBean(MainFrame.class).getDesktopPane().add(pv);
-                pv.setVisible(true);
+                spg.show(new Producto());
             break;
             case ACCION_ANADIR_GRUPO:
-                GrupoView gv = context.getBean(GrupoView.class);
-                gv.setGrupo(new Grupo());
-                context.getBean(MainFrame.class).getDesktopPane().add(gv);
-                gv.setVisible(true);
+                spg.show(new Grupo());
             break;
             case ACCION_BUSCAR_PRODUCTO:
                  context.getBean("buscarProducto",BuscarProducto.class).setVisible(true);

@@ -23,7 +23,9 @@ import com.brasajava.view.persona.tablemodel.MiTableModelNifNombre;
 import com.brasajava.view.persona.tablemodel.TableModelAll;
 import com.brasajava.view.producto.BuscarGrupo;
 import com.brasajava.view.producto.BuscarProducto;
+import com.brasajava.view.producto.GrupoTableModel;
 import com.brasajava.view.producto.GrupoView;
+import com.brasajava.view.producto.ProductoTableModel;
 import com.brasajava.view.producto.ProductoView;
 import com.brasajava.view.tpv.BusquedaDePersona;
 import com.brasajava.view.tpv.TPV;
@@ -119,6 +121,7 @@ public class ApplicationConfiguration {
     }
     
     @Bean
+    @Scope("prototype")
     public BusquedaDePersona busquedaDePersona(ApplicationContext context, TPV tpv){
         return new BusquedaDePersona(tpv, context);
     }
@@ -152,6 +155,7 @@ public class ApplicationConfiguration {
     }
     
     @Bean
+    @Scope("prototype")
     public BuscarProducto buscarProductoParaAñadir(MainFrame main,ApplicationContext context){
         BuscarProducto lista = new BuscarProducto(main,context);
         lista.setLocationRelativeTo(null);
@@ -167,9 +171,22 @@ public class ApplicationConfiguration {
         return lista;
     }
     @Bean
+    @Scope("prototype")
     public BuscarGrupo buscarGrupoParaAñadir(MainFrame main,ApplicationContext context){
         BuscarGrupo lista = new BuscarGrupo(main,context);
         lista.setLocationRelativeTo(null);
         return lista;
+    }
+    
+    @Bean
+    @Scope("prototype")
+    public ProductoTableModel productoTableModel(MessageSource messageSouce,ApplicationLocale applicationLocale){
+        return new ProductoTableModel(messageSouce,applicationLocale);
+    }
+    
+    @Bean
+    @Scope("prototype")
+    public GrupoTableModel grupoTableModel(MessageSource messageSouce,ApplicationLocale applicationLocale){
+        return new GrupoTableModel(messageSouce,applicationLocale);
     }
 }

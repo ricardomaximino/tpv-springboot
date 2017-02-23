@@ -6,44 +6,54 @@
 package com.brasajava.view.producto;
 
 import com.brasajava.model.Grupo;
-import com.brasajava.model.Producto;
 import com.brasajava.service.ServicioGrupo;
+import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.interfaces.Internationalizable;
 import com.brasajava.view.principal.MainFrame;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 
 /**
  *
  * @author Ricardo
  */
-public class BuscarGrupo extends javax.swing.JDialog {
+public class BuscarGrupo extends javax.swing.JDialog implements Internationalizable{
 
     private List<Grupo> listaDeGrupos;
-    private ApplicationContext context;
+    private final ApplicationContext context;
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
     private String str;
     private boolean isChar;
     private ProductoView productoView;
 
     public BuscarGrupo(JFrame parent, ApplicationContext context) {
         super(parent, true);
-        initComponents();
         this.context = context;
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
         listaDeGrupos = new ArrayList();
         for (Grupo g : context.getBean(ServicioGrupo.class).findAll()) {
             listaDeGrupos.add(g);
         }
+        initComponents();
         ((GrupoTableModel) tabla.getModel()).getListaDeGrupo().addAll(listaDeGrupos);
+        ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
     public BuscarGrupo(JFrame parent, ApplicationContext context, List<Grupo> list) {
         super(parent, true);
-        initComponents();
         this.context = context;
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
         this.listaDeGrupos = list;
+        initComponents();   
         ((GrupoTableModel) tabla.getModel()).getListaDeGrupo().addAll(listaDeGrupos);
+        ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
     }
     
     public void refresh(){
@@ -96,7 +106,7 @@ public class BuscarGrupo extends javax.swing.JDialog {
     }
 
     private GrupoTableModel getModel() {
-        return new GrupoTableModel();
+        return context.getBean(GrupoTableModel.class);
     }
 
     /**
@@ -241,4 +251,13 @@ public class BuscarGrupo extends javax.swing.JDialog {
     private javax.swing.JTable tabla;
     private javax.swing.JTextField txtPorNombre;
     // End of variables declaration//GEN-END:variables
+
+    private void setWithInternationalization(){
+        lblPorNombre.setText(messageSource.getMessage("label_SearchGroupByName", null, applicationLocale.getLocale()));
+    }
+    @Override
+    public void refreshLanguage() {
+       setWithInternationalization();
+       ((GrupoTableModel)tabla.getModel()).refreshLanguage();
+    }
 }
