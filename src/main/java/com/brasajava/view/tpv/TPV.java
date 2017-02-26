@@ -5,6 +5,11 @@ import com.brasajava.model.Grupo;
 import com.brasajava.model.Persona;
 import com.brasajava.model.Producto;
 import com.brasajava.model.Venta;
+import com.brasajava.service.ServicioCliente;
+import com.brasajava.service.ServicioUsuario;
+import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.Session;
+import com.brasajava.util.interfaces.Internationalizable;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -24,18 +29,21 @@ import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableModel;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 
 /**
  * Esta clase representa el TPV virtual.
  *
  * @author Ricardo Maximino
  */
-public class TPV extends javax.swing.JFrame {
+public class TPV extends javax.swing.JFrame implements Internationalizable{
 
     private Persona cliente;
     private Persona usuario;
     private BusquedaDePersona busqueda;
-    private ApplicationContext context;
+    private final ApplicationContext context;
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
 
     //Grupo
     List<Grupo> grupoList;
@@ -71,34 +79,41 @@ public class TPV extends javax.swing.JFrame {
      * @param cliente
      * @param usuario
      */
-    public TPV(ApplicationContext context, Persona cliente, Persona usuario) {
+    public TPV(ApplicationContext context,Session session) {
         this.context = context;
-        this.cliente = cliente;
-        this.usuario = usuario;
-
-        initComponents();
-        setColumnModel();
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
+        this.cliente = session.getCliente();
+        this.usuario = session.getUsuario();
 
         //ButtonList
         grupoButtonList = new ArrayList();
         productoButtonList = new ArrayList();
         cuentaButtonList = new ArrayList();
+        
         //Map
         grupoMap = new HashMap<>();
         productoMap = new HashMap<>();
         cuentaMap = new HashMap<>();
         cuentasMap = new HashMap<>();
-        //int
+        
+        //int size of the buttons
         grupoHeight = productoHeight = cuentaHeight = 200;
         grupoWidth = productoWidth = cuentaWidth = 200;
+        
+        //defaults
         cantidad = 1;
         cuentaCount = 1;
 
+        initComponents();
+        
         txtCuenta.setText(((CajaTableModel) tabla.getModel()).getCuenta().getNombre());
         tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        lblCantidad.setName("false");
-        this.usuario = usuario;
-
+        lblCantidadValue.setName("false");
+        
+        
+        setColumnModel();
+        setWithInternationalization();
     }
 
     public Persona getCliente() {
@@ -132,6 +147,36 @@ public class TPV extends javax.swing.JFrame {
     public void setGrupoList(List<Grupo> grupoList) {
         this.grupoList = grupoList;
         crearGrupos(grupoList);
+    }
+    
+    public void refreshSession(){
+        Session session = context.getBean(Session.class);
+        if(session.getUsuario()!= null){
+            this.setTitle("TPV - " + session.getUsuario().getNombre());
+        }       
+        
+        if(session.getCliente() != null){
+            this.setTitle(getTitle() + " >>------------------------->  " + session.getCliente().getNombre());
+        }
+    }
+    
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+    }
+    
+    private void setWithInternationalization(){
+        //label
+        lblNombreDeLaCuenta.setText(messageSource.getMessage("label_NameOfTheAccount", null,applicationLocale.getLocale()));
+        lblCantidad.setText(messageSource.getMessage("UNIT", null,applicationLocale.getLocale()));
+        lblTotal.setText(messageSource.getMessage("TOTAL", null,applicationLocale.getLocale()));
+        //button
+        btnTicket.setText(messageSource.getMessage("button_Ticket", null,applicationLocale.getLocale()));
+        btnCliente.setText(messageSource.getMessage("menu_Client", null,applicationLocale.getLocale()));
+        btnUsuario.setText(messageSource.getMessage("menu_User", null,applicationLocale.getLocale()));
+        btnBorrar.setText(messageSource.getMessage("button_Delete", null,applicationLocale.getLocale()));
+        btnNuevaCuenta.setText(messageSource.getMessage("button_NewAccount", null,applicationLocale.getLocale()));
+        btnPagar.setText(messageSource.getMessage("button_Pay", null,applicationLocale.getLocale()));
     }
 
     //Grupos
@@ -237,7 +282,7 @@ public class TPV extends javax.swing.JFrame {
         if (v != null) {
             v.setVenta(v.getCantidad() + cantidad, p);
         } else {
-            v = new Venta();
+            v = context.getBean(Venta.class);
             v.setCuenta(c);
             v.setVenta(cantidad, p);
             ventasMap.put(p, v);
@@ -298,14 +343,14 @@ public class TPV extends javax.swing.JFrame {
 
     //Cantidades
     private void converteCantidad() {
-        cantidad = Integer.parseInt(lblCantidad.getText());
-        lblCantidad.setName("false");
+        cantidad = Integer.parseInt(lblCantidadValue.getText());
+        lblCantidadValue.setName("false");
     }
 
     private void resetCantidad() {
         cantidad = 1;
-        lblCantidad.setText(cantidad + "");
-        lblCantidad.setName("false");
+        lblCantidadValue.setText(cantidad + "");
+        lblCantidadValue.setName("false");
     }
     //Cantidades
 
@@ -423,6 +468,48 @@ public class TPV extends javax.swing.JFrame {
         return total;
     }
     //Total
+    
+    private void fireDataChage(Venta v) {
+        CajaTableModel model = (CajaTableModel) tabla.getModel();
+        model.fireTableDataChanged();
+        sumaTotal(model.getCuenta().getVentas());
+        int index = model.getCuenta().getVentas().indexOf(v);
+        tabla.setRowSelectionInterval(index, index);
+    }
+
+    private void tecladoVirtualAction(java.awt.event.ActionEvent evt) {
+        JButton b = (JButton) evt.getSource();
+        if (lblCantidadValue.getName().equals("true")) {
+            lblCantidadValue.setText(lblCantidadValue.getText() + b.getText());
+        } else if (!b.getText().equals("0")) {
+            lblCantidadValue.setText(b.getText());
+            lblCantidadValue.setName("true");
+        }
+    }
+
+    private TableModel getModel() {
+        return context.getBean(CajaTableModel.class);
+    }
+
+    private void setColumnModel() {
+        for (int i = 0; i < 4; i++) {
+            switch (i) {
+                case 0:
+                    tabla.getColumnModel().getColumn(0).setPreferredWidth(5);
+                    break;
+                case 1:
+                    tabla.getColumnModel().getColumn(1).setPreferredWidth(200);
+                    break;
+                case 2:
+                    tabla.getColumnModel().getColumn(2).setPreferredWidth(20);
+                    break;
+                case 3:
+                    tabla.getColumnModel().getColumn(3).setPreferredWidth(20);
+                    break;
+            }
+        }
+
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -430,8 +517,8 @@ public class TPV extends javax.swing.JFrame {
 
         jButton32 = new javax.swing.JButton();
         panelToolBar = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnCliente = new javax.swing.JButton();
+        btnUsuario = new javax.swing.JButton();
         scrollCuenta = new javax.swing.JScrollPane();
         panelCuenta = new javax.swing.JPanel();
         scrollGenero = new javax.swing.JScrollPane();
@@ -455,15 +542,15 @@ public class TPV extends javax.swing.JFrame {
         btnPagar = new javax.swing.JButton();
         btnNuevaCuenta = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        lblTotalLabel = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
         lblTotalValue = new javax.swing.JLabel();
         scrollTabla = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
         jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        lblNombreDeLaCuenta = new javax.swing.JLabel();
         txtCuenta = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
         lblCantidad = new javax.swing.JLabel();
+        lblCantidadValue = new javax.swing.JLabel();
         btnTicket = new javax.swing.JButton();
         scrollProducto = new javax.swing.JScrollPane();
         panelProducto = new javax.swing.JPanel();
@@ -471,23 +558,24 @@ public class TPV extends javax.swing.JFrame {
         jButton32.setText("jButton32");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("TPV - ");
         setIconImage(new ImageIcon(this.getClass().getResource("/images/icon.png")).getImage());
 
         panelToolBar.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jButton1.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jButton1.setText("Cliente");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnCliente.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        btnCliente.setText("Cliente");
+        btnCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnClienteActionPerformed(evt);
             }
         });
 
-        jButton2.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        jButton2.setText("Usuario");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnUsuario.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        btnUsuario.setText("Usuario");
+        btnUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnUsuarioActionPerformed(evt);
             }
         });
 
@@ -497,25 +585,25 @@ public class TPV extends javax.swing.JFrame {
             panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelToolBarLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jButton1)
+                .addComponent(btnCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
-                .addContainerGap(444, Short.MAX_VALUE))
+                .addComponent(btnUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(366, Short.MAX_VALUE))
         );
 
-        panelToolBarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jButton1, jButton2});
+        panelToolBarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCliente, btnUsuario});
 
         panelToolBarLayout.setVerticalGroup(
             panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelToolBarLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1))
+                    .addComponent(btnUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCliente))
                 .addContainerGap())
         );
 
-        panelToolBarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButton1, jButton2});
+        panelToolBarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCliente, btnUsuario});
 
         javax.swing.GroupLayout panelCuentaLayout = new javax.swing.GroupLayout(panelCuenta);
         panelCuenta.setLayout(panelCuentaLayout);
@@ -686,8 +774,8 @@ public class TPV extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        lblTotalLabel.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        lblTotalLabel.setText("TOTAL:");
+        lblTotal.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        lblTotal.setText("TOTAL:");
 
         lblTotalValue.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         lblTotalValue.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
@@ -699,7 +787,7 @@ public class TPV extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblTotalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 213, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -709,7 +797,7 @@ public class TPV extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblTotalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -801,8 +889,8 @@ public class TPV extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel1.setText("NOMBRE DE LA CUENTA");
+        lblNombreDeLaCuenta.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblNombreDeLaCuenta.setText("CUENTA");
 
         txtCuenta.setBackground(java.awt.SystemColor.control);
         txtCuenta.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
@@ -819,13 +907,13 @@ public class TPV extends javax.swing.JFrame {
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel2.setText("CANTIDAD");
+        lblCantidad.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lblCantidad.setText("UNID.");
 
-        lblCantidad.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-        lblCantidad.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblCantidad.setText("1");
-        lblCantidad.setName("false"); // NOI18N
+        lblCantidadValue.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        lblCantidadValue.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblCantidadValue.setText("1");
+        lblCantidadValue.setName("false"); // NOI18N
 
         btnTicket.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         btnTicket.setText("Ticket");
@@ -840,15 +928,21 @@ public class TPV extends javax.swing.JFrame {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(txtCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(txtCuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(69, 69, 69)
+                        .addComponent(lblNombreDeLaCuenta)))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(lblCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblCantidadValue, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblCantidad)
+                        .addGap(27, 27, 27)))
                 .addComponent(btnTicket)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -862,12 +956,12 @@ public class TPV extends javax.swing.JFrame {
                         .addComponent(btnTicket, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
+                            .addComponent(lblNombreDeLaCuenta)
+                            .addComponent(lblCantidad))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtCuenta)
-                            .addComponent(lblCantidad, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(lblCantidadValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
 
@@ -964,9 +1058,12 @@ public class TPV extends javax.swing.JFrame {
     }//GEN-LAST:event_btnNuevaCuentaActionPerformed
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        Pagar pagar = new Pagar(sumarCuentaParaPagar(), cliente, usuario, this);
+        //Crear con spring pasar todo para la session
+        context.getBean(Session.class).setCuenta(sumarCuentaParaPagar());
+        Pagar pagar =context.getBean(Pagar.class);
         pagar.setLocationRelativeTo(null);
         pagar.setVisible(true);
+        pagar = null;
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorrarActionPerformed
@@ -982,7 +1079,7 @@ public class TPV extends javax.swing.JFrame {
         if (row >= 0) {
             CajaTableModel model = (CajaTableModel) tabla.getModel();
             Venta v = model.getCuenta().getVentas().get(row);
-            int cantidad = v.getCantidad() - Integer.parseInt(lblCantidad.getText());
+            int cantidad = v.getCantidad() - Integer.parseInt(lblCantidadValue.getText());
             int confirmacion = -3;
             if (cantidad < 1) {
                 confirmacion = JOptionPane.showConfirmDialog(this, "Desea eliminar este articulo?");
@@ -1023,7 +1120,7 @@ public class TPV extends javax.swing.JFrame {
         if (row >= 0) {
             CajaTableModel model = (CajaTableModel) tabla.getModel();
             Venta v = model.getCuenta().getVentas().get(row);
-            v.setVenta(v.getCantidad() + Integer.parseInt(lblCantidad.getText()), v.getProducto());
+            v.setVenta(v.getCantidad() + Integer.parseInt(lblCantidadValue.getText()), v.getProducto());
             model.fireTableDataChanged();
             sumaTotal(model.getCuenta().getVentas());
             int index = model.getCuenta().getVentas().indexOf(v);
@@ -1061,69 +1158,33 @@ public class TPV extends javax.swing.JFrame {
         tecladoVirtualAction(evt);
     }//GEN-LAST:event_btn1ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (busqueda != null) {
-            busqueda.setLocationRelativeTo(null);
-            busqueda.setVisible(true);
-        } else {
+    private void btnClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClienteActionPerformed
+        if (busqueda == null) {
             busqueda = context.getBean(BusquedaDePersona.class);
-            busqueda.setLocationRelativeTo(null);
-            busqueda.setVisible(true);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+        busqueda.setCliente(true);
+        List<Persona> lp = new ArrayList<>();
+        for (Persona per : context.getBean(ServicioCliente.class).findAll()) {
+            lp.add(per);
+        }
+        busqueda.setLista(lp);
+        busqueda.setLocationRelativeTo(null);
+        busqueda.setVisible(true);
+    }//GEN-LAST:event_btnClienteActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if (busqueda != null) {
-            busqueda.setLocationRelativeTo(null);
-            busqueda.setVisible(true);
-        } else {
+    private void btnUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuarioActionPerformed
+        if (busqueda == null) {
             busqueda = context.getBean(BusquedaDePersona.class);
-            busqueda.setLocationRelativeTo(null);
-            busqueda.setVisible(true);
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void fireDataChage(Venta v) {
-        CajaTableModel model = (CajaTableModel) tabla.getModel();
-        model.fireTableDataChanged();
-        sumaTotal(model.getCuenta().getVentas());
-        int index = model.getCuenta().getVentas().indexOf(v);
-        tabla.setRowSelectionInterval(index, index);
-    }
-
-    private void tecladoVirtualAction(java.awt.event.ActionEvent evt) {
-        JButton b = (JButton) evt.getSource();
-        if (lblCantidad.getName().equals("true")) {
-            lblCantidad.setText(lblCantidad.getText() + b.getText());
-        } else if (!b.getText().equals("0")) {
-            lblCantidad.setText(b.getText());
-            lblCantidad.setName("true");
+        busqueda.setCliente(false);
+        List<Persona> lp = new ArrayList<>();
+        for (Persona per : context.getBean(ServicioUsuario.class).findAll()) {
+            lp.add(per);
         }
-    }
-
-    private TableModel getModel() {
-        return new CajaTableModel();
-    }
-
-    private void setColumnModel() {
-        for (int i = 0; i < 4; i++) {
-            switch (i) {
-                case 0:
-                    tabla.getColumnModel().getColumn(0).setPreferredWidth(5);
-                    break;
-                case 1:
-                    tabla.getColumnModel().getColumn(1).setPreferredWidth(200);
-                    break;
-                case 2:
-                    tabla.getColumnModel().getColumn(2).setPreferredWidth(20);
-                    break;
-                case 3:
-                    tabla.getColumnModel().getColumn(3).setPreferredWidth(20);
-                    break;
-            }
-        }
-
-    }
+        busqueda.setLista(lp);
+        busqueda.setLocationRelativeTo(null);
+        busqueda.setVisible(true);
+    }//GEN-LAST:event_btnUsuarioActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn0;
@@ -1138,20 +1199,20 @@ public class TPV extends javax.swing.JFrame {
     private javax.swing.JButton btn9;
     private javax.swing.JButton btnBorrar;
     private javax.swing.JButton btnCE;
+    private javax.swing.JButton btnCliente;
     private javax.swing.JButton btnMas;
     private javax.swing.JButton btnMenos;
     private javax.swing.JButton btnNuevaCuenta;
     private javax.swing.JButton btnPagar;
     private javax.swing.JButton btnTicket;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
+    private javax.swing.JButton btnUsuario;
     private javax.swing.JButton jButton32;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblCantidad;
-    private javax.swing.JLabel lblTotalLabel;
+    private javax.swing.JLabel lblCantidadValue;
+    private javax.swing.JLabel lblNombreDeLaCuenta;
+    private javax.swing.JLabel lblTotal;
     private javax.swing.JLabel lblTotalValue;
     private javax.swing.JPanel panelCaja;
     private javax.swing.JPanel panelCuenta;
@@ -1166,117 +1227,4 @@ public class TPV extends javax.swing.JFrame {
     private javax.swing.JTable tabla;
     private javax.swing.JTextField txtCuenta;
     // End of variables declaration//GEN-END:variables
-/*
-    private List<Grupo> createGruops() {
-        Producto pro1 = new Producto();
-        pro1.setId(1);
-        pro1.setNombre("Coca-Cola");
-        pro1.setPrecioMasIva(new BigDecimal(1.33).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        pro1.setImage("hitUva.png");
-
-        Producto pro2 = new Producto();
-        pro2.setId(2);
-        pro2.setNombre("Fanta Laranja");
-        pro2.setPrecioMasIva(new BigDecimal(1.33).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        pro2.setImage("hitPina.png");
-
-        Producto pro3 = new Producto();
-        pro3.setId(3);
-        pro3.setNombre("Dolly");
-        pro3.setPrecioMasIva(new BigDecimal(1.13).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        pro3.setImage("hitManzana.png");
-
-        Producto pro4 = new Producto();
-        pro4.setId(4);
-        pro4.setNombre("Frizz");
-        pro4.setPrecioMasIva(new BigDecimal(1.00).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        pro4.setImage("frizz.png");
-
-        Producto pro5 = new Producto();
-        pro5.setId(5);
-        pro5.setNombre("Ciel");
-        pro5.setPrecioMasIva(new BigDecimal(1.64).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        pro5.setImage("ciel.png");
-    
-
-        Grupo refrescos = new Grupo();
-        refrescos.setId(1);
-        refrescos.setNombre("Refrescos");
-        refrescos.getProductos().add(pro1);
-        refrescos.getProductos().add(pro2);
-        refrescos.getProductos().add(pro3);
-        refrescos.getProductos().add(pro4);
-        refrescos.getProductos().add(pro5);
-
-        Producto pro21 = new Producto();
-        pro21.setId(21);
-        pro21.setNombre("Solo");
-        pro21.setPrecioMasIva(new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-        pro21.setImage("solo.png");
-
-        Producto pro22 = new Producto();
-        pro22.setId(22);
-        pro22.setNombre("Cortado");
-        pro22.setPrecioMasIva(new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-
-        Producto pro23 = new Producto();
-        pro23.setId(23);
-        pro23.setNombre("Cafe con Leite");
-        pro23.setPrecioMasIva(new BigDecimal(1.20).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-
-        Producto pro24 = new Producto();
-        pro24.setId(24);
-        pro24.setNombre("Solo largo");
-        pro24.setPrecioMasIva(new BigDecimal(1).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-
-        Producto pro25 = new Producto();
-        pro25.setId(25);
-        pro25.setNombre("Bombom");
-        pro25.setPrecioMasIva(new BigDecimal(1.2).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-
-        Producto pro26 = new Producto();
-        pro26.setId(26);
-        pro26.setNombre("Cafe con Leite");
-        pro26.setPrecioMasIva(new BigDecimal(1.20).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-
-        Grupo cafes = new Grupo();
-        cafes.setId(2);
-        cafes.setNombre("Cafes");
-        cafes.getProductos().add(pro21);
-        cafes.getProductos().add(pro22);
-        cafes.getProductos().add(pro23);
-        cafes.getProductos().add(pro24);
-        cafes.getProductos().add(pro25);
-        cafes.getProductos().add(pro26);
-
-        Producto pro31 = new Producto();
-        pro31.setId(31);
-        pro31.setNombre("1/2 Tostada con Aceite");
-        pro31.setPrecioMasIva(new BigDecimal(0.60).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-
-        Producto pro32 = new Producto();
-        pro32.setId(32);
-        pro32.setNombre("1/2 Tostada con Fiambre");
-        pro32.setPrecioMasIva(new BigDecimal(1.10).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-
-        Producto pro33 = new Producto();
-        pro33.setId(33);
-        pro33.setNombre("1/2 Tostada con doble Fiambre");
-        pro33.setPrecioMasIva(new BigDecimal(1.13).setScale(2, BigDecimal.ROUND_HALF_DOWN));
-
-        Grupo tostadas = new Grupo();
-        tostadas.setId(3);
-        tostadas.setNombre("Tostadas");
-        tostadas.getProductos().add(pro31);
-        tostadas.getProductos().add(pro32);
-        tostadas.getProductos().add(pro33);
-
-        List<Grupo> generos = new ArrayList();
-        generos.add(refrescos);
-        generos.add(cafes);
-        generos.add(tostadas);
-
-        return generos;
-    }
-     */
 }

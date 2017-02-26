@@ -5,12 +5,16 @@
  */
 package com.brasajava.view.tpv;
 
+import com.brasajava.model.Persona;
 import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.Session;
 import com.brasajava.util.interfaces.Internationalizable;
 import com.brasajava.view.persona.tablemodel.MiTableModel;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
-import javax.swing.table.TableModel;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -18,25 +22,44 @@ import org.springframework.context.MessageSource;
  *
  * @author Ricardo
  */
-public class BusquedaDePersona extends javax.swing.JDialog implements Internationalizable{
+public class BusquedaDePersona extends javax.swing.JDialog implements Internationalizable {
 
     private final ApplicationContext context;
     private final MessageSource messageSource;
     private final ApplicationLocale applicationLocale;
-    
+    private boolean cliente;
+    private boolean isChar;
+    private String str;
+    private List<Persona> lista;
+
     private TPV tpv;
+
     /**
      * Creates new form Busqueda
+     *
      * @param tpv
+     * @param context
      */
-    public BusquedaDePersona(TPV tpv,ApplicationContext context) {
+    public BusquedaDePersona(TPV tpv, ApplicationContext context) {
         super(tpv, true);
         this.tpv = tpv;
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
         this.applicationLocale = context.getBean(ApplicationLocale.class);
+        lista = new ArrayList<>();
         initComponents();
+        setWithInternationalization();
     }
+
+    public List<Persona> getLista() {
+        return lista;
+    }
+
+    public void setLista(List<Persona> lista) {
+        this.lista = lista;
+        setModelData();
+    }
+    
 
     public JTable getTabla() {
         return tabla;
@@ -45,18 +68,80 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
     public void setTabla(JTable tabla) {
         this.tabla = tabla;
     }
+
+    public void setCliente(boolean cliente) {
+        this.cliente = cliente;
+    }
     
     
+    private void setModelData(){
+        MiTableModel model = (MiTableModel)tabla.getModel();
+        model.setDatos(lista);
+        model.fireTableDataChanged();
+    }
+
     @Override
     public void refreshLanguage() {
-      //this.setTitle(messageSource.getMessage(this.getName(), null, applicationLocale.getLocale()));
+        setWithInternationalization();
+        ((MiTableModel) tabla.getModel()).refreshLanguage();
+        ((MiTableModel) tabla.getModel()).fireTableStructureChanged();
+    }
 
-        MiTableModel model = context.getBean("tableModelNifNombre", MiTableModel.class);
-        TableModel oldModel = tabla.getModel();
-        if (oldModel instanceof MiTableModel) {
-            model.setDatos(((MiTableModel) oldModel).getDatos());
+    private void setWithInternationalization() {
+        if (cliente) {
+            this.setTitle(messageSource.getMessage("menu_Client", null, applicationLocale.getLocale()));
+        } else {
+            this.setTitle(messageSource.getMessage("menu_User", null, applicationLocale.getLocale()));
         }
-        tabla.setModel(model);
+        lblNIF.setText(messageSource.getMessage("ID", null, applicationLocale.getLocale()));
+        lblNombre.setText(messageSource.getMessage("NAME", null, applicationLocale.getLocale()));
+        btnBuscar.setText(messageSource.getMessage("button_Search", null, applicationLocale.getLocale()));
+    }
+
+    private MiTableModel getModel() {
+        return context.getBean("tableModelNifNombre", MiTableModel.class);
+    }
+    
+    private void porNombreAction(KeyEvent evt) {
+        //
+        if (isChar) {
+            str = txtNombre.getText() + evt.getKeyChar();
+        } else {
+            str = txtNombre.getText();
+        }
+        MiTableModel model = (MiTableModel) tabla.getModel();
+        model.getDatos().clear();
+        if (str.isEmpty()) {
+            model.getDatos().addAll(lista);
+        } else {
+            for (Persona p : lista) {
+                if (p.getNombre().toUpperCase().contains(str.toUpperCase().subSequence(0, str.length()))) {
+                    model.getDatos().add(p);
+                }
+            }
+        }
+        model.fireTableDataChanged();
+
+    }
+    
+    private void porNIF(){
+        MiTableModel model = (MiTableModel) tabla.getModel();
+        model.getDatos().clear();
+        if (txtNIF.getText().isEmpty()) {
+            model.getDatos().addAll(lista);
+        } else {
+            for (Persona p : lista) {
+                if (p.getNombre().toUpperCase().contains(txtNIF.getText().toUpperCase().subSequence(0, txtNIF.getText().length()))) {
+                    model.getDatos().add(p);
+                }
+            }
+        }
+        model.fireTableDataChanged();
+    }
+    private void clear(){
+        txtNIF.setText("");
+        txtNombre.setText("");
+        str = "";
     }
 
     /**
@@ -85,13 +170,31 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
         lblNombre.setText("NOMBRE");
 
         txtNombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtNombre.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtNombreKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtNombreKeyTyped(evt);
+            }
+        });
 
         lblNIF.setText("N.I.F");
 
         txtNIF.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtNIF.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtNIFKeyPressed(evt);
+            }
+        });
 
         btnBuscar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -127,26 +230,16 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
         );
 
         tabla.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        tabla.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "N.I.F", "NOMBRE"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        tabla.setModel(getModel());
         tabla.setRowHeight(40);
         tabla.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tabla.getColumnModel().getColumn(0).setPreferredWidth(10);
         tabla.getColumnModel().getColumn(1).setPreferredWidth(140);
+        tabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablaMouseClicked(evt);
+            }
+        });
         scrollTabla.setViewportView(tabla);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -172,6 +265,48 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyTyped
+        porNombreAction(evt);
+    }//GEN-LAST:event_txtNombreKeyTyped
+
+    private void txtNombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNombreKeyPressed
+       if (evt.getKeyCode() == 8 || evt.getKeyCode() == 10) {
+            isChar = false;
+        } else {
+            isChar = true;
+        }
+    }//GEN-LAST:event_txtNombreKeyPressed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        porNIF();
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void txtNIFKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtNIFKeyPressed
+        if(evt.getKeyCode() == 10){
+            porNIF();
+        }
+    }//GEN-LAST:event_txtNIFKeyPressed
+
+    private void tablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMouseClicked
+        Persona p;
+        if (evt.getClickCount() == 2) {
+            MiTableModel model = (MiTableModel) tabla.getModel();
+            p = model.getDatos().get(tabla.getSelectedRow());
+            if (cliente) {
+                Session session = context.getBean(Session.class);
+                session.setCliente(p);
+                clear();
+                dispose();
+            } else {
+                Session session = context.getBean(Session.class);
+                session.setUsuario(p);
+                clear();
+                dispose();
+            }
+            tpv.refreshSession();
+        }
+    }//GEN-LAST:event_tablaMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

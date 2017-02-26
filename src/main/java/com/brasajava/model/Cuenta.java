@@ -1,6 +1,7 @@
 package com.brasajava.model;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -31,10 +32,12 @@ public class Cuenta {
     @Transient
     private boolean ajustada;
     private boolean cobrada;
+    private LocalDate fecha;
     
     public Cuenta(){
         ventas = new ArrayList();
         total = new BigDecimal("0.00");
+        fecha = LocalDate.now();
     }
     public Cuenta(String nombre){
         this();
@@ -116,4 +119,38 @@ public class Cuenta {
             total = total.subtract(venta.getTotal());
         }
     }
+
+    public LocalDate getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 73 * hash + (int) (this.id ^ (this.id >>> 32));
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Cuenta other = (Cuenta) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+    
 }

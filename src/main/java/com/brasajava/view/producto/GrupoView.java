@@ -11,11 +11,11 @@ import com.brasajava.service.ServicioGrupo;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.PrototypeContext;
 import com.brasajava.util.interfaces.Internationalizable;
-import com.brasajava.view.principal.MainFrame;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -27,7 +27,7 @@ import org.springframework.context.MessageSource;
  *
  * @author Ricardo
  */
-public class GrupoView extends javax.swing.JInternalFrame implements Internationalizable{
+public class GrupoView extends javax.swing.JInternalFrame implements Internationalizable {
 
     private Grupo grupo;
     private final ApplicationContext context;
@@ -75,9 +75,9 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
             JOptionPane.showMessageDialog(this, message_YA_EXISTE);
         }
     }
-    
+
     @Override
-    public void dispose(){
+    public void dispose() {
         PrototypeContext pc = context.getBean(PrototypeContext.class);
         pc.remove(this);
         super.dispose();
@@ -108,6 +108,7 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
             try {
                 Image image = new ImageIcon(getClass().getResource("/images/" + grupo.getImage())).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
                 lblMolduraGrupo.setIcon(new ImageIcon(image));
+                lblMolduraGrupo.setToolTipText(grupoImage);
             } catch (NullPointerException ex) {
             }
         }
@@ -135,7 +136,7 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
     }
 
     private void btnGrupoAction(ActionEvent evt) {
-        switch (evt.getActionCommand()) {
+        switch (((JButton) evt.getSource()).getName()) {
             case GUARDAR:
                 //checkear validez de los datos
                 //pasar del visual para el objeto
@@ -184,8 +185,8 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
         lblMolduraGrupo = new javax.swing.JLabel();
         scrollTabla = new javax.swing.JScrollPane();
         tablaParaPruductoGrupo = new javax.swing.JTable();
-        btnActualizarYCancelarGrupo = new javax.swing.JButton();
-        btnNuevoYGuardarGrupo = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
         ckbActivo = new javax.swing.JCheckBox();
 
         menuItemAñadir.setText("AÑADIR");
@@ -250,17 +251,19 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
         });
         scrollTabla.setViewportView(tablaParaPruductoGrupo);
 
-        btnActualizarYCancelarGrupo.setText("CANCELAR");
-        btnActualizarYCancelarGrupo.addActionListener(new java.awt.event.ActionListener() {
+        btnCancelar.setText("CANCELAR");
+        btnCancelar.setName("CANCELAR"); // NOI18N
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActualizarYCancelarGrupoActionPerformed(evt);
+                btnCancelarActionPerformed(evt);
             }
         });
 
-        btnNuevoYGuardarGrupo.setText("GUARDAR");
-        btnNuevoYGuardarGrupo.addActionListener(new java.awt.event.ActionListener() {
+        btnGuardar.setText("GUARDAR");
+        btnGuardar.setName("GUARDAR"); // NOI18N
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNuevoYGuardarGrupoActionPerformed(evt);
+                btnGuardarActionPerformed(evt);
             }
         });
 
@@ -281,9 +284,9 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
                             .addComponent(lblCodigoGrupoValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(txtNombreGrupo, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGrupoLayout.createSequentialGroup()
-                                .addComponent(btnActualizarYCancelarGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnNuevoYGuardarGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGrupoLayout.createSequentialGroup()
                                 .addGap(3, 3, 3)
                                 .addGroup(panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -312,8 +315,8 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
                 .addContainerGap()
                 .addGroup(panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblImageGrupo)
-                    .addComponent(btnActualizarYCancelarGrupo)
-                    .addComponent(btnNuevoYGuardarGrupo))
+                    .addComponent(btnCancelar)
+                    .addComponent(btnGuardar))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelGrupoLayout.createSequentialGroup()
@@ -361,33 +364,40 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnActualizarYCancelarGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarYCancelarGrupoActionPerformed
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         btnGrupoAction(evt);
-    }//GEN-LAST:event_btnActualizarYCancelarGrupoActionPerformed
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
-    private void btnNuevoYGuardarGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoYGuardarGrupoActionPerformed
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         btnGrupoAction(evt);
-    }//GEN-LAST:event_btnNuevoYGuardarGrupoActionPerformed
+    }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void lblMolduraGrupoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMolduraGrupoMouseClicked
         if (evt.getButton() == 1) {
             JFileChooser fc = new JFileChooser(getClass().getResource("/images/").getPath(), FileSystemView.getFileSystemView());
             fc.setDialogTitle(dialogTitle + " " + grupo.getNombre());
-            fc.setFileFilter(new FileNameExtensionFilter(filterDescription, "jpg","gif","png","jpeg"));
+            fc.setFileFilter(new FileNameExtensionFilter(filterDescription, "jpg", "gif", "png", "jpeg"));
             int respuesta = fc.showOpenDialog(this);
             if (respuesta == JFileChooser.APPROVE_OPTION) {
                 grupoImage = fc.getSelectedFile().getName();
+
+                try {
+                    Image image = new ImageIcon(getClass().getResource("/images/" + grupoImage)).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
+                    lblMolduraGrupo.setIcon(new ImageIcon(image));
+                    lblMolduraGrupo.setToolTipText(grupoImage);
+                } catch (NullPointerException ex) {
+                }
             }
         }
 
         if (evt.getButton() == 3) {
             if (grupoImage != null && grupoImage.isEmpty()) {
                 menuItemQuitarImagen.setEnabled(false);
-                
+
             } else {
                 menuItemQuitarImagen.setEnabled(true);
             }
-            popUpMenuImagen.show(this,evt.getX()+255, evt.getY()+105);
+            popUpMenuImagen.show(this, evt.getX() + 255, evt.getY() + 105);
         }
 
     }//GEN-LAST:event_lblMolduraGrupoMouseClicked
@@ -427,8 +437,8 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnActualizarYCancelarGrupo;
-    private javax.swing.JButton btnNuevoYGuardarGrupo;
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnGuardar;
     private javax.swing.JCheckBox ckbActivo;
     private javax.swing.JLabel lblCodigoGrupo;
     private javax.swing.JLabel lblCodigoGrupoValue;
@@ -448,29 +458,30 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
     private javax.swing.JTextField txtNombreGrupo;
     // End of variables declaration//GEN-END:variables
 
-    private void setWithInternationalization(){
-        btnActualizarYCancelarGrupo.setText(messageSource.getMessage("button_Cancel", null,applicationLocale.getLocale()));
-        btnNuevoYGuardarGrupo.setText(messageSource.getMessage("button_Save", null,applicationLocale.getLocale()));
-        
-        lblCodigoGrupo.setText(messageSource.getMessage("label_Code", null,applicationLocale.getLocale()));
-        lblNombreGrupo.setText(messageSource.getMessage("label_Name", null,applicationLocale.getLocale()));
-        lblDescripcionGrupo.setText(messageSource.getMessage("label_Description", null,applicationLocale.getLocale()));
-        lblImageGrupo.setText(messageSource.getMessage("label_Image", null,applicationLocale.getLocale()));
-        
-        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null,applicationLocale.getLocale()));
-        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null,applicationLocale.getLocale()));
-        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null,applicationLocale.getLocale()) + " " +
-                messageSource.getMessage("label_Image", null,applicationLocale.getLocale()));
-        
-        dialogTitle = messageSource.getMessage("message_SelectImageForTheGroup", null,applicationLocale.getLocale());
-        filterDescription = messageSource.getMessage("label_Image", null,applicationLocale.getLocale());
-        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null,applicationLocale.getLocale());
-        
-        ckbActivo.setText(context.getMessage("label_ActiveGroup", null,applicationLocale.getLocale()));
+    private void setWithInternationalization() {
+        btnCancelar.setText(messageSource.getMessage("button_Cancel", null, applicationLocale.getLocale()));
+        btnGuardar.setText(messageSource.getMessage("button_Save", null, applicationLocale.getLocale()));
+
+        lblCodigoGrupo.setText(messageSource.getMessage("label_Code", null, applicationLocale.getLocale()));
+        lblNombreGrupo.setText(messageSource.getMessage("label_Name", null, applicationLocale.getLocale()));
+        lblDescripcionGrupo.setText(messageSource.getMessage("label_Description", null, applicationLocale.getLocale()));
+        lblImageGrupo.setText(messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
+
+        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null, applicationLocale.getLocale()));
+        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()));
+        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()) + " "
+                + messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
+
+        dialogTitle = messageSource.getMessage("message_SelectImageForTheGroup", null, applicationLocale.getLocale());
+        filterDescription = messageSource.getMessage("label_Image", null, applicationLocale.getLocale());
+        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null, applicationLocale.getLocale());
+
+        ckbActivo.setText(context.getMessage("label_ActiveGroup", null, applicationLocale.getLocale()));
     }
+
     @Override
     public void refreshLanguage() {
         setWithInternationalization();
-        ((ProductoTableModel)tablaParaPruductoGrupo.getModel()).refreshLanguage();
+        ((ProductoTableModel) tablaParaPruductoGrupo.getModel()).refreshLanguage();
     }
 }

@@ -8,7 +8,9 @@ package com.brasajava.view.producto;
 import com.brasajava.model.Grupo;
 import com.brasajava.service.ServicioGrupo;
 import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.PrototypeContext;
 import com.brasajava.util.interfaces.Internationalizable;
+import com.brasajava.view.principal.MainFrame;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,21 +22,22 @@ import org.springframework.context.MessageSource;
  *
  * @author Ricardo
  */
-public class BuscarGrupo extends javax.swing.JDialog implements Internationalizable {
+public class BuscarGrupoI extends javax.swing.JInternalFrame implements Internationalizable{
 
     private List<Grupo> listaDeGrupos;
     private final ApplicationContext context;
     private final MessageSource messageSource;
     private final ApplicationLocale applicationLocale;
+    private final ShowProductoGrupoCommand showCommand;
     private String str;
     private boolean isChar;
     private ProductoView productoView;
 
-    public BuscarGrupo(JFrame parent, ApplicationContext context) {
-        super(parent, true);
+    public BuscarGrupoI(ApplicationContext context) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
         this.applicationLocale = context.getBean(ApplicationLocale.class);
+        this.showCommand = context.getBean(ShowProductoGrupoCommand.class);
         listaDeGrupos = new ArrayList();
         for (Grupo g : context.getBean(ServicioGrupo.class).findAll()) {
             listaDeGrupos.add(g);
@@ -44,19 +47,19 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
-    public BuscarGrupo(JFrame parent, ApplicationContext context, List<Grupo> list) {
-        super(parent, true);
+    public BuscarGrupoI(ApplicationContext context, List<Grupo> list) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
         this.applicationLocale = context.getBean(ApplicationLocale.class);
+        this.showCommand = context.getBean(ShowProductoGrupoCommand.class);
         this.listaDeGrupos = list;
-        initComponents();
+        initComponents();   
         ((GrupoTableModel) tabla.getModel()).getListaDeGrupo().addAll(listaDeGrupos);
         ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
     }
-
-    public void refresh() {
-        GrupoTableModel model = (GrupoTableModel) tabla.getModel();
+    
+    public void refresh(){
+        GrupoTableModel model = (GrupoTableModel)tabla.getModel();
         listaDeGrupos.clear();
         for (Grupo g : context.getBean(ServicioGrupo.class).findAll()) {
             listaDeGrupos.add(g);
@@ -80,6 +83,18 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
 
     public void setProductoView(ProductoView productoView) {
         this.productoView = productoView;
+    }
+    
+    @Override
+    public void refreshLanguage() {
+       setWithInternationalization();
+       ((GrupoTableModel)tabla.getModel()).refreshLanguage();
+    }
+    
+    @Override
+    public void dispose(){
+        context.getBean(PrototypeContext.class).remove(this);
+        super.dispose();
     }
 
     private void porNombreAction(KeyEvent evt) {
@@ -107,16 +122,12 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
     private GrupoTableModel getModel() {
         return context.getBean(GrupoTableModel.class);
     }
-
-    private void setWithInternationalization() {
+    
+    private void setWithInternationalization(){
         lblPorNombre.setText(messageSource.getMessage("label_SearchGroupByName", null, applicationLocale.getLocale()));
     }
+    
 
-    @Override
-    public void refreshLanguage() {
-        setWithInternationalization();
-        ((GrupoTableModel) tabla.getModel()).refreshLanguage();
-    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -133,7 +144,8 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         scrollTabla = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setClosable(true);
+        setIconifiable(true);
 
         panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -176,7 +188,7 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)
+                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -192,9 +204,9 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
                 .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblPorNombre)
                     .addComponent(txtPorNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(scrollTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -217,10 +229,6 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtPorNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPorNombreKeyTyped
-        porNombreAction(evt);
-    }//GEN-LAST:event_txtPorNombreKeyTyped
-
     private void txtPorNombreInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtPorNombreInputMethodTextChanged
 
     }//GEN-LAST:event_txtPorNombreInputMethodTextChanged
@@ -237,14 +245,20 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         }
     }//GEN-LAST:event_txtPorNombreKeyPressed
 
+    private void txtPorNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPorNombreKeyTyped
+        porNombreAction(evt);
+    }//GEN-LAST:event_txtPorNombreKeyTyped
+
     private void tablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMouseClicked
         Grupo g;
         if (evt.getClickCount() == 2) {
             GrupoTableModel model = (GrupoTableModel) tabla.getModel();
             g = model.getListaDeGrupo().get(tabla.getSelectedRow());
-            productoView.add(g);
+            showCommand.show(g);
+            this.dispose();
         }
     }//GEN-LAST:event_tablaMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel lblPorNombre;
@@ -253,5 +267,4 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
     private javax.swing.JTable tabla;
     private javax.swing.JTextField txtPorNombre;
     // End of variables declaration//GEN-END:variables
-
 }

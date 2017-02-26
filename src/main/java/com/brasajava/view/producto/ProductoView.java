@@ -19,6 +19,7 @@ import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -30,7 +31,7 @@ import org.springframework.context.MessageSource;
  *
  * @author Ricardo
  */
-public class ProductoView extends javax.swing.JInternalFrame implements Internationalizable{
+public class ProductoView extends javax.swing.JInternalFrame implements Internationalizable {
 
     private Producto producto;
     private DefaultListModel<Grupo> listModel;
@@ -71,20 +72,21 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
     public void add(Grupo grup) {
         if (!listModel.contains(grup)) {
             listModel.addElement(grup);
-        }else{
+        } else {
             //Internationalization
             JOptionPane.showMessageDialog(this, message_YA_EXISTE);
         }
     }
-    
+
     @Override
-    public void dispose(){
+    public void dispose() {
         PrototypeContext pc = context.getBean(PrototypeContext.class);
         pc.remove(this);
         super.dispose();
     }
 
     private void setProductoFields() {
+        System.out.println("SetProductoFields");
         lblCodigoProductoValue.setText(producto.getId() + "");
         txtNombreProducto.setText(producto.getNombre());
         txtDescripcionProducto.setText(producto.getDescripcion());
@@ -105,12 +107,16 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
             try {
                 Image image = new ImageIcon(getClass().getResource("/images/" + producto.getImage())).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
                 lblMolduraProducto.setIcon(new ImageIcon(image));
+                lblMolduraProducto.setToolTipText(productoImage);
+                System.out.println("Imagen: " + productoImage);
             } catch (NullPointerException ex) {
+                System.out.println("Imagem fallo");
             }
         }
     }
 
     private void colectarDatosDelProducto() {
+        System.out.println("CollectandoDatos del Producto");
         producto.setActivo(ckbActivo.isSelected());
         producto.setAlmacen(parseInt(txtAlmacen.getText()));
         producto.setCusto(parseBigDecimal(txtCustoDelProducto.getText()));
@@ -180,13 +186,15 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
     }
 
     private void btnProductoAction(ActionEvent evt) {
-        switch (evt.getActionCommand()) {
+        switch (((JButton) evt.getSource()).getName()) {
             case GUARDAR:
                 colectarDatosDelProducto();
                 break;
             case CANCELAR:
                 setProductoFields();
                 break;
+            default:
+                JOptionPane.showMessageDialog(this, evt.getActionCommand());
         }
     }
 
@@ -237,8 +245,8 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
         txtAlmacen = new javax.swing.JTextField();
         lblMargenDelProducto = new javax.swing.JLabel();
         txtMargen = new javax.swing.JTextField();
-        btnActualizarYCancelarProducto = new javax.swing.JButton();
-        btnNuevoYGuardarProducto = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
+        btnGuardar = new javax.swing.JButton();
         scrollList = new javax.swing.JScrollPane();
         listProducto = new javax.swing.JList<>();
         ckbActivo = new javax.swing.JCheckBox();
@@ -318,18 +326,20 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
 
         txtMargen.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
-        btnActualizarYCancelarProducto.setText("CANCELAR");
-        btnActualizarYCancelarProducto.addActionListener(new java.awt.event.ActionListener() {
+        btnCancelar.setText("CANCELAR");
+        btnCancelar.setName("CANCELAR"); // NOI18N
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnActualizarYCancelarProductoActionPerformed(evt);
+                btnCancelarActionPerformed(evt);
             }
         });
 
-        btnNuevoYGuardarProducto.setText("GUARDAR");
-        btnNuevoYGuardarProducto.setToolTipText("");
-        btnNuevoYGuardarProducto.addActionListener(new java.awt.event.ActionListener() {
+        btnGuardar.setText("GUARDAR");
+        btnGuardar.setToolTipText("");
+        btnGuardar.setName("GUARDAR"); // NOI18N
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNuevoYGuardarProductoActionPerformed(evt);
+                btnGuardarActionPerformed(evt);
             }
         });
 
@@ -384,9 +394,9 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
                                 .addGap(58, 58, 58)
                                 .addComponent(lblCodigoProductoValue, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnActualizarYCancelarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(58, 58, 58)
-                                .addComponent(btnNuevoYGuardarProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(panelProductoLayout.createSequentialGroup()
                                 .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(panelProductoLayout.createSequentialGroup()
@@ -404,7 +414,7 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
                 .addContainerGap())
         );
 
-        panelProductoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnActualizarYCancelarProducto, btnNuevoYGuardarProducto});
+        panelProductoLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCancelar, btnGuardar});
 
         panelProductoLayout.setVerticalGroup(
             panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -416,8 +426,8 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
                             .addComponent(lblCodigoProductoValue, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lblCodigoProducto)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnActualizarYCancelarProducto)
-                                .addComponent(btnNuevoYGuardarProducto)))
+                                .addComponent(btnCancelar)
+                                .addComponent(btnGuardar)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lblNombreProducto)
@@ -476,32 +486,39 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnNuevoYGuardarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoYGuardarProductoActionPerformed
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         btnProductoAction(evt);
-    }//GEN-LAST:event_btnNuevoYGuardarProductoActionPerformed
+    }//GEN-LAST:event_btnGuardarActionPerformed
 
-    private void btnActualizarYCancelarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarYCancelarProductoActionPerformed
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         btnProductoAction(evt);
-    }//GEN-LAST:event_btnActualizarYCancelarProductoActionPerformed
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void lblMolduraProductoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblMolduraProductoMouseClicked
         if (evt.getButton() == 1) {
-            JFileChooser fc = new JFileChooser(getClass().getResource("/images/").getPath(),FileSystemView.getFileSystemView());
+            JFileChooser fc = new JFileChooser(getClass().getResource("/images/").getPath(), FileSystemView.getFileSystemView());
             fc.setDialogTitle(dialogTitle + " " + producto.getNombre());
-            fc.setFileFilter(new FileNameExtensionFilter(filterDescription, "jpg","gif","png","jpeg"));
+            fc.setFileFilter(new FileNameExtensionFilter(filterDescription, "jpg", "gif", "png", "jpeg"));
             int respuesta = fc.showOpenDialog(this);
             if (respuesta == JFileChooser.APPROVE_OPTION) {
                 productoImage = fc.getSelectedFile().getName();
+
+                try {
+                    Image image = new ImageIcon(getClass().getResource("/images/" + productoImage)).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
+                    lblMolduraProducto.setIcon(new ImageIcon(image));
+                    lblMolduraProducto.setToolTipText(productoImage);
+                } catch (NullPointerException ex) {  }
+
             }
-        } 
-        
+        }
+
         if (evt.getButton() == 3) {
-            if(productoImage != null && productoImage.isEmpty()){
+            if (productoImage != null && productoImage.isEmpty()) {
                 menuItemQuitarImagen.setEnabled(false);
-            }else{
+            } else {
                 menuItemQuitarImagen.setEnabled(true);
             }
-            popUpMenuImagen.show(this,evt.getX()+250, evt.getY()+300);
+            popUpMenuImagen.show(this, evt.getX() + 250, evt.getY() + 300);
         }
     }//GEN-LAST:event_lblMolduraProductoMouseClicked
 
@@ -538,8 +555,8 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnActualizarYCancelarProducto;
-    private javax.swing.JButton btnNuevoYGuardarProducto;
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JButton btnGuardar;
     private javax.swing.JCheckBox ckbActivo;
     private javax.swing.JLabel lblAlmacen;
     private javax.swing.JLabel lblCodigoProducto;
@@ -572,33 +589,34 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
     private javax.swing.JTextField txtPrecioSinIva;
     // End of variables declaration//GEN-END:variables
 
-    private void setWithInternationalization(){
-        btnActualizarYCancelarProducto.setText(messageSource.getMessage("button_Cancel", null,applicationLocale.getLocale()));
-        btnNuevoYGuardarProducto.setText(messageSource.getMessage("button_Save", null,applicationLocale.getLocale()));
-        
-        lblCodigoProducto.setText(messageSource.getMessage("label_Code", null,applicationLocale.getLocale()));
-        lblNombreProducto.setText(messageSource.getMessage("label_Name", null,applicationLocale.getLocale()));
-        lblDescripcionDelProducto.setText(messageSource.getMessage("label_Description", null,applicationLocale.getLocale()));
-        lblCustoDelProducto.setText(messageSource.getMessage("label_CostPrice", null,applicationLocale.getLocale()));
-        lblMargenDelProducto.setText(messageSource.getMessage("label_Margin", null,applicationLocale.getLocale()));
-        lblPrecioSinIva.setText(messageSource.getMessage("label_PriceWithoutTax", null,applicationLocale.getLocale()));
-        lblIva.setText(messageSource.getMessage("label_Tax", null,applicationLocale.getLocale()));
-        lblPrecioConIva.setText(messageSource.getMessage("label_PriceWithTax", null,applicationLocale.getLocale()));
-        lblAlmacen.setText(messageSource.getMessage("label_Stock", null,applicationLocale.getLocale()));
-        lblGrupos.setText(messageSource.getMessage("label_Groups", null,applicationLocale.getLocale()));
-        lblImagen.setText(messageSource.getMessage("label_Image", null,applicationLocale.getLocale()));
-        
-        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null,applicationLocale.getLocale()));
-        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null,applicationLocale.getLocale()));
-        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null,applicationLocale.getLocale()) + " " +
-                messageSource.getMessage("label_Image", null,applicationLocale.getLocale()));
-        
-        dialogTitle = messageSource.getMessage("message_SelectImageForTheProduct", null,applicationLocale.getLocale());
-        filterDescription = messageSource.getMessage("label_Image", null,applicationLocale.getLocale());
-        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null,applicationLocale.getLocale());
-        
-        ckbActivo.setText(messageSource.getMessage("label_ActiveProduct", null,applicationLocale.getLocale()));
+    private void setWithInternationalization() {
+        btnCancelar.setText(messageSource.getMessage("button_Cancel", null, applicationLocale.getLocale()));
+        btnGuardar.setText(messageSource.getMessage("button_Save", null, applicationLocale.getLocale()));
+
+        lblCodigoProducto.setText(messageSource.getMessage("label_Code", null, applicationLocale.getLocale()));
+        lblNombreProducto.setText(messageSource.getMessage("label_Name", null, applicationLocale.getLocale()));
+        lblDescripcionDelProducto.setText(messageSource.getMessage("label_Description", null, applicationLocale.getLocale()));
+        lblCustoDelProducto.setText(messageSource.getMessage("label_CostPrice", null, applicationLocale.getLocale()));
+        lblMargenDelProducto.setText(messageSource.getMessage("label_Margin", null, applicationLocale.getLocale()));
+        lblPrecioSinIva.setText(messageSource.getMessage("label_PriceWithoutTax", null, applicationLocale.getLocale()));
+        lblIva.setText(messageSource.getMessage("label_Tax", null, applicationLocale.getLocale()));
+        lblPrecioConIva.setText(messageSource.getMessage("label_PriceWithTax", null, applicationLocale.getLocale()));
+        lblAlmacen.setText(messageSource.getMessage("label_Stock", null, applicationLocale.getLocale()));
+        lblGrupos.setText(messageSource.getMessage("label_Groups", null, applicationLocale.getLocale()));
+        lblImagen.setText(messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
+
+        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null, applicationLocale.getLocale()));
+        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()));
+        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()) + " "
+                + messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
+
+        dialogTitle = messageSource.getMessage("message_SelectImageForTheProduct", null, applicationLocale.getLocale());
+        filterDescription = messageSource.getMessage("label_Image", null, applicationLocale.getLocale());
+        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null, applicationLocale.getLocale());
+
+        ckbActivo.setText(messageSource.getMessage("label_ActiveProduct", null, applicationLocale.getLocale()));
     }
+
     @Override
     public void refreshLanguage() {
         setWithInternationalization();

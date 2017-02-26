@@ -2,21 +2,24 @@ package com.brasajava.view.tpv;
 
 import com.brasajava.model.Cuenta;
 import com.brasajava.model.Venta;
+import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.interfaces.Internationalizable;
 import javax.swing.table.AbstractTableModel;
+import org.springframework.context.MessageSource;
 
 public class CajaTableModel extends AbstractTableModel implements Internationalizable {
 
     private Cuenta cuenta;
     private String[] title;
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
 
-    public CajaTableModel() {
+    public CajaTableModel(MessageSource messageSource, ApplicationLocale applicationLocale) {
+        this.messageSource = messageSource;
+        this.applicationLocale = applicationLocale;
         cuenta = new Cuenta("0");
         title = new String[4];
-        title[0] = "UNID.";
-        title[1] = "DESC.";
-        title[2] = "PREC.";
-        title[3] = "TOTAL";
+        setWithInternationalization();
     }
 
     public Cuenta getCuenta() {
@@ -74,10 +77,18 @@ public class CajaTableModel extends AbstractTableModel implements Internationali
         }
         return obj;
     }
+    
+    private void setWithInternationalization(){
+        title[0] = messageSource.getMessage("UNIT", null,applicationLocale.getLocale()); //"UNID.";
+        title[1] = messageSource.getMessage("DESCRIPTION", null,applicationLocale.getLocale()); //"DESC.";
+        title[2] = messageSource.getMessage("PRICE", null,applicationLocale.getLocale()); //"PREC.";
+        title[3] = messageSource.getMessage("TOTAL", null,applicationLocale.getLocale()); //"TOTAL";
+    }
 
     @Override
     public void refreshLanguage() {
-
+        setWithInternationalization();
+        fireTableStructureChanged();
     }
 
 }

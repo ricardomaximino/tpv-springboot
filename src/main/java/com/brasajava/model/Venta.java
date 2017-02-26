@@ -22,7 +22,10 @@ public class Venta {
     private Producto producto;
     @OneToOne(fetch = FetchType.EAGER,targetEntity = Usuario.class)
     @JoinColumn( name = "USUARIO_ID")
-    private Persona vendedor;
+    private Persona usuario;
+    @OneToOne(fetch = FetchType.EAGER,targetEntity = Cliente.class)
+    @JoinColumn( name = "CLIENTE_ID")
+    private Persona cliente;
     private BigDecimal total;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CUENTA_ID")
@@ -50,12 +53,20 @@ public class Venta {
         return producto;
     }
 
-    public Persona getVendedor() {
-        return vendedor;
+    public Persona getUsuario() {
+        return usuario;
     }
 
-    public void setVendedor(Persona vendedor) {
-        this.vendedor = vendedor;
+    public void setUsuario(Persona usuario) {
+        this.usuario = usuario;
+    }
+
+    public Persona getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Persona cliente) {
+        this.cliente = cliente;
     }
 
     public BigDecimal getTotal() {
@@ -86,5 +97,31 @@ public class Venta {
     public void setFecha(LocalDate fecha) {
         this.fecha = fecha;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 37 * hash + (int) (this.id ^ (this.id >>> 32));
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Venta other = (Venta) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        return true;
+    }
+    
    
 }

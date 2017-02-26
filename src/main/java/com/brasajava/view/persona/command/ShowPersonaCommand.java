@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -56,6 +57,7 @@ public class ShowPersonaCommand {
         if (frame != null) {
             frame.setVisible(true);
         }
+        //Mejorar focus
         desktopPane.setSelectedFrame(frame);
         desktopPane.getDesktopManager().deiconifyFrame(frame);
         desktopPane.getDesktopManager().activateFrame(frame);

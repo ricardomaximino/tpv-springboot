@@ -10,6 +10,7 @@ import com.brasajava.service.ServicioGrupo;
 import com.brasajava.service.ServicioUsuario;
 import com.brasajava.util.interfaces.Internationalizable;
 import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.PrototypeContext;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,8 @@ import com.brasajava.util.interfaces.Command;
 import com.brasajava.view.menu.command.DesktopController;
 import com.brasajava.view.persona.command.ShowPersonaCommand;
 import com.brasajava.view.producto.BuscarGrupo;
-import com.brasajava.view.producto.BuscarProducto;
+import com.brasajava.view.producto.BuscarGrupoI;
+import com.brasajava.view.producto.BuscarProductoI;
 import com.brasajava.view.producto.ShowProductoGrupoCommand;
 import com.brasajava.view.tpv.TPV;
 import java.util.Iterator;
@@ -202,7 +204,8 @@ public class MenuBar extends JMenuBar implements Internationalizable {
 
         //configuraciones
         JMenu configuraciones = createMenu("menu_Settings", GRUPO_CONFIGURACIONES, ACCION_NULLA);
-        this.add(configuraciones);
+        //quitar comentario para implementar ajustes
+        //this.add(configuraciones);
         
         //tpv
         JMenu tpv = createMenu("menu_TPV", GRUPO_TPV, ACCION_NULLA);
@@ -251,6 +254,7 @@ public class MenuBar extends JMenuBar implements Internationalizable {
     private void productoGrupo(ActionEvent e){
         MiMenuItem item = (MiMenuItem)e.getSource();
         ShowProductoGrupoCommand spg = context.getBean(ShowProductoGrupoCommand.class);
+        PrototypeContext pc = context.getBean(PrototypeContext.class);
        switch(item.getCommandActionName()){
             case ACCION_ANADIR_PRODUCTO:
                 spg.show(new Producto());
@@ -259,10 +263,14 @@ public class MenuBar extends JMenuBar implements Internationalizable {
                 spg.show(new Grupo());
             break;
             case ACCION_BUSCAR_PRODUCTO:
-                 context.getBean("buscarProducto",BuscarProducto.class).setVisible(true);
+                 BuscarProductoI bp = context.getBean("buscarProducto",BuscarProductoI.class);
+                 pc.putPrototype(bp);
+                 bp.setVisible(true);
             break;
             case ACCION_BUSCAR_GRUPO:
-                context.getBean("buscarGrupo",BuscarGrupo.class).setVisible(true);
+                BuscarGrupoI bg = context.getBean("buscarGrupo",BuscarGrupoI.class);
+                pc.putPrototype(bg);
+                bg.setVisible(true);
             break;
         }
     }

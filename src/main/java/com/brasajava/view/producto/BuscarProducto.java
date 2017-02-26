@@ -9,7 +9,6 @@ import com.brasajava.model.Producto;
 import com.brasajava.service.ServicioProducto;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.interfaces.Internationalizable;
-import com.brasajava.view.principal.MainFrame;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class BuscarProducto extends javax.swing.JDialog implements International
         this.applicationLocale = context.getBean(ApplicationLocale.class);
         this.showCommand = context.getBean(ShowProductoGrupoCommand.class);
         this.listaDeProductos = list;
-        initComponents();    
+        initComponents();
         setWithInternationalization();
         ((ProductoTableModel) tabla.getModel()).getListaDeProducto().addAll(listaDeProductos);
         ((ProductoTableModel) tabla.getModel()).fireTableDataChanged();
@@ -110,9 +109,18 @@ public class BuscarProducto extends javax.swing.JDialog implements International
 
     }
 
-
     private ProductoTableModel getModel() {
         return context.getBean(ProductoTableModel.class);
+    }
+
+    private void setWithInternationalization() {
+        lblPorNombre.setText(messageSource.getMessage("label_SearchProductByName", null, applicationLocale.getLocale()));
+    }
+
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+        ((ProductoTableModel) tabla.getModel()).refreshLanguage();
     }
 
     /**
@@ -138,18 +146,6 @@ public class BuscarProducto extends javax.swing.JDialog implements International
         lblPorNombre.setText("BUSCA PRODUCTO POR NOMBRE");
 
         txtPorNombre.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtPorNombre.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                txtPorNombreInputMethodTextChanged(evt);
-            }
-        });
-        txtPorNombre.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPorNombreActionPerformed(evt);
-            }
-        });
         txtPorNombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtPorNombreKeyPressed(evt);
@@ -218,14 +214,6 @@ public class BuscarProducto extends javax.swing.JDialog implements International
         porNombreAction(evt);
     }//GEN-LAST:event_txtPorNombreKeyTyped
 
-    private void txtPorNombreInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtPorNombreInputMethodTextChanged
-
-    }//GEN-LAST:event_txtPorNombreInputMethodTextChanged
-
-    private void txtPorNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPorNombreActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtPorNombreActionPerformed
-
     private void txtPorNombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPorNombreKeyPressed
         if (evt.getKeyCode() == 8 || evt.getKeyCode() == 10) {
             isChar = false;
@@ -239,12 +227,7 @@ public class BuscarProducto extends javax.swing.JDialog implements International
         if (evt.getClickCount() == 2) {
             ProductoTableModel model = (ProductoTableModel) tabla.getModel();
             p = model.getListaDeProducto().get(tabla.getSelectedRow());
-            if (this.isModal()) {
-                grupoView.add(p);
-            } else {
-                showCommand.show(p);
-                this.dispose();
-            }
+            grupoView.add(p);
         }
     }//GEN-LAST:event_tablaMouseClicked
 
@@ -256,12 +239,4 @@ public class BuscarProducto extends javax.swing.JDialog implements International
     private javax.swing.JTextField txtPorNombre;
     // End of variables declaration//GEN-END:variables
 
-    private void setWithInternationalization(){
-        lblPorNombre.setText(messageSource.getMessage("label_SearchProductByName", null,applicationLocale.getLocale()));
-    }
-    @Override
-    public void refreshLanguage() {
-        setWithInternationalization();
-        ((ProductoTableModel)tabla.getModel()).refreshLanguage();
-    }
 }

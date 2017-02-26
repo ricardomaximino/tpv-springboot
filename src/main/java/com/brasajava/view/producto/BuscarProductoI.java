@@ -5,14 +5,14 @@
  */
 package com.brasajava.view.producto;
 
-import com.brasajava.model.Grupo;
-import com.brasajava.service.ServicioGrupo;
+import com.brasajava.model.Producto;
+import com.brasajava.service.ServicioProducto;
 import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.PrototypeContext;
 import com.brasajava.util.interfaces.Internationalizable;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFrame;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -20,66 +20,81 @@ import org.springframework.context.MessageSource;
  *
  * @author Ricardo
  */
-public class BuscarGrupo extends javax.swing.JDialog implements Internationalizable {
+public class BuscarProductoI extends javax.swing.JInternalFrame implements Internationalizable {
 
-    private List<Grupo> listaDeGrupos;
+    private List<Producto> listaDeProductos;
     private final ApplicationContext context;
     private final MessageSource messageSource;
     private final ApplicationLocale applicationLocale;
+    private final ShowProductoGrupoCommand showCommand;
     private String str;
     private boolean isChar;
-    private ProductoView productoView;
+    private GrupoView grupoView;
 
-    public BuscarGrupo(JFrame parent, ApplicationContext context) {
-        super(parent, true);
+    public BuscarProductoI(ApplicationContext context) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
         this.applicationLocale = context.getBean(ApplicationLocale.class);
-        listaDeGrupos = new ArrayList();
-        for (Grupo g : context.getBean(ServicioGrupo.class).findAll()) {
-            listaDeGrupos.add(g);
+        this.showCommand = context.getBean(ShowProductoGrupoCommand.class);
+        listaDeProductos = new ArrayList();
+        for (Producto p : context.getBean(ServicioProducto.class).findAll()) {
+            listaDeProductos.add(p);
         }
         initComponents();
-        ((GrupoTableModel) tabla.getModel()).getListaDeGrupo().addAll(listaDeGrupos);
-        ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
+        setWithInternationalization();
+        ((ProductoTableModel) tabla.getModel()).getListaDeProducto().addAll(listaDeProductos);
+        ((ProductoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
-    public BuscarGrupo(JFrame parent, ApplicationContext context, List<Grupo> list) {
-        super(parent, true);
+    public BuscarProductoI(ApplicationContext context, List<Producto> list) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
         this.applicationLocale = context.getBean(ApplicationLocale.class);
-        this.listaDeGrupos = list;
+        this.showCommand = context.getBean(ShowProductoGrupoCommand.class);
+        this.listaDeProductos = list;
         initComponents();
-        ((GrupoTableModel) tabla.getModel()).getListaDeGrupo().addAll(listaDeGrupos);
-        ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
+        setWithInternationalization();
+        ((ProductoTableModel) tabla.getModel()).getListaDeProducto().addAll(listaDeProductos);
+        ((ProductoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
     public void refresh() {
-        GrupoTableModel model = (GrupoTableModel) tabla.getModel();
-        listaDeGrupos.clear();
-        for (Grupo g : context.getBean(ServicioGrupo.class).findAll()) {
-            listaDeGrupos.add(g);
+        ProductoTableModel model = (ProductoTableModel) tabla.getModel();
+        listaDeProductos.clear();
+        for (Producto p : context.getBean(ServicioProducto.class).findAll()) {
+            listaDeProductos.add(p);
         }
-        model.getListaDeGrupo().clear();
-        model.getListaDeGrupo().addAll(listaDeGrupos);
+        model.getListaDeProducto().clear();
+        model.getListaDeProducto().addAll(listaDeProductos);
         model.fireTableDataChanged();
     }
 
-    public List<Grupo> getListaDeProductos() {
-        return listaDeGrupos;
+    public List<Producto> getListaDeProductos() {
+        return listaDeProductos;
     }
 
-    public void setListaDeProductos(List<Grupo> listaDeProductos) {
-        this.listaDeGrupos = listaDeProductos;
+    public void setListaDeProductos(List<Producto> listaDeProductos) {
+        this.listaDeProductos = listaDeProductos;
     }
 
-    public ProductoView getProductoView() {
-        return productoView;
+    public GrupoView getGrupoView() {
+        return grupoView;
     }
 
-    public void setProductoView(ProductoView productoView) {
-        this.productoView = productoView;
+    public void setGrupoView(GrupoView grupoView) {
+        this.grupoView = grupoView;
+    }
+
+    @Override
+    public void dispose() {
+        context.getBean(PrototypeContext.class).remove(this);
+        super.dispose();
+    }
+
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+        ((ProductoTableModel) tabla.getModel()).refreshLanguage();
     }
 
     private void porNombreAction(KeyEvent evt) {
@@ -89,14 +104,14 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         } else {
             str = txtPorNombre.getText();
         }
-        GrupoTableModel model = (GrupoTableModel) tabla.getModel();
-        model.getListaDeGrupo().clear();
+        ProductoTableModel model = (ProductoTableModel) tabla.getModel();
+        model.getListaDeProducto().clear();
         if (str.isEmpty()) {
-            model.getListaDeGrupo().addAll(listaDeGrupos);
+            model.getListaDeProducto().addAll(listaDeProductos);
         } else {
-            for (Grupo g : listaDeGrupos) {
-                if (g.getNombre().toUpperCase().contains(str.toUpperCase().subSequence(0, str.length()))) {
-                    model.getListaDeGrupo().add(g);
+            for (Producto p : listaDeProductos) {
+                if (p.getNombre().toUpperCase().contains(str.toUpperCase().subSequence(0, str.length()))) {
+                    model.getListaDeProducto().add(p);
                 }
             }
         }
@@ -104,18 +119,12 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
 
     }
 
-    private GrupoTableModel getModel() {
-        return context.getBean(GrupoTableModel.class);
+    private ProductoTableModel getModel() {
+        return context.getBean(ProductoTableModel.class);
     }
 
     private void setWithInternationalization() {
-        lblPorNombre.setText(messageSource.getMessage("label_SearchGroupByName", null, applicationLocale.getLocale()));
-    }
-
-    @Override
-    public void refreshLanguage() {
-        setWithInternationalization();
-        ((GrupoTableModel) tabla.getModel()).refreshLanguage();
+        lblPorNombre.setText(messageSource.getMessage("label_SearchProductByName", null, applicationLocale.getLocale()));
     }
 
     /**
@@ -133,26 +142,15 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         scrollTabla = new javax.swing.JScrollPane();
         tabla = new javax.swing.JTable();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setClosable(true);
+        setIconifiable(true);
 
         panel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         lblPorNombre.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        lblPorNombre.setText("BUSCA GRUPO POR NOMBRE");
+        lblPorNombre.setText("BUSCA PRODUCTO POR NOMBRE");
 
         txtPorNombre.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtPorNombre.addInputMethodListener(new java.awt.event.InputMethodListener() {
-            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
-            }
-            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
-                txtPorNombreInputMethodTextChanged(evt);
-            }
-        });
-        txtPorNombre.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtPorNombreActionPerformed(evt);
-            }
-        });
         txtPorNombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtPorNombreKeyPressed(evt);
@@ -176,7 +174,7 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
             panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)
+                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 582, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -217,18 +215,6 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtPorNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPorNombreKeyTyped
-        porNombreAction(evt);
-    }//GEN-LAST:event_txtPorNombreKeyTyped
-
-    private void txtPorNombreInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_txtPorNombreInputMethodTextChanged
-
-    }//GEN-LAST:event_txtPorNombreInputMethodTextChanged
-
-    private void txtPorNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPorNombreActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtPorNombreActionPerformed
-
     private void txtPorNombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPorNombreKeyPressed
         if (evt.getKeyCode() == 8 || evt.getKeyCode() == 10) {
             isChar = false;
@@ -237,14 +223,20 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         }
     }//GEN-LAST:event_txtPorNombreKeyPressed
 
+    private void txtPorNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPorNombreKeyTyped
+        porNombreAction(evt);
+    }//GEN-LAST:event_txtPorNombreKeyTyped
+
     private void tablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablaMouseClicked
-        Grupo g;
+        Producto p;
         if (evt.getClickCount() == 2) {
-            GrupoTableModel model = (GrupoTableModel) tabla.getModel();
-            g = model.getListaDeGrupo().get(tabla.getSelectedRow());
-            productoView.add(g);
+            ProductoTableModel model = (ProductoTableModel) tabla.getModel();
+            p = model.getListaDeProducto().get(tabla.getSelectedRow());
+            showCommand.show(p);
+            this.dispose();
         }
     }//GEN-LAST:event_tablaMouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel lblPorNombre;
@@ -253,5 +245,4 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
     private javax.swing.JTable tabla;
     private javax.swing.JTextField txtPorNombre;
     // End of variables declaration//GEN-END:variables
-
 }

@@ -15,19 +15,26 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.brasajava.model.Direccion;
+import com.brasajava.model.Factura;
 import com.brasajava.model.Persona;
 import com.brasajava.model.Usuario;
+import com.brasajava.model.Venta;
+import com.brasajava.util.Session;
 import com.brasajava.view.persona.ListaPersona;
 import com.brasajava.view.persona.tablemodel.MiTableModel;
 import com.brasajava.view.persona.tablemodel.MiTableModelNifNombre;
 import com.brasajava.view.persona.tablemodel.TableModelAll;
 import com.brasajava.view.producto.BuscarGrupo;
+import com.brasajava.view.producto.BuscarGrupoI;
 import com.brasajava.view.producto.BuscarProducto;
+import com.brasajava.view.producto.BuscarProductoI;
 import com.brasajava.view.producto.GrupoTableModel;
 import com.brasajava.view.producto.GrupoView;
 import com.brasajava.view.producto.ProductoTableModel;
 import com.brasajava.view.producto.ProductoView;
 import com.brasajava.view.tpv.BusquedaDePersona;
+import com.brasajava.view.tpv.CajaTableModel;
+import com.brasajava.view.tpv.Pagar;
 import com.brasajava.view.tpv.TPV;
 import java.time.LocalDate;
 import org.springframework.context.annotation.Scope;
@@ -38,6 +45,11 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 public class ApplicationConfiguration {
+    
+    @Bean
+    public Session session(){
+        return new Session();
+    }
 
     @Bean
     public MainFrame mainFrame(JMenuBar menuBar) {
@@ -55,7 +67,7 @@ public class ApplicationConfiguration {
 
     @Bean
     public ApplicationLocale applicationLocale(ApplicationContext context){
-        ApplicationLocale applicationLocale = new ApplicationLocale(new Locale("pt","BR"),new Locale("es","ES"),context);
+        ApplicationLocale applicationLocale = new ApplicationLocale(new Locale("es","ES"),new Locale("pt","BR"),context);
         return applicationLocale;
     }
     
@@ -127,8 +139,37 @@ public class ApplicationConfiguration {
     }
     
     @Bean 
-    public TPV tpv(ApplicationContext context){
-        return new TPV(context, null, null);
+    public TPV tpv(ApplicationContext context,Session session){
+        return new TPV(context, session);
+    }
+    
+    @Bean
+    public CajaTableModel cajaTableModel(MessageSource messageSource, ApplicationLocale applicationLocale){
+        return new CajaTableModel(messageSource,applicationLocale);
+    }
+    
+    @Bean
+    @Scope("prototype")
+    public Pagar pagar(ApplicationContext context, TPV tpv){
+        return new Pagar(tpv, context);
+    }
+    
+    @Bean
+    @Scope("prototype")
+    public Factura factura(Session session){
+        Factura f = new Factura();
+        f.setCliente(session.getCliente());
+        f.setUsuario(session.getUsuario());
+        return f;
+    }
+    
+    @Bean
+    @Scope("prototype")
+    public Venta venta(Session session){
+        Venta venta = new Venta();
+        venta.setUsuario(session.getUsuario());
+        venta.setCliente(session.getCliente());
+        return venta;
     }
     
     @Bean
@@ -147,10 +188,9 @@ public class ApplicationConfiguration {
     
     @Bean
     @Scope("prototype")
-    public BuscarProducto buscarProducto(MainFrame main,ApplicationContext context){
-        BuscarProducto lista = new BuscarProducto(main,context);
-        lista.setLocationRelativeTo(null);
-        lista.setModal(false);
+    public BuscarProductoI buscarProducto(MainFrame main,ApplicationContext context){
+        BuscarProductoI lista = new BuscarProductoI(context);
+        main.getDesktopPane().add(lista);
         return lista;
     }
     
@@ -164,10 +204,9 @@ public class ApplicationConfiguration {
    
     @Bean
     @Scope("prototype")
-    public BuscarGrupo buscarGrupo(MainFrame main,ApplicationContext context){
-        BuscarGrupo lista = new BuscarGrupo(main,context);
-        lista.setLocationRelativeTo(null);
-        lista.setModal(false);
+    public BuscarGrupoI buscarGrupo(MainFrame main,ApplicationContext context){
+        BuscarGrupoI lista = new BuscarGrupoI(context);
+        main.getDesktopPane().add(lista);
         return lista;
     }
     @Bean

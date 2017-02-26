@@ -5,8 +5,8 @@
  */
 package com.brasajava.dao;
 
-import com.brasajava.model.Factura;
 import com.brasajava.model.Persona;
+import com.brasajava.model.Venta;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
@@ -15,9 +15,9 @@ import org.springframework.data.repository.CrudRepository;
  *
  * @author Ricardo
  */
-public interface FacturaDAO extends CrudRepository<Factura, Long>{
-    List<Factura> findByCliente(Persona cliente);
-    List<Factura> findByUsuario(Persona usuario);
-    List<Factura> findByFecha(LocalDate fecha);
+public interface VentaDAO extends CrudRepository<Venta, Long>{
     
+    List<Venta> findByCliente(Persona cliente);
+    List<Venta> findByUsuario(Persona usuario);
+    List<Venta> findByFecha(LocalDate fecha);
 }
