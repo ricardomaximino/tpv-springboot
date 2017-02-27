@@ -31,6 +31,8 @@ public class Cuenta {
     private boolean ticket;
     @Transient
     private boolean ajustada;
+    @Transient
+    private boolean reabrir;
     private boolean cobrada;
     private LocalDate fecha;
     
@@ -107,7 +109,15 @@ public class Cuenta {
     public void setAjustada(boolean ajustada) {
         this.ajustada = ajustada;
     }
-    
+
+    public boolean isReabrir() {
+        return reabrir;
+    }
+
+    public void setReabrir(boolean reabrir) {
+        this.reabrir = reabrir;
+    }
+        
     public void addVenta(Venta venta){
         ventas.add(venta);
         total = total.add(venta.getTotal());

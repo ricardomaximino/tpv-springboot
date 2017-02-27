@@ -6,6 +6,7 @@
 package com.brasajava.util;
 
 import com.brasajava.model.Cuenta;
+import com.brasajava.model.Factura;
 import com.brasajava.model.Persona;
 
 /**
@@ -16,6 +17,7 @@ public class Session {
     private Persona cliente;
     private Persona usuario;
     private Cuenta cuenta;
+    private Factura factura;
     
     public Session(){}
     
@@ -49,6 +51,14 @@ public class Session {
 
     public void setCuenta(Cuenta cuenta) {
         this.cuenta = cuenta;
+    }
+
+    public Factura getFactura() {
+        return factura;
+    }
+
+    public void setFactura(Factura factura) {
+        this.factura = factura;
     }
     
 }

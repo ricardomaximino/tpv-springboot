@@ -32,8 +32,10 @@ import com.brasajava.view.producto.GrupoTableModel;
 import com.brasajava.view.producto.GrupoView;
 import com.brasajava.view.producto.ProductoTableModel;
 import com.brasajava.view.producto.ProductoView;
+import com.brasajava.view.tpv.BuscaFactura;
 import com.brasajava.view.tpv.BusquedaDePersona;
 import com.brasajava.view.tpv.CajaTableModel;
+import com.brasajava.view.tpv.FacturaTableModel;
 import com.brasajava.view.tpv.Pagar;
 import com.brasajava.view.tpv.TPV;
 import java.time.LocalDate;
@@ -138,6 +140,12 @@ public class ApplicationConfiguration {
         return new BusquedaDePersona(tpv, context);
     }
     
+    @Bean
+    @Scope("prototype")
+    public BuscaFactura buscaFactura(ApplicationContext context, TPV tpv){
+        return new BuscaFactura(tpv, context);
+    }
+    
     @Bean 
     public TPV tpv(ApplicationContext context,Session session){
         return new TPV(context, session);
@@ -221,6 +229,12 @@ public class ApplicationConfiguration {
     @Scope("prototype")
     public ProductoTableModel productoTableModel(MessageSource messageSouce,ApplicationLocale applicationLocale){
         return new ProductoTableModel(messageSouce,applicationLocale);
+    }
+    
+    @Bean
+    @Scope("prototype")
+    public FacturaTableModel facturaTableModel(MessageSource messageSouce,ApplicationLocale applicationLocale){
+        return new FacturaTableModel(messageSouce,applicationLocale);
     }
     
     @Bean

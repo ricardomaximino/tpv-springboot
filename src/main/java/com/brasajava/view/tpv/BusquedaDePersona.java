@@ -153,7 +153,8 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        panel = new javax.swing.JPanel();
+        panelControles = new javax.swing.JPanel();
         lblNombre = new javax.swing.JLabel();
         txtNombre = new javax.swing.JTextField();
         lblNIF = new javax.swing.JLabel();
@@ -165,7 +166,7 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setIconImage(new ImageIcon(this.getClass().getResource("/images/icon.png")).getImage());
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        panelControles.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         lblNombre.setText("NOMBRE");
 
@@ -196,33 +197,33 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
             }
         });
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelControlesLayout = new javax.swing.GroupLayout(panelControles);
+        panelControles.setLayout(panelControlesLayout);
+        panelControlesLayout.setHorizontalGroup(
+            panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelControlesLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(lblNombre)
                     .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelControlesLayout.createSequentialGroup()
                         .addComponent(txtNIF, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(lblNIF))
                 .addGap(14, 14, 14))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        panelControlesLayout.setVerticalGroup(
+            panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelControlesLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblNombre)
                     .addComponent(lblNIF))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(panelControlesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtNIF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -242,24 +243,41 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
         });
         scrollTabla.setViewportView(tabla);
 
+        javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
+        panel.setLayout(panelLayout);
+        panelLayout.setHorizontalGroup(
+            panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(panelControles, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(scrollTabla))
+                .addContainerGap())
+        );
+        panelLayout.setVerticalGroup(
+            panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(panelControles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(scrollTabla))
+                .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollTabla, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
+                .addComponent(panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -311,9 +329,10 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JToggleButton btnBuscar;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblNIF;
     private javax.swing.JLabel lblNombre;
+    private javax.swing.JPanel panel;
+    private javax.swing.JPanel panelControles;
     private javax.swing.JScrollPane scrollTabla;
     private javax.swing.JTable tabla;
     private javax.swing.JTextField txtNIF;

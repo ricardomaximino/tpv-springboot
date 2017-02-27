@@ -7,27 +7,25 @@ package com.brasajava.view.tpv;
 
 import com.brasajava.model.Cuenta;
 import com.brasajava.model.Factura;
-import com.brasajava.model.Persona;
-import com.brasajava.model.Venta;
-import com.brasajava.service.ServicioCuenta;
 import com.brasajava.service.ServicioFactura;
-import com.brasajava.service.ServicioVenta;
+import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.Session;
+import com.brasajava.util.interfaces.Internationalizable;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 
 /**
  *
  * @author Ricardo
  */
-public class Pagar extends javax.swing.JDialog {
+public class Pagar extends javax.swing.JDialog implements Internationalizable{
 
     private boolean noPagaRapito;
     private boolean cobrado;
@@ -37,6 +35,9 @@ public class Pagar extends javax.swing.JDialog {
     private BigDecimal cambio;
     private final TPV tpv;
     private final ApplicationContext context;
+    private final MessageSource messageSource;
+    private final ApplicationLocale applicationLocale;
+    private Session session;
 
     /**
      * Creates new form Pagar
@@ -48,18 +49,30 @@ public class Pagar extends javax.swing.JDialog {
         super(tpv, true);
         this.tpv = tpv;
         this.context = context;
-        this.factura = context.getBean(Factura.class);
-        this. cuenta = context.getBean(Session.class).getCuenta();
+        this.messageSource = context.getBean(MessageSource.class);
+        this.applicationLocale = context.getBean(ApplicationLocale.class);
+        this.session = context.getBean(Session.class);
+        //para facturas con una sola cuenta.
+        if(session.getFactura()!= null){
+            this.factura = session.getFactura();
+            this.cuenta = factura.getCuentas().get(0);
+        }else{
+            this.factura = context.getBean(Factura.class);
+            this.cuenta = session.getCuenta();
+        }
         noPagaRapito = false;
         initComponents();
-        prepara();
+        if(this.cuenta != null){
+            prepara();
+        }  
         activarCartera();
+        setWithInternationalization();
     }
 
     private void prepara() {
-        lblTotal.setText(cuenta.getTotal().toString());
-        lblEntregado.setText(cuenta.getTotal().toString());
-        lblCambio.setText(cuenta.getTotal().toString());
+        lblTotalValue.setText(cuenta.getTotal().toString());
+        lblEntregadoValue.setText(cuenta.getTotal().toString());
+        lblCambioValue.setText(cuenta.getTotal().toString());
     }
 
     private void activarCartera() {
@@ -93,13 +106,13 @@ public class Pagar extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        lblCambio = new javax.swing.JLabel();
         lblTotal = new javax.swing.JLabel();
-        btnOk = new javax.swing.JButton();
+        lblCambio = new javax.swing.JLabel();
         lblEntregado = new javax.swing.JLabel();
+        lblCambioValue = new javax.swing.JLabel();
+        lblTotalValue = new javax.swing.JLabel();
+        btnAceptar = new javax.swing.JButton();
+        lblEntregadoValue = new javax.swing.JLabel();
         btnCancelar = new javax.swing.JButton();
         panelCartera = new javax.swing.JPanel();
         btn50Euros = new javax.swing.JButton();
@@ -119,30 +132,30 @@ public class Pagar extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setIconImage(new ImageIcon(this.getClass().getResource("/images/icon.png")).getImage());
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel1.setText("TOTAL");
-
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel2.setText("CAMBIO");
-
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel3.setText("ENTREGADO");
+        lblTotal.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lblTotal.setText("TOTAL");
 
         lblCambio.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lblCambio.setText("0,00");
+        lblCambio.setText("CAMBIO");
 
-        lblTotal.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lblTotal.setText("15,00");
+        lblEntregado.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lblEntregado.setText("ENTREGADO");
 
-        btnOk.setText("OK");
-        btnOk.addActionListener(new java.awt.event.ActionListener() {
+        lblCambioValue.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lblCambioValue.setText("0,00");
+
+        lblTotalValue.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lblTotalValue.setText("15,00");
+
+        btnAceptar.setText("Aceptar");
+        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnOkActionPerformed(evt);
+                btnAceptarActionPerformed(evt);
             }
         });
 
-        lblEntregado.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        lblEntregado.setText("15,00");
+        lblEntregadoValue.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lblEntregadoValue.setText("15,00");
 
         btnCancelar.setText("Cancelar");
         btnCancelar.addActionListener(new java.awt.event.ActionListener() {
@@ -158,17 +171,17 @@ public class Pagar extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(41, 41, 41)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnOk, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnAceptar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblCambio, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblEntregado, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblCambio, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(lblEntregado, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(lblTotalValue, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblCambioValue, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblEntregadoValue, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(btnCancelar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -178,24 +191,24 @@ public class Pagar extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(46, 46, 46)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblTotal, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblTotalValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(13, 13, 13)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblEntregado, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lblEntregado, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblEntregadoValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblCambio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(lblCambio, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblCambioValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(69, 69, 69)
-                .addComponent(btnOk, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(51, 51, 51)
                 .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22))
         );
 
-        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCancelar, btnOk});
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnAceptar, btnCancelar});
 
         panelCartera.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
 
@@ -381,8 +394,8 @@ public class Pagar extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
-    private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
-        entregado = new BigDecimal(lblEntregado.getText());
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        entregado = new BigDecimal(lblEntregadoValue.getText());
         entregado.setScale(2, RoundingMode.HALF_DOWN);
         cambio = entregado.subtract(cuenta.getTotal());
         if (cambio.doubleValue() >= 0) {
@@ -394,17 +407,22 @@ public class Pagar extends javax.swing.JDialog {
 
             //guardar no BD
             context.getBean(ServicioFactura.class).save(factura);
+            
+
 
             //imprimir
             
-            
+            factura.getCuentas().get(0).setReabrir(false);
+           // if(session.getFactura().equals(factura)){
+             //   session.setFactura(null);
+            //}
             tpv.crearCuenta();
             cobrado = true;
             this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Falta dinero.");
+            JOptionPane.showMessageDialog(this, messageSource.getMessage("message_IsMissingSomeMoney", null,applicationLocale.getLocale()));
         }
-    }//GEN-LAST:event_btnOkActionPerformed
+    }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void btn50EurosKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btn50EurosKeyPressed
         // TODO add your handling code here:
@@ -412,13 +430,10 @@ public class Pagar extends javax.swing.JDialog {
 
     private void hacerCuentas() {
         cambio = entregado.subtract(cuenta.getTotal());
-        lblEntregado.setText(entregado.toString());
-        lblCambio.setText(cambio.toString());
+        lblEntregadoValue.setText(entregado.toString());
+        lblCambioValue.setText(cambio.toString());
     }
 
-    private void esc(KeyEvent evt) {
-        JOptionPane.showMessageDialog(this, evt.getKeyCode() + "");
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn10Centimos;
     private javax.swing.JButton btn10Euros;
@@ -432,16 +447,29 @@ public class Pagar extends javax.swing.JDialog {
     private javax.swing.JButton btn50Euros;
     private javax.swing.JButton btn5Centimos;
     private javax.swing.JButton btn5Euros;
+    private javax.swing.JButton btnAceptar;
     private javax.swing.JButton btnCE;
     private javax.swing.JButton btnCancelar;
-    private javax.swing.JButton btnOk;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblCambio;
+    private javax.swing.JLabel lblCambioValue;
     private javax.swing.JLabel lblEntregado;
+    private javax.swing.JLabel lblEntregadoValue;
     private javax.swing.JLabel lblTotal;
+    private javax.swing.JLabel lblTotalValue;
     private javax.swing.JPanel panelCartera;
     // End of variables declaration//GEN-END:variables
+
+    private void setWithInternationalization(){
+        lblCambio.setText(messageSource.getMessage("lbl_Cambio", null,applicationLocale.getLocale()));
+        lblEntregado.setText(messageSource.getMessage("lbl_Entregado", null,applicationLocale.getLocale()));
+        lblTotal.setText(messageSource.getMessage("TOTAL", null,applicationLocale.getLocale()));
+        
+        btnAceptar.setText(messageSource.getMessage("button_Accept", null,applicationLocale.getLocale()));
+        btnCancelar.setText(messageSource.getMessage("button_Cancel", null,applicationLocale.getLocale()));
+    }
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+    }
 }

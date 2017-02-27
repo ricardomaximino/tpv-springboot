@@ -1,11 +1,13 @@
 package com.brasajava.view.tpv;
 
 import com.brasajava.model.Cuenta;
+import com.brasajava.model.Factura;
 import com.brasajava.model.Grupo;
 import com.brasajava.model.Persona;
 import com.brasajava.model.Producto;
 import com.brasajava.model.Venta;
 import com.brasajava.service.ServicioCliente;
+import com.brasajava.service.ServicioFactura;
 import com.brasajava.service.ServicioUsuario;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.Session;
@@ -36,7 +38,7 @@ import org.springframework.context.MessageSource;
  *
  * @author Ricardo Maximino
  */
-public class TPV extends javax.swing.JFrame implements Internationalizable{
+public class TPV extends javax.swing.JFrame implements Internationalizable {
 
     private Persona cliente;
     private Persona usuario;
@@ -76,10 +78,9 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
      * Este es el único contructor para crear una instancia de esa clase.
      *
      * @param context
-     * @param cliente
-     * @param usuario
+     * @param session
      */
-    public TPV(ApplicationContext context,Session session) {
+    public TPV(ApplicationContext context, Session session) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
         this.applicationLocale = context.getBean(ApplicationLocale.class);
@@ -90,28 +91,27 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
         grupoButtonList = new ArrayList();
         productoButtonList = new ArrayList();
         cuentaButtonList = new ArrayList();
-        
+
         //Map
         grupoMap = new HashMap<>();
         productoMap = new HashMap<>();
         cuentaMap = new HashMap<>();
         cuentasMap = new HashMap<>();
-        
+
         //int size of the buttons
         grupoHeight = productoHeight = cuentaHeight = 200;
         grupoWidth = productoWidth = cuentaWidth = 200;
-        
+
         //defaults
         cantidad = 1;
         cuentaCount = 1;
 
         initComponents();
-        
+
         txtCuenta.setText(((CajaTableModel) tabla.getModel()).getCuenta().getNombre());
         tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         lblCantidadValue.setName("false");
-        
-        
+
         setColumnModel();
         setWithInternationalization();
     }
@@ -148,35 +148,35 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
         this.grupoList = grupoList;
         crearGrupos(grupoList);
     }
-    
-    public void refreshSession(){
+
+    public void refreshSession() {
         Session session = context.getBean(Session.class);
-        if(session.getUsuario()!= null){
+        if (session.getUsuario() != null) {
             this.setTitle("TPV - " + session.getUsuario().getNombre());
-        }       
-        
-        if(session.getCliente() != null){
+        }
+
+        if (session.getCliente() != null) {
             this.setTitle(getTitle() + " >>------------------------->  " + session.getCliente().getNombre());
         }
     }
-    
+
     @Override
     public void refreshLanguage() {
         setWithInternationalization();
     }
-    
-    private void setWithInternationalization(){
+
+    private void setWithInternationalization() {
         //label
-        lblNombreDeLaCuenta.setText(messageSource.getMessage("label_NameOfTheAccount", null,applicationLocale.getLocale()));
-        lblCantidad.setText(messageSource.getMessage("UNIT", null,applicationLocale.getLocale()));
-        lblTotal.setText(messageSource.getMessage("TOTAL", null,applicationLocale.getLocale()));
+        lblNombreDeLaCuenta.setText(messageSource.getMessage("label_NameOfTheAccount", null, applicationLocale.getLocale()));
+        lblCantidad.setText(messageSource.getMessage("UNIT", null, applicationLocale.getLocale()));
+        lblTotal.setText(messageSource.getMessage("TOTAL", null, applicationLocale.getLocale()));
         //button
-        btnTicket.setText(messageSource.getMessage("button_Ticket", null,applicationLocale.getLocale()));
-        btnCliente.setText(messageSource.getMessage("menu_Client", null,applicationLocale.getLocale()));
-        btnUsuario.setText(messageSource.getMessage("menu_User", null,applicationLocale.getLocale()));
-        btnBorrar.setText(messageSource.getMessage("button_Delete", null,applicationLocale.getLocale()));
-        btnNuevaCuenta.setText(messageSource.getMessage("button_NewAccount", null,applicationLocale.getLocale()));
-        btnPagar.setText(messageSource.getMessage("button_Pay", null,applicationLocale.getLocale()));
+        btnTicket.setText(messageSource.getMessage("button_Ticket", null, applicationLocale.getLocale()));
+        btnCliente.setText(messageSource.getMessage("menu_Client", null, applicationLocale.getLocale()));
+        btnUsuario.setText(messageSource.getMessage("menu_User", null, applicationLocale.getLocale()));
+        btnBorrar.setText(messageSource.getMessage("button_Delete", null, applicationLocale.getLocale()));
+        btnNuevaCuenta.setText(messageSource.getMessage("button_NewAccount", null, applicationLocale.getLocale()));
+        btnPagar.setText(messageSource.getMessage("button_Pay", null, applicationLocale.getLocale()));
     }
 
     //Grupos
@@ -266,6 +266,8 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
 
     //Producto
     //cada linea, en la tabla, para cada producto
+    //las cuentas que estan guardadas en la base de datos cuando se añade un producto
+    //aún que ya lo haya será una nueva venta.
     private void productoButtonAction(ActionEvent e) {
         converteCantidad();
 
@@ -358,14 +360,22 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
     private void guardaCuenta() {
         Cuenta cuenta = ((CajaTableModel) tabla.getModel()).getCuenta();
         if (cuenta.getVentas().size() > 0 || cuenta.isAjustada()) {
-            if (!cuenta.isCobrada()) {
+            if (!cuenta.isCobrada() || cuenta.isReabrir()) {
+                //para no dar fallo confundindo cuentas ya que todas las nuevas tienen el id = 0 
+                cuentasMap.remove(cuenta);
+
+                //hacer map de las cuentas con nombre es peligroso pero el metodo equal y hashcode analizan solamente el id.
                 cuentaMap.put(cuenta.getNombre(), cuenta);
+
                 JButton b = new JButton(cuenta.getNombre());
                 b.setActionCommand(cuenta.getNombre());
                 b.setSize(cuentaWidth, cuentaHeight);
                 b.addActionListener(this::cuentaButtonAction);
                 if (cuenta.isTicket()) {
                     b.setBackground(Color.green);
+                }
+                if (cuenta.isReabrir()) {
+                    b.setBackground(Color.red);
                 }
                 cuentaButtonList.add(b);
                 reorganizaCuenta();
@@ -436,10 +446,9 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
         nuevaCuenta();
     }
 
-    //Arreglar internationalization
     private void borrarCuenta() {
         Cuenta c = ((CajaTableModel) tabla.getModel()).getCuenta();
-        int jop = JOptionPane.showConfirmDialog(panelProducto, "Desea Borrar esta Cuenta " + c.getNombre() + "?", "Confirmación", JOptionPane.YES_OPTION);
+        int jop = JOptionPane.showConfirmDialog(panelProducto, messageSource.getMessage("message_DoYouWantDeleteThisAccount", null, applicationLocale.getLocale()) + " " + c.getNombre() + "?", messageSource.getMessage("message_Confimation", null, applicationLocale.getLocale()), JOptionPane.YES_OPTION);
         if (jop == JOptionPane.YES_OPTION) {
             nuevaCuenta();
             c = null;
@@ -447,9 +456,13 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
     }
 
     private void cambiarNombreDeLaCuenta(String nombre) {
-        Cuenta cuenta = ((CajaTableModel) tabla.getModel()).getCuenta();
-        cuenta.setNombre(nombre);
-        cuenta.setAjustada(true);
+        if (!cuentaMap.containsKey(nombre)) {
+            Cuenta cuenta = ((CajaTableModel) tabla.getModel()).getCuenta();
+            cuenta.setNombre(nombre);
+            cuenta.setAjustada(true);
+        } else {
+            JOptionPane.showConfirmDialog(this, messageSource.getMessage("message_ThisNameHasBeenUsing", null, applicationLocale.getLocale()));
+        }
     }
 
     private Cuenta sumarCuentaParaPagar() {
@@ -468,7 +481,7 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
         return total;
     }
     //Total
-    
+
     private void fireDataChage(Venta v) {
         CajaTableModel model = (CajaTableModel) tabla.getModel();
         model.fireTableDataChanged();
@@ -519,6 +532,7 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
         panelToolBar = new javax.swing.JPanel();
         btnCliente = new javax.swing.JButton();
         btnUsuario = new javax.swing.JButton();
+        btnTicktes = new javax.swing.JButton();
         scrollCuenta = new javax.swing.JScrollPane();
         panelCuenta = new javax.swing.JPanel();
         scrollGenero = new javax.swing.JScrollPane();
@@ -579,6 +593,14 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
             }
         });
 
+        btnTicktes.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+        btnTicktes.setText("Ticktes");
+        btnTicktes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTicktesActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panelToolBarLayout = new javax.swing.GroupLayout(panelToolBar);
         panelToolBar.setLayout(panelToolBarLayout);
         panelToolBarLayout.setHorizontalGroup(
@@ -588,22 +610,26 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
                 .addComponent(btnCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(366, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnTicktes)
+                .addContainerGap(220, Short.MAX_VALUE))
         );
 
-        panelToolBarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCliente, btnUsuario});
+        panelToolBarLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnCliente, btnTicktes, btnUsuario});
 
         panelToolBarLayout.setVerticalGroup(
             panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelToolBarLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnCliente))
+                .addGroup(panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelToolBarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnCliente))
+                    .addComponent(btnTicktes))
                 .addContainerGap())
         );
 
-        panelToolBarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCliente, btnUsuario});
+        panelToolBarLayout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {btnCliente, btnTicktes, btnUsuario});
 
         javax.swing.GroupLayout panelCuentaLayout = new javax.swing.GroupLayout(panelCuenta);
         panelCuenta.setLayout(panelCuentaLayout);
@@ -1059,8 +1085,14 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
         //Crear con spring pasar todo para la session
-        context.getBean(Session.class).setCuenta(sumarCuentaParaPagar());
-        Pagar pagar =context.getBean(Pagar.class);
+        Session session = context.getBean(Session.class);
+        Cuenta c = sumarCuentaParaPagar();
+        if (c.getFactura() == null) {
+            session.setCuenta(c);
+        } else {
+            session.setFactura(c.getFactura());
+        }
+        Pagar pagar = context.getBean(Pagar.class);
         pagar.setLocationRelativeTo(null);
         pagar.setVisible(true);
         pagar = null;
@@ -1082,7 +1114,7 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
             int cantidad = v.getCantidad() - Integer.parseInt(lblCantidadValue.getText());
             int confirmacion = -3;
             if (cantidad < 1) {
-                confirmacion = JOptionPane.showConfirmDialog(this, "Desea eliminar este articulo?");
+                confirmacion = JOptionPane.showConfirmDialog(this, messageSource.getMessage("message_DoYouWantDeleteThisArticle", null,applicationLocale.getLocale()));
                 if (confirmacion == JOptionPane.OK_OPTION) {
                     model.getCuenta().getVentas().remove(v);
                     Map<Producto, Venta> ventasMap = cuentasMap.get(model.getCuenta()).getMap();
@@ -1186,6 +1218,17 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
         busqueda.setVisible(true);
     }//GEN-LAST:event_btnUsuarioActionPerformed
 
+    private void btnTicktesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTicktesActionPerformed
+        BuscaFactura bf = context.getBean(BuscaFactura.class);
+        List<Factura> lf = new ArrayList<>();
+        for (Factura f : context.getBean(ServicioFactura.class).findAll()) {
+            lf.add(f);
+        }
+        bf.setLista(lf);
+        bf.setLocationRelativeTo(null);
+        bf.setVisible(true);
+    }//GEN-LAST:event_btnTicktesActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn0;
     private javax.swing.JButton btn1;
@@ -1205,6 +1248,7 @@ public class TPV extends javax.swing.JFrame implements Internationalizable{
     private javax.swing.JButton btnNuevaCuenta;
     private javax.swing.JButton btnPagar;
     private javax.swing.JButton btnTicket;
+    private javax.swing.JButton btnTicktes;
     private javax.swing.JButton btnUsuario;
     private javax.swing.JButton jButton32;
     private javax.swing.JPanel jPanel1;

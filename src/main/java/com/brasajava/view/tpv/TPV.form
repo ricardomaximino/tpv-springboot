@@ -91,17 +91,22 @@
                   <Component id="btnCliente" linkSize="6" min="-2" pref="140" max="-2" attributes="0"/>
                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                   <Component id="btnUsuario" linkSize="6" min="-2" pref="129" max="-2" attributes="0"/>
-                  <EmptySpace pref="366" max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="btnTicktes" linkSize="6" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="220" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Group type="102" alignment="0" attributes="0">
+              <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="btnUsuario" linkSize="4" alignment="3" min="-2" pref="90" max="-2" attributes="0"/>
-                      <Component id="btnCliente" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                          <Component id="btnUsuario" linkSize="4" alignment="3" min="-2" pref="90" max="-2" attributes="0"/>
+                          <Component id="btnCliente" linkSize="4" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <Component id="btnTicktes" linkSize="4" alignment="0" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
@@ -129,6 +134,17 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnUsuarioActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnTicktes">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="18" style="1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Ticktes"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnTicktesActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>
