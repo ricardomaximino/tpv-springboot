@@ -11,6 +11,7 @@ import com.brasajava.service.ServicioUsuario;
 import com.brasajava.util.interfaces.Internationalizable;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.PrototypeContext;
+import com.brasajava.util.Session;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +24,12 @@ import org.springframework.context.MessageSource;
 import com.brasajava.util.interfaces.Command;
 import com.brasajava.view.menu.command.DesktopController;
 import com.brasajava.view.persona.command.ShowPersonaCommand;
-import com.brasajava.view.producto.BuscarGrupo;
 import com.brasajava.view.producto.BuscarGrupoI;
 import com.brasajava.view.producto.BuscarProductoI;
 import com.brasajava.view.producto.ShowProductoGrupoCommand;
 import com.brasajava.view.tpv.TPV;
 import java.util.Iterator;
 import java.util.Locale;
-import javax.swing.JFrame;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -238,17 +237,16 @@ public class MenuBar extends JMenuBar implements Internationalizable {
 
     private void tpvVirtual(ActionEvent e){
         TPV tpv = context.getBean(TPV.class);
+        Session session = context.getBean(Session.class);
         List<Grupo> grupoList = new ArrayList<>();
         Iterator<Grupo> iterator = context.getBean(ServicioGrupo.class).findAll().iterator();
         while(iterator.hasNext()){
             grupoList.add(iterator.next());
         }
-        tpv.setUsuario(null);
-        tpv.setCliente(null);
+        tpv.setUsuario(session.getUsuario());
+        tpv.setCliente(session.getCliente());
         tpv.setGrupoList(grupoList);
         tpv.setVisible(true);
-        tpv.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        tpv.setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
     
     private void productoGrupo(ActionEvent e){
@@ -280,6 +278,7 @@ public class MenuBar extends JMenuBar implements Internationalizable {
         String grupo = menuItem.getGroup();
         context.getBean(menuItem.getCommandActionName(), Command.class).execute(new Object[]{menuItem});
     }
+    
     private void listAll(ActionEvent e){
         MiMenuItem menu = (MiMenuItem) e.getSource();
         ShowPersonaCommand showPersonaCommand = context.getBean(ShowPersonaCommand.class);

@@ -11,4 +11,5 @@ public interface Command {
      * @param args del tipo java.lang.Object[].
      */
     void execute(Object[] args);
+    
 }

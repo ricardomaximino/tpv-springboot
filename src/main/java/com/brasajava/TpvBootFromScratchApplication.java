@@ -6,9 +6,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
+/**
+ * Esta clase es la que conten el metodo main, es la clase que inicia la maquina
+ * spring.
+ * @author Ricardo Maximino
+ */
 @SpringBootApplication
 public class TpvBootFromScratchApplication {
 
+        /**
+         * Inicia Springboot.
+         * @param args del tipo java.lang.String[].
+         */
 	public static void main(String[] args) {
                 ConfigurableApplicationContext ctx = new SpringApplicationBuilder(TpvBootFromScratchApplication.class).headless(false).web(false).run(args);
                 for(String s : ctx.getBeanDefinitionNames()){

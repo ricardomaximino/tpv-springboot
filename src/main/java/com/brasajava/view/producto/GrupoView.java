@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.producto;
 
 import com.brasajava.model.Grupo;
@@ -24,8 +19,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 /**
- *
- * @author Ricardo
+ * Esta clase representa el grupo donde se crea o actualiza un grupo.
+ * @author Ricardo Maximino
  */
 public class GrupoView extends javax.swing.JInternalFrame implements Internationalizable {
 
@@ -43,9 +38,16 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
     private static final String CANCELAR = "CANCELAR";
 
     /**
-     * Creates new form ProductoGrupo
+     * Único constructor para crear una instancia desta clase.
      *
-     * @param context
+     * @param context del tipo org.springframework.context.ApplicationContext.
+     * 
+     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * <li>com.brasajava.view.producto.ShowProductoGrupoCommand</li>
+     * </ul> 
      */
     public GrupoView(ApplicationContext context) {
         this.context = context;
@@ -56,15 +58,30 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
         setWithInternationalization();
     }
 
+    /**
+     * Retorna el valor de la variable grupo.
+     * @return del tipo com.brasajava.model.Grupo.
+     */
     public Grupo getGrupo() {
         return grupo;
     }
 
+    /**
+     * Configura el valor de la variable grupo.
+     * @param grupo del tipo com.brasajava.model.Grupo.
+     * <p>Al configurar esta variable automaticamente se actualizara la
+     * interfaz gráfica con el valor del grupo pasado por parametro.</p>
+     */
     public void setGrupo(Grupo grupo) {
         this.grupo = grupo;
         setGrupoFields();
     }
 
+    /**
+     * Añade el producto pasado por parametro al tableModel, en caso de que
+     * este producto yá exista en el tableModel, se exibirá un mensaje adivirtiendo.
+     * @param pro del tipo com.brasajava.model.Producto.
+     */
     public void add(Producto pro) {
         ProductoTableModel model = (ProductoTableModel) tablaParaPruductoGrupo.getModel();
         if (!model.getListaDeProducto().contains(pro)) {
@@ -76,11 +93,26 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
         }
     }
 
+    /**
+     * Override este metodo para que antes del dispose() se elimine la referencia
+     * en el prototypeContext.
+     */
     @Override
     public void dispose() {
         PrototypeContext pc = context.getBean(PrototypeContext.class);
         pc.remove(this);
         super.dispose();
+    }
+
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+        ((ProductoTableModel) tablaParaPruductoGrupo.getModel()).refreshLanguage();
     }
 
     private long parseLong(String txt) {
@@ -158,6 +190,27 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
             }
             popUpMenu.show(this, evt.getX() + 45, evt.getY() + 315);
         }
+    }
+
+    private void setWithInternationalization() {
+        btnCancelar.setText(messageSource.getMessage("button_Cancel", null, applicationLocale.getLocale()));
+        btnGuardar.setText(messageSource.getMessage("button_Save", null, applicationLocale.getLocale()));
+
+        lblCodigoGrupo.setText(messageSource.getMessage("label_Code", null, applicationLocale.getLocale()));
+        lblNombreGrupo.setText(messageSource.getMessage("label_Name", null, applicationLocale.getLocale()));
+        lblDescripcionGrupo.setText(messageSource.getMessage("label_Description", null, applicationLocale.getLocale()));
+        lblImageGrupo.setText(messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
+
+        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null, applicationLocale.getLocale()));
+        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()));
+        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()) + " "
+                + messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
+
+        dialogTitle = messageSource.getMessage("message_SelectImageForTheGroup", null, applicationLocale.getLocale());
+        filterDescription = messageSource.getMessage("label_Image", null, applicationLocale.getLocale());
+        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null, applicationLocale.getLocale());
+
+        ckbActivo.setText(context.getMessage("label_ActiveGroup", null, applicationLocale.getLocale()));
     }
 
     /**
@@ -282,8 +335,8 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGrupoLayout.createSequentialGroup()
                         .addGroup(panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lblCodigoGrupoValue, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(txtNombreGrupo, javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelGrupoLayout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(btnCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btnGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -298,7 +351,8 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
                             .addGroup(panelGrupoLayout.createSequentialGroup()
                                 .addGroup(panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lblCodigoGrupo)
-                                    .addComponent(lblNombreGrupo))
+                                    .addComponent(lblNombreGrupo)
+                                    .addComponent(txtNombreGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panelGrupoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -457,31 +511,4 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
     private javax.swing.JTextField txtDescripcionGrupo;
     private javax.swing.JTextField txtNombreGrupo;
     // End of variables declaration//GEN-END:variables
-
-    private void setWithInternationalization() {
-        btnCancelar.setText(messageSource.getMessage("button_Cancel", null, applicationLocale.getLocale()));
-        btnGuardar.setText(messageSource.getMessage("button_Save", null, applicationLocale.getLocale()));
-
-        lblCodigoGrupo.setText(messageSource.getMessage("label_Code", null, applicationLocale.getLocale()));
-        lblNombreGrupo.setText(messageSource.getMessage("label_Name", null, applicationLocale.getLocale()));
-        lblDescripcionGrupo.setText(messageSource.getMessage("label_Description", null, applicationLocale.getLocale()));
-        lblImageGrupo.setText(messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
-
-        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null, applicationLocale.getLocale()));
-        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()));
-        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()) + " "
-                + messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
-
-        dialogTitle = messageSource.getMessage("message_SelectImageForTheGroup", null, applicationLocale.getLocale());
-        filterDescription = messageSource.getMessage("label_Image", null, applicationLocale.getLocale());
-        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null, applicationLocale.getLocale());
-
-        ckbActivo.setText(context.getMessage("label_ActiveGroup", null, applicationLocale.getLocale()));
-    }
-
-    @Override
-    public void refreshLanguage() {
-        setWithInternationalization();
-        ((ProductoTableModel) tablaParaPruductoGrupo.getModel()).refreshLanguage();
-    }
 }

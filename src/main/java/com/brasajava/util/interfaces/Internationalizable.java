@@ -12,5 +12,4 @@ public interface Internationalizable {
      * Único metodo que ejecuta el comando implementado.
      */
     void refreshLanguage();
-    
 }

@@ -42,8 +42,8 @@ import java.time.LocalDate;
 import org.springframework.context.annotation.Scope;
 
 /**
- *
- * @author Ricardo
+ * Esta clase representa los beans en los antiguo xml o bien spring annotations. 
+ * @author Ricardo Maximino
  */
 @Configuration
 public class ApplicationConfiguration {

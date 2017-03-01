@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.producto;
 
 import com.brasajava.model.Producto;
@@ -17,8 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 /**
- *
- * @author Ricardo
+ * Esta clase representa la Busqueda de producto con JInternalFrame.
+ * @author Ricardo Maximino
  */
 public class BuscarProductoI extends javax.swing.JInternalFrame implements Internationalizable {
 
@@ -29,8 +24,17 @@ public class BuscarProductoI extends javax.swing.JInternalFrame implements Inter
     private final ShowProductoGrupoCommand showCommand;
     private String str;
     private boolean isChar;
-    private GrupoView grupoView;
 
+    /**
+     * Constructor para crear una instancia desta clase.
+     * @param context del tipo org.springframework.context.ApplicationConetxt.
+     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * <li>com.brasajava.view.producto.ShowProductoGrupoCommand</li>
+     * </ul> 
+     */
     public BuscarProductoI(ApplicationContext context) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
@@ -46,6 +50,18 @@ public class BuscarProductoI extends javax.swing.JInternalFrame implements Inter
         ((ProductoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
+    /**
+     * Constructor para crear una instancia desta clase pasando aparte del context
+     * una lista de productos.
+     * @param context del tipo org.springframework.context.ApplicationContext.
+     * @param list del tipo java.util.List&lt;Producto&gt;.
+     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * <li>com.brasajava.view.producto.ShowProductoGrupoCommand</li>
+     * </ul> 
+     */
     public BuscarProductoI(ApplicationContext context, List<Producto> list) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
@@ -58,6 +74,9 @@ public class BuscarProductoI extends javax.swing.JInternalFrame implements Inter
         ((ProductoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
+    /**
+     * Actualiza la listaDeProductos con la base de datos.
+     */
     public void refresh() {
         ProductoTableModel model = (ProductoTableModel) tabla.getModel();
         listaDeProductos.clear();
@@ -69,28 +88,37 @@ public class BuscarProductoI extends javax.swing.JInternalFrame implements Inter
         model.fireTableDataChanged();
     }
 
+    /**
+     * Retorna el valor de la variable listaDeProductos.
+     * @return del tipo java.util.List&lt;Producto&gt;.
+     */
     public List<Producto> getListaDeProductos() {
         return listaDeProductos;
     }
 
+    /**
+     * Configura el valor de la variable listaDeProductos.
+     * @param listaDeProductos del tipo java.util.List&lt;Producto&gt;.
+     */
     public void setListaDeProductos(List<Producto> listaDeProductos) {
         this.listaDeProductos = listaDeProductos;
     }
 
-    public GrupoView getGrupoView() {
-        return grupoView;
-    }
-
-    public void setGrupoView(GrupoView grupoView) {
-        this.grupoView = grupoView;
-    }
-
+    /**
+     * Override este metodo para que antes del dispose() se elimine la referencia
+     * en el prototypeContext.
+     */
     @Override
     public void dispose() {
         context.getBean(PrototypeContext.class).remove(this);
         super.dispose();
     }
 
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
     @Override
     public void refreshLanguage() {
         setWithInternationalization();

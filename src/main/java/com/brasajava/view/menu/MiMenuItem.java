@@ -17,6 +17,7 @@ public class MiMenuItem extends JMenuItem implements GroupAndCommandActionName {
     /**
      * Constructor con solo un parametro, es lo minimo de configuracion para
      * instanciar esta clase.
+     * 
      *
      * @param name del tipo java.lang.String.
      */

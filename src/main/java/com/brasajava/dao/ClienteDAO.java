@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
+
 /**
  * Esta interfaz es de operaciones simples para una persona, fue creada para 
  * quitar la dependencia de un DAO especifico para los servicios.

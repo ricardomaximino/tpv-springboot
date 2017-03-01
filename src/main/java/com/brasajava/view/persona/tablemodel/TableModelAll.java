@@ -6,24 +6,52 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 
 /**
+ * Esta clase representa el TableModel com totos los campos de la clase Persona.
  *
- * @author Ricardo
+ * @author Ricardo Maximino
  */
-public class TableModelAll extends MiTableModel{
-   
-    
-    public TableModelAll(MessageSource messageSource, ApplicationLocale applicationLocale){
+public class TableModelAll extends MiTableModel {
+
+    /**
+     * Constructor para instanciar esta clase.
+     *
+     * @param messageSource del tipo org.springframework.context.MessageSource.
+     * @param applicationLocale de tipo com.brasajava.util.ApplicationLocale.
+     * <p>
+     * titulos = new String[13]</p>
+     */
+    public TableModelAll(MessageSource messageSource, ApplicationLocale applicationLocale) {
         super(messageSource, applicationLocale);
         this.titulos = new String[13];
         configTitulos();
     }
 
+    /**
+     * Constructor para instanciar esta clase.
+     *
+     * @param messageSource del tipo org.springframework.context.MessageSource.
+     * @param applicationLocale del tipo com.brasajava.util.ApplicationLocale.
+     * @param datos del tipo java.util.List&lt;Persona&gt;.
+     * <p>
+     * titulos = new String[13]</p>
+     */
     public TableModelAll(MessageSource messageSource, ApplicationLocale applicationLocale, List<Persona> datos) {
         super(messageSource, applicationLocale, datos);
         this.titulos = new String[13];
         configTitulos();
     }
 
+    /**
+     * Retorna un objeto con el valor de las coodenadas pasadas como parametros.
+     *
+     * @param rowIndex del tipo int.
+     * @param columnIndex del tipo int.
+     * @return del tipo java.lang.Object.
+     *
+     * Esta clase no usa un array bidimensional si no que una lista, entoces
+     * utiliza rowIndex como index de la lista y el columnIndex en un switch
+     * para retornar el valor objeto deseado.
+     */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object object = null;
@@ -71,6 +99,9 @@ public class TableModelAll extends MiTableModel{
         return object;
     }
 
+    /**
+     * Auto configura las columnas de la tabla relacionada a este tableModel.
+     */
     @Override
     public void colunmSizeConfig() {
         if (tabla != null) {
@@ -87,11 +118,21 @@ public class TableModelAll extends MiTableModel{
             tabla.getColumnModel().getColumn(10).setPreferredWidth(100);
             tabla.getColumnModel().getColumn(11).setPreferredWidth(10);
             tabla.getColumnModel().getColumn(12).setPreferredWidth(10);
-            
+
         }
     }
-    
-    private void configTitulos(){
+
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
+    @Override
+    public void refreshLanguage() {
+        configTitulos();
+    }
+
+    private void configTitulos() {
         titulos[0] = messageSource.getMessage("ID", null, applicationLocale.getLocale());
         titulos[1] = messageSource.getMessage("NAME", null, applicationLocale.getLocale());
         titulos[2] = messageSource.getMessage("FIRST_LASTNAME", null, applicationLocale.getLocale());
@@ -105,10 +146,5 @@ public class TableModelAll extends MiTableModel{
         titulos[10] = messageSource.getMessage("ACCESS_CONTROL", null, applicationLocale.getLocale());
         titulos[11] = messageSource.getMessage("JOIN_DATE", null, applicationLocale.getLocale());
         titulos[12] = messageSource.getMessage("CUTED_OFF_DATE", null, applicationLocale.getLocale());
-    }
-
-    @Override
-    public void refreshLanguage() {
-        configTitulos();
     }
 }

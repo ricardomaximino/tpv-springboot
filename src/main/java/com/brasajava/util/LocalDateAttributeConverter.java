@@ -16,6 +16,7 @@ import javax.persistence.Converter;
 @Converter(autoApply = true)
 public class LocalDateAttributeConverter implements AttributeConverter<LocalDate, Date >{
     
+    
     /**
      * Este metodo convierte de LocalDate para java.sql.Date.
      * @param localDate del tipo java.time.LocalDate.

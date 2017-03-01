@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.producto;
 
 import com.brasajava.model.Grupo;
@@ -17,8 +12,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 /**
+ * Esta clase representa la Busqueda de grupo con JDialog.
  *
- * @author Ricardo
+ * @author Ricardo Maximino
  */
 public class BuscarGrupo extends javax.swing.JDialog implements Internationalizable {
 
@@ -30,6 +26,19 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
     private boolean isChar;
     private ProductoView productoView;
 
+    /**
+     * Constructor para crear una instancia desta clase.
+     *
+     * @param parent del tipo JFrame.
+     * @param context del tipo org.springframework.context.ApplicationConetxt.
+     * <p>
+     * Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * <li>com.brasajava.view.producto.ShowProductoGrupoCommand</li>
+     * </ul>
+     */
     public BuscarGrupo(JFrame parent, ApplicationContext context) {
         super(parent, true);
         this.context = context;
@@ -44,6 +53,21 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
+    /**
+     * Constructor para crear una instancia desta clase pasando aparte del
+     * context una lista de productos.
+     *
+     * @param parent del tipo JFrame.
+     * @param context del tipo org.springframework.context.ApplicationContext.
+     * @param list del tipo java.util.List&lt;Producto&gt;.
+     * <p>
+     * Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * <li>com.brasajava.view.producto.ShowProductoGrupoCommand</li>
+     * </ul>
+     */
     public BuscarGrupo(JFrame parent, ApplicationContext context, List<Grupo> list) {
         super(parent, true);
         this.context = context;
@@ -55,6 +79,9 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
+    /**
+     * Actualiza la listaDeProductos con la base de datos.
+     */
     public void refresh() {
         GrupoTableModel model = (GrupoTableModel) tabla.getModel();
         listaDeGrupos.clear();
@@ -66,20 +93,51 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         model.fireTableDataChanged();
     }
 
+    /**
+     * Retorna el valor de la variable listaDeGrupos.
+     *
+     * @return del tipo java.util.List&lt;Grupo&gt;.
+     */
     public List<Grupo> getListaDeProductos() {
         return listaDeGrupos;
     }
 
-    public void setListaDeProductos(List<Grupo> listaDeProductos) {
-        this.listaDeGrupos = listaDeProductos;
+    /**
+     * Configura el valor de la variable listaDeGrupos.
+     *
+     * @param listaDeGrupos del tipo java.util.List&lt;Grupo&gt;.
+     */
+    public void setListaDeProductos(List<Grupo> listaDeGrupos) {
+        this.listaDeGrupos = listaDeGrupos;
     }
 
+    /**
+     * Retorna el valor de la variable productoView.
+     *
+     * @return del tipo com.brasajava.view.producto.ProductoView.
+     */
     public ProductoView getProductoView() {
         return productoView;
     }
 
+    /**
+     * Configura la variable productoView.
+     *
+     * @param productoView del tipo com.brasajava.view.producto.ProductoView.
+     */
     public void setProductoView(ProductoView productoView) {
         this.productoView = productoView;
+    }
+    
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
+        ((GrupoTableModel) tabla.getModel()).refreshLanguage();
     }
 
     private void porNombreAction(KeyEvent evt) {
@@ -112,13 +170,7 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
         lblPorNombre.setText(messageSource.getMessage("label_SearchGroupByName", null, applicationLocale.getLocale()));
     }
 
-    @Override
-    public void refreshLanguage() {
-        setWithInternationalization();
-        ((GrupoTableModel) tabla.getModel()).refreshLanguage();
-    }
-
-    /**
+    /*
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
@@ -253,5 +305,4 @@ public class BuscarGrupo extends javax.swing.JDialog implements Internationaliza
     private javax.swing.JTable tabla;
     private javax.swing.JTextField txtPorNombre;
     // End of variables declaration//GEN-END:variables
-
 }

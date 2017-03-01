@@ -12,6 +12,7 @@ import java.time.Month;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+
 /**
  * Esta classe implementa la interfaz
  * com.brasajava.view.busqueda.command.Command y esta pensada para ejecutar una

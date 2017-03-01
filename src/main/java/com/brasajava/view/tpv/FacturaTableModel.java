@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.tpv;
 
 import com.brasajava.model.Factura;
@@ -14,8 +9,8 @@ import javax.swing.table.AbstractTableModel;
 import org.springframework.context.MessageSource;
 
 /**
- *
- * @author Ricardo
+ * Esta clase representa un TableModel para com.brasajava.model.Factura.
+ * @author Ricardo Maximino
  */
 public class FacturaTableModel extends AbstractTableModel implements Internationalizable{
     private List<Factura> listaDeFactura;
@@ -23,6 +18,13 @@ public class FacturaTableModel extends AbstractTableModel implements Internation
     private final MessageSource messageSource;
     private final ApplicationLocale applicationLocale;
 
+    /**
+     * El único constructor para instanciar esta clase.
+     * @param messageSource del tipo org.springframework.context.MessageSource.
+     * @param applicationLocale del tipo com.brasajava.util.ApplicationLocale.
+     * <p>listaDeFactura = new ArrayList&lt;&gt;();</p>
+     * <p>titulos = new String[4]</p>
+     */
     public FacturaTableModel(MessageSource messageSource,ApplicationLocale applicationLocale){
         this.messageSource = messageSource;
         this.applicationLocale = applicationLocale;
@@ -31,20 +33,38 @@ public class FacturaTableModel extends AbstractTableModel implements Internation
         setWithInternationalization();
     }
 
+    /**
+     * Retorna el valor de la variable listaDeFactura.
+     * @return del tipo java.util.List&lt;com.brasajava.model.Factura&gt;
+     */
     public List<Factura> getListaDeFactura() {
         return listaDeFactura;
     }
 
+    /**
+     * Configura el valor de la variable listaDeFactura y llama el metodo
+     * fireTableDataChaged().
+     * @param listaDeFactura  del tipo java.util.List&lt;com.brasajava.model.Factura&gt;
+     */
     public void setListaDeFactura(List<Factura> listaDeFactura) {
         this.listaDeFactura = listaDeFactura;
         this.fireTableDataChanged();
     }
     
 
+    /**
+     * Retorna el valor de la variable titulos.
+     * @return del tipo java.lang.String[]
+     */
     public String[] getTitulos() {
         return titulos;
     }
 
+    /**
+     * Configura el valor de la variable titulos y llama el metodo 
+     * fireTableStructureChanged()
+     * @param titulos del tipo java.lang.String[].
+     */
     public void setTitulos(String[] titulos) {
         this.titulos = titulos;
         this.fireTableStructureChanged();
@@ -52,26 +72,56 @@ public class FacturaTableModel extends AbstractTableModel implements Internation
     
     
 
+    /**
+     * Retorna el número de lineas usando el metodo size() de la listaDeFactura.
+     * @return del tipo int.
+     */
     @Override
     public int getRowCount() {
         return listaDeFactura.size();
     }
 
+    /**
+     * Retorna el número de columnas usando la variable de la array titulos.
+     * @return del tipo int.
+     */
     @Override
     public int getColumnCount() {
         return titulos.length;
     }
-    
+    /**
+     * Retorna el nombre de la columna retornando el valor de la array titulo
+     * usando el parametro pasado.
+     * @param columnIndex del tipo int.
+     * @return del tipo java.lang.String.
+     */
     @Override
     public String getColumnName(int columnIndex){
         return titulos[columnIndex];
     }
     
+    /**
+     * Override el metodo para retornar siempre false para que ninguna de las
+     * celulas sean editables.
+     * @param rowIndex del tipo int.
+     * @param columnIndex del tipo int.
+     * @return  del tipo boolean.
+     */
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex){
         return false;
     }
 
+    /**
+     * Retorna un objeto con el valor de las coodenadas pasadas como parametros.
+     * @param rowIndex del tipo int.
+     * @param columnIndex del tipo int.
+     * @return del tipo java.lang.Object.
+     * 
+     * Esta clase no usa un array bidimensional si no que una lista,
+     * entoces utiliza rowIndex como index de la lista y el columnIndex en
+     * un switch para retornar el valor objeto deseado.
+     */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         Object obj = null;
@@ -91,16 +141,21 @@ public class FacturaTableModel extends AbstractTableModel implements Internation
         return obj;
     }
 
-    private void setWithInternationalization(){
-        titulos[0]= messageSource.getMessage("label_Code", null, applicationLocale.getLocale());
-        titulos[1]= messageSource.getMessage("DATE", null, applicationLocale.getLocale());
-        titulos[2]= messageSource.getMessage("tableColumn_NumberOfAccount", null, applicationLocale.getLocale());
-        titulos[3]= messageSource.getMessage("TOTAL", null, applicationLocale.getLocale());
-    }
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
     @Override
     public void refreshLanguage() {
         setWithInternationalization();
         fireTableStructureChanged();
     }
     
+    private void setWithInternationalization(){
+        titulos[0]= messageSource.getMessage("label_Code", null, applicationLocale.getLocale());
+        titulos[1]= messageSource.getMessage("DATE", null, applicationLocale.getLocale());
+        titulos[2]= messageSource.getMessage("tableColumn_NumberOfAccount", null, applicationLocale.getLocale());
+        titulos[3]= messageSource.getMessage("TOTAL", null, applicationLocale.getLocale());
+    }    
 }

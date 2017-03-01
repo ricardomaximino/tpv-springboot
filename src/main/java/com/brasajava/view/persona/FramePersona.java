@@ -15,14 +15,12 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -40,7 +38,7 @@ public class FramePersona extends javax.swing.JInternalFrame implements Internat
     private Persona persona;
     private String state;
     private String group;
-    private List<String> errorList;
+    private final List<String> errorList;
 
     public static final String GRUPO_CLIENTE = "CLIENTE";
     public static final String GRUPO_USUARIO = "USUARIO";
@@ -245,20 +243,6 @@ public class FramePersona extends javax.swing.JInternalFrame implements Internat
         }
     }
 
-    private boolean validateData() {
-        boolean result = true;
-        converteFecha();
-        checkPassword();
-        if (txtNIF.isEditable()) {
-            checkNIF();
-        }
-        if (!errorList.isEmpty()) {
-            result = false;
-            JOptionPane.showMessageDialog(this, errorListToString());
-        }
-        return result;
-    }
-
     /**
      * Este metodo es para transferir los valores de los componentes visuales
      * para la instancia de la clase com.brasajava.model.Persona armacenada el
@@ -295,15 +279,30 @@ public class FramePersona extends javax.swing.JInternalFrame implements Internat
         persona.getDirecion().setNota(txtNota.getText());
     }
 
-    //Provisorio
+    /**
+     * Inhabilita la edición del apartado de contraseña y controle de acceso.
+     */
     public void setFrameToUpdateMode() {
-        System.out.println("Desactivar Edición de Contraseña");
         txtContrasena.setEnabled(false);
         txtRepiteContrasena.setEnabled(false);
         cmbControlDeAcceso.setEnabled(false);
         txtNIF.setEditable(false);
     }
 
+    private boolean validateData() {
+        boolean result = true;
+        converteFecha();
+        checkPassword();
+        if (txtNIF.isEditable()) {
+            checkNIF();
+        }
+        if (!errorList.isEmpty()) {
+            result = false;
+            JOptionPane.showMessageDialog(this, errorListToString());
+        }
+        return result;
+    }
+    
     private DefaultComboBoxModel<Item> getMesModel() {
         DefaultComboBoxModel<Item> model = new DefaultComboBoxModel<>();
         //Enero
@@ -1247,5 +1246,4 @@ public class FramePersona extends javax.swing.JInternalFrame implements Internat
     private javax.swing.JTextField txtSegundoApellido;
     private javax.swing.JTextField txtTelefono;
     // End of variables declaration//GEN-END:variables
-
 }

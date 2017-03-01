@@ -76,4 +76,5 @@ public class ApplicationLocale {
             entry.getValue().refreshLanguage();
         }
     }
+    
 }

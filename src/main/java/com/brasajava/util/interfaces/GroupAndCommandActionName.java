@@ -26,4 +26,5 @@ public interface GroupAndCommandActionName {
      * @return del tipo java.lang.String.
      */
     String getCommandActionName();
+    
 }

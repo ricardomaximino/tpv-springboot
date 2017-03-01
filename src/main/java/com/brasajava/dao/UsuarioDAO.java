@@ -1,6 +1,5 @@
 package com.brasajava.dao;
 
-
 import com.brasajava.model.Usuario;
 import java.time.LocalDate;
 import java.util.List;

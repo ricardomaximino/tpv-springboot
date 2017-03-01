@@ -406,6 +406,7 @@ public class FrameBusqueda extends javax.swing.JDialog implements Internationali
         model.addElement(diciembre);
         return model;
     }
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

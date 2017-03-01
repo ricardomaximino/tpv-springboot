@@ -1,7 +1,9 @@
 package com.brasajava.model;
 
+import com.brasajava.util.LocalDateAttributeConverter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,6 +32,7 @@ public class Venta {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CUENTA_ID")
     private Cuenta cuenta;
+    @Convert(converter = LocalDateAttributeConverter.class)
     private LocalDate fecha;
     
     public Venta(){

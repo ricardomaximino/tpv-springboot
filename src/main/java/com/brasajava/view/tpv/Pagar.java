@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.tpv;
 
 import com.brasajava.model.Cuenta;
@@ -12,23 +7,27 @@ import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.Session;
 import com.brasajava.util.interfaces.Internationalizable;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.print.PrinterException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 /**
- *
- * @author Ricardo
+ * Esta clase representa un frame que posibilita pagar una cuenta abierta en
+ * el tpv.
+ * @author Ricardo Maximino
  */
 public class Pagar extends javax.swing.JDialog implements Internationalizable{
 
     private boolean noPagaRapito;
-    private boolean cobrado;
     private final Cuenta cuenta;
     private final Factura factura;
     private BigDecimal entregado;
@@ -37,13 +36,20 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
     private final ApplicationContext context;
     private final MessageSource messageSource;
     private final ApplicationLocale applicationLocale;
-    private Session session;
+    private final Session session;
 
     /**
-     * Creates new form Pagar
+     * El único constructor para instanciar esta clase.
      *
-     * @param tpv
-     * @param context
+     * @param tpv del tipo com.brasajava.view.tpv.TPV.
+     * @param context del tipo org.springframework.context.ApplicationContext.
+     * 
+     * Utilizando context se pedirá una instancia de las clases:
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * <li>com.brasajava.util.Session</li>
+     * </ul>
      */
     public Pagar(TPV tpv, ApplicationContext context) {
         super(tpv, true);
@@ -66,6 +72,16 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
             prepara();
         }  
         activarCartera();
+        setWithInternationalization();
+    }
+    
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
+    @Override
+    public void refreshLanguage() {
         setWithInternationalization();
     }
 
@@ -94,6 +110,148 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
             noPagaRapito = true;
             hacerCuentas();
         }
+    }
+    private void ticket(){
+        JTextArea ta = new JTextArea();
+        ta.setFont(new Font("monospaced", 1, 12));
+        StringBuilder sb = tpv.prePrint();
+        int start = 0;
+        int end = 0;
+        String str = "";
+        sb.append("=====================================");
+        
+        //Total        
+        sb.append("\n");
+        sb.append("                                     ");
+        start = sb.length() - 20;
+        str = messageSource.getMessage("TOTAL", null, applicationLocale.getLocale());
+        end = start + str.length();
+        sb.replace(start, end, str);
+        
+        switch (lblTotalValue.getText().length()) {
+            case 4:
+                start = sb.length() - 4;
+                str = lblTotalValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 5:
+                start = sb.length() - 5;
+                str = lblTotalValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 6:
+                start = sb.length() - 6;
+                str = lblTotalValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 7:
+                start = sb.length() - 7;
+                str = lblTotalValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+        }
+        
+        //entregado
+        sb.append("\n");
+        sb.append("                                     ");
+        start = sb.length() - 20;
+        str = messageSource.getMessage("lbl_Entregado", null, applicationLocale.getLocale());
+        end = start + str.length();
+        sb.replace(start, end, str);
+        
+        switch (lblEntregadoValue.getText().length()) {
+            case 4:
+                start = sb.length() - 4;
+                str = lblEntregadoValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 5:
+                start = sb.length() - 5;
+                str = lblEntregadoValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 6:
+                start = sb.length() - 6;
+                str = lblEntregadoValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 7:
+                start = sb.length() - 7;
+                str = lblEntregadoValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+        }
+        sb.append("\n");
+        sb.append("                 ====================");
+        
+        //cambio
+        sb.append("\n");
+        sb.append("                                     ");
+        start = sb.length() - 20;
+        str = messageSource.getMessage("lbl_Cambio", null, applicationLocale.getLocale());
+        end = start + str.length();
+        sb.replace(start, end, str);
+        
+        switch (lblCambioValue.getText().length()) {
+            case 4:
+                start = sb.length() - 4;
+                str = lblCambioValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 5:
+                start = sb.length() - 5;
+                str = lblCambioValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 6:
+                start = sb.length() - 6;
+                str = lblCambioValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+            case 7:
+                start = sb.length() - 7;
+                str = lblCambioValue.getText().replace('.', ',');
+                end = start + str.length();
+                sb.replace(start, end, str);
+                break;
+        }
+        sb.append("\n");
+        sb.append("\n");
+        sb.append("                                     ");
+        start = sb.length() - 37;
+        str = messageSource.getMessage("message_AttendedYou", null, applicationLocale.getLocale()) + ": " + session.getUsuario().getNombre();
+        end = start + str.length();
+        sb.replace(start, end, str);
+        
+        
+        MessageFormat header = new MessageFormat("TPV - BRASAJAVA SWING");
+        MessageFormat footer = new MessageFormat("GRACIAS POR CONFIAR EN BRASAJAVA");
+        ta.append(sb.toString());
+        try {
+            ta.print(header, footer, false, null, null, false);
+        } catch (PrinterException ex) {
+
+        }
+    }
+    
+    private void setWithInternationalization(){
+        lblCambio.setText(messageSource.getMessage("lbl_Cambio", null,applicationLocale.getLocale()));
+        lblEntregado.setText(messageSource.getMessage("lbl_Entregado", null,applicationLocale.getLocale()));
+        lblTotal.setText(messageSource.getMessage("TOTAL", null,applicationLocale.getLocale()));
+        
+        btnAceptar.setText(messageSource.getMessage("button_Accept", null,applicationLocale.getLocale()));
+        btnCancelar.setText(messageSource.getMessage("button_Cancel", null,applicationLocale.getLocale()));
     }
 
     /**
@@ -408,17 +566,22 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
             //guardar no BD
             context.getBean(ServicioFactura.class).save(factura);
             
-
-
-            //imprimir
             
             factura.getCuentas().get(0).setReabrir(false);
-           // if(session.getFactura().equals(factura)){
-             //   session.setFactura(null);
-            //}
+            if(session.getFactura() != null && session.getFactura().equals(factura)){
+                session.setFactura(null);
+            }
+            
+            
+            //imprimir
+            this.setVisible(false);
+            ticket();
+            
+            
+            //Logar cliente abitual
+            
             tpv.crearCuenta();
-            cobrado = true;
-            this.dispose();
+            this.dispose();        
         } else {
             JOptionPane.showMessageDialog(this, messageSource.getMessage("message_IsMissingSomeMoney", null,applicationLocale.getLocale()));
         }
@@ -459,17 +622,4 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
     private javax.swing.JLabel lblTotalValue;
     private javax.swing.JPanel panelCartera;
     // End of variables declaration//GEN-END:variables
-
-    private void setWithInternationalization(){
-        lblCambio.setText(messageSource.getMessage("lbl_Cambio", null,applicationLocale.getLocale()));
-        lblEntregado.setText(messageSource.getMessage("lbl_Entregado", null,applicationLocale.getLocale()));
-        lblTotal.setText(messageSource.getMessage("TOTAL", null,applicationLocale.getLocale()));
-        
-        btnAceptar.setText(messageSource.getMessage("button_Accept", null,applicationLocale.getLocale()));
-        btnCancelar.setText(messageSource.getMessage("button_Cancel", null,applicationLocale.getLocale()));
-    }
-    @Override
-    public void refreshLanguage() {
-        setWithInternationalization();
-    }
 }

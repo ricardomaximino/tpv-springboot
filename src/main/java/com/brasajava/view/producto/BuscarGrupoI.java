@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.producto;
 
 import com.brasajava.model.Grupo;
@@ -10,17 +5,15 @@ import com.brasajava.service.ServicioGrupo;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.PrototypeContext;
 import com.brasajava.util.interfaces.Internationalizable;
-import com.brasajava.view.principal.MainFrame;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFrame;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 /**
- *
- * @author Ricardo
+ * Esta clase representa la Busqueda de Grupo con JInternalFrame.
+ * @author Ricardo Maximino
  */
 public class BuscarGrupoI extends javax.swing.JInternalFrame implements Internationalizable{
 
@@ -31,8 +24,17 @@ public class BuscarGrupoI extends javax.swing.JInternalFrame implements Internat
     private final ShowProductoGrupoCommand showCommand;
     private String str;
     private boolean isChar;
-    private ProductoView productoView;
 
+    /**
+     * Constructor para crear una instancia desta clase.
+     * @param context del tipo org.springframework.context.ApplicationConetxt.
+     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * <li>com.brasajava.view.producto.ShowProductoGrupoCommand</li>
+     * </ul> 
+     */
     public BuscarGrupoI(ApplicationContext context) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
@@ -47,6 +49,18 @@ public class BuscarGrupoI extends javax.swing.JInternalFrame implements Internat
         ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
     }
 
+    /**
+     * Constructor para crear una instancia desta clase pasando aparte del context
+     * una lista de productos.
+     * @param context del tipo org.springframework.context.ApplicationContext.
+     * @param list del tipo java.util.List&lt;Grupo&gt;.
+     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * <li>com.brasajava.view.producto.ShowProductoGrupoCommand</li>
+     * </ul> 
+     */
     public BuscarGrupoI(ApplicationContext context, List<Grupo> list) {
         this.context = context;
         this.messageSource = context.getBean(MessageSource.class);
@@ -58,6 +72,9 @@ public class BuscarGrupoI extends javax.swing.JInternalFrame implements Internat
         ((GrupoTableModel) tabla.getModel()).fireTableDataChanged();
     }
     
+    /**
+     * Actualiza la listaDeProductos con la base de datos.
+     */
     public void refresh(){
         GrupoTableModel model = (GrupoTableModel)tabla.getModel();
         listaDeGrupos.clear();
@@ -69,28 +86,37 @@ public class BuscarGrupoI extends javax.swing.JInternalFrame implements Internat
         model.fireTableDataChanged();
     }
 
-    public List<Grupo> getListaDeProductos() {
+    /**
+     * Retorna el valor de la variable listaDeGrupos.
+     * @return del tipo java.util.List&lt;Grupo&gt;.
+     */
+    public List<Grupo> getListaDeGrupos() {
         return listaDeGrupos;
     }
 
-    public void setListaDeProductos(List<Grupo> listaDeProductos) {
+    /**
+     * Configura el valor de la variable listaDeProductos.
+     * @param listaDeProductos del tipo java.util.List&lt;Grupo&gt;.
+     */
+    public void setListaDeGrupos(List<Grupo> listaDeProductos) {
         this.listaDeGrupos = listaDeProductos;
     }
-
-    public ProductoView getProductoView() {
-        return productoView;
-    }
-
-    public void setProductoView(ProductoView productoView) {
-        this.productoView = productoView;
-    }
     
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
     @Override
     public void refreshLanguage() {
        setWithInternationalization();
        ((GrupoTableModel)tabla.getModel()).refreshLanguage();
     }
     
+    /**
+     * Override este metodo para que antes del dispose() se elimine la referencia
+     * en el prototypeContext.
+     */
     @Override
     public void dispose(){
         context.getBean(PrototypeContext.class).remove(this);

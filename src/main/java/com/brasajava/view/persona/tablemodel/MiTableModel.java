@@ -9,6 +9,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import org.springframework.context.MessageSource;
 
+
 /**
  * Esta es una clase abstrata que extende la clase
  * javax.swing.table.AbstractTableModel e implementa la interz

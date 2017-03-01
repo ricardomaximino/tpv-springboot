@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.producto;
 
 import com.brasajava.model.Grupo;
@@ -28,8 +23,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 /**
- *
- * @author Ricardo
+ * Esta clase representa el producto, donde se crea o se actualiza un producto.
+ * @author Ricardo Maximino
  */
 public class ProductoView extends javax.swing.JInternalFrame implements Internationalizable {
 
@@ -48,9 +43,14 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
     private static final String CANCELAR = "CANCELAR";
 
     /**
-     * Creates new form ProductoGrupo
+     * Único constructo para crear una instancia desta clase.
      *
-     * @param context
+     * @param context del tipo org.springframework.context.ApplicationContext.
+     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * </ul> 
      */
     public ProductoView(ApplicationContext context) {
         this.context = context;
@@ -60,29 +60,57 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
         setWithInternationalization();
     }
 
+    /**
+     * Retorna el valor de la variable producto.
+     * @return del tipo com.brasajava.model.Producto.
+     */
     public Producto getProducto() {
         return producto;
     }
 
+    /**
+     * Configura el valor de la variable producto.
+     * @param producto del tipo com.brasajava.model.Producto.
+     * Al configurar el producto automaticamente se actualiza la interfaz gráfica
+     * con los datos del producto.
+     */
     public void setProducto(Producto producto) {
         this.producto = producto;
         setProductoFields();
     }
 
+    /**
+     * Añade un grupo listModel, en caso de que este grupo ya esté en el listModel
+     * se exibirá un mensaje adivirtiendo que yá existe.
+     * @param grup del tipo com.brasajava.model.Grupo.
+     */
     public void add(Grupo grup) {
         if (!listModel.contains(grup)) {
             listModel.addElement(grup);
         } else {
-            //Internationalization
             JOptionPane.showMessageDialog(this, message_YA_EXISTE);
         }
     }
 
+    /**
+     * Override este metodo para que antes del dispose() se elimine la referencia
+     * en el prototypeContext.
+     */
     @Override
     public void dispose() {
         PrototypeContext pc = context.getBean(PrototypeContext.class);
         pc.remove(this);
         super.dispose();
+    }
+    
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
+    @Override
+    public void refreshLanguage() {
+        setWithInternationalization();
     }
 
     private void setProductoFields() {
@@ -207,6 +235,34 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
             }
             popUpMenuGrupos.show(this, evt.getX() + 45, evt.getY() + 315);
         }
+    }
+    
+    private void setWithInternationalization() {
+        btnCancelar.setText(messageSource.getMessage("button_Cancel", null, applicationLocale.getLocale()));
+        btnGuardar.setText(messageSource.getMessage("button_Save", null, applicationLocale.getLocale()));
+
+        lblCodigoProducto.setText(messageSource.getMessage("label_Code", null, applicationLocale.getLocale()));
+        lblNombreProducto.setText(messageSource.getMessage("label_Name", null, applicationLocale.getLocale()));
+        lblDescripcionDelProducto.setText(messageSource.getMessage("label_Description", null, applicationLocale.getLocale()));
+        lblCustoDelProducto.setText(messageSource.getMessage("label_CostPrice", null, applicationLocale.getLocale()));
+        lblMargenDelProducto.setText(messageSource.getMessage("label_Margin", null, applicationLocale.getLocale()));
+        lblPrecioSinIva.setText(messageSource.getMessage("label_PriceWithoutTax", null, applicationLocale.getLocale()));
+        lblIva.setText(messageSource.getMessage("label_Tax", null, applicationLocale.getLocale()));
+        lblPrecioConIva.setText(messageSource.getMessage("label_PriceWithTax", null, applicationLocale.getLocale()));
+        lblAlmacen.setText(messageSource.getMessage("label_Stock", null, applicationLocale.getLocale()));
+        lblGrupos.setText(messageSource.getMessage("label_Groups", null, applicationLocale.getLocale()));
+        lblImagen.setText(messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
+
+        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null, applicationLocale.getLocale()));
+        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()));
+        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()) + " "
+                + messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
+
+        dialogTitle = messageSource.getMessage("message_SelectImageForTheProduct", null, applicationLocale.getLocale());
+        filterDescription = messageSource.getMessage("label_Image", null, applicationLocale.getLocale());
+        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null, applicationLocale.getLocale());
+
+        ckbActivo.setText(messageSource.getMessage("label_ActiveProduct", null, applicationLocale.getLocale()));
     }
 
     /**
@@ -387,7 +443,9 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
                                     .addComponent(txtMargen)
                                     .addComponent(txtAlmacen)))
                             .addComponent(txtDescripcionProducto)
-                            .addComponent(txtNombreProducto)))
+                            .addGroup(panelProductoLayout.createSequentialGroup()
+                                .addComponent(txtNombreProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(panelProductoLayout.createSequentialGroup()
                         .addGroup(panelProductoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelProductoLayout.createSequentialGroup()
@@ -588,37 +646,4 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
     private javax.swing.JTextField txtPrecioMasIva;
     private javax.swing.JTextField txtPrecioSinIva;
     // End of variables declaration//GEN-END:variables
-
-    private void setWithInternationalization() {
-        btnCancelar.setText(messageSource.getMessage("button_Cancel", null, applicationLocale.getLocale()));
-        btnGuardar.setText(messageSource.getMessage("button_Save", null, applicationLocale.getLocale()));
-
-        lblCodigoProducto.setText(messageSource.getMessage("label_Code", null, applicationLocale.getLocale()));
-        lblNombreProducto.setText(messageSource.getMessage("label_Name", null, applicationLocale.getLocale()));
-        lblDescripcionDelProducto.setText(messageSource.getMessage("label_Description", null, applicationLocale.getLocale()));
-        lblCustoDelProducto.setText(messageSource.getMessage("label_CostPrice", null, applicationLocale.getLocale()));
-        lblMargenDelProducto.setText(messageSource.getMessage("label_Margin", null, applicationLocale.getLocale()));
-        lblPrecioSinIva.setText(messageSource.getMessage("label_PriceWithoutTax", null, applicationLocale.getLocale()));
-        lblIva.setText(messageSource.getMessage("label_Tax", null, applicationLocale.getLocale()));
-        lblPrecioConIva.setText(messageSource.getMessage("label_PriceWithTax", null, applicationLocale.getLocale()));
-        lblAlmacen.setText(messageSource.getMessage("label_Stock", null, applicationLocale.getLocale()));
-        lblGrupos.setText(messageSource.getMessage("label_Groups", null, applicationLocale.getLocale()));
-        lblImagen.setText(messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
-
-        menuItemAñadir.setText(messageSource.getMessage("menuItem_Add", null, applicationLocale.getLocale()));
-        menuItemQuitar.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()));
-        menuItemQuitarImagen.setText(messageSource.getMessage("menuItem_exclude", null, applicationLocale.getLocale()) + " "
-                + messageSource.getMessage("label_Image", null, applicationLocale.getLocale()));
-
-        dialogTitle = messageSource.getMessage("message_SelectImageForTheProduct", null, applicationLocale.getLocale());
-        filterDescription = messageSource.getMessage("label_Image", null, applicationLocale.getLocale());
-        message_YA_EXISTE = messageSource.getMessage("message_AlreadyHave", null, applicationLocale.getLocale());
-
-        ckbActivo.setText(messageSource.getMessage("label_ActiveProduct", null, applicationLocale.getLocale()));
-    }
-
-    @Override
-    public void refreshLanguage() {
-        setWithInternationalization();
-    }
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.dao;
 
 import com.brasajava.model.Factura;
@@ -12,12 +7,31 @@ import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
 /**
- *
- * @author Ricardo
+ * Esta interfaz será usada por spring data para crear una class concreta.
+ * @author Ricardo Maximino
  */
 public interface FacturaDAO extends CrudRepository<Factura, Long>{
+    /**
+     * Lista todas las facturas de la base de datos cuyo cliente relacionado sea
+     * igual al parametro.
+     * @param cliente del tipo com.brasajava.model.Cliente.
+     * @return del tipo java.util.List&lt;Factura&gt;.
+     */
     List<Factura> findByCliente(Persona cliente);
+    /**
+     * Lista todas las facturas de la base de datos cuyo usuario relacionado sea
+     * igual al parametro.
+     * @param usuario del tipo com.brasajava.model.Usuario.
+     * @return del tipo java.util.List&lt;Factura&gt;.
+     */
     List<Factura> findByUsuario(Persona usuario);
+    
+    /**
+     * Lista todas las facturas de la base de datos cuya fecha relacionado sea
+     * igual al parametro.
+     * @param fecha del tipo java.time.LocalDate.
+     * @return del tipo java.util.List&lt;Factura&gt;.
+     */
     List<Factura> findByFecha(LocalDate fecha);
     
 }

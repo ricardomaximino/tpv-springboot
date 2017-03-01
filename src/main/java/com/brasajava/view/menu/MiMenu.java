@@ -12,6 +12,7 @@ public class MiMenu extends JMenu implements GroupAndCommandActionName{
     private String group;
     private String commandActionName;
     
+    
      /**
       * Constructor con solo un parametro, es lo minimo de configuracion para
       * instanciar esta clase.

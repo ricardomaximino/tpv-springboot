@@ -5,6 +5,10 @@ import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import org.springframework.stereotype.Component;
 
+/**
+ * Esta clase auxilia el JDesktopPane a organizar y cerrar los JInternalFrames. 
+ * @author Ricardo Maximino
+ */
 @Component
 public class DesktopController {
 
@@ -22,18 +26,27 @@ public class DesktopController {
 
     }
 
+    /**
+     * Cierra todos los JInternalFrames del JDesktopPane.
+     */
     public void cerrarTodosInternalFrames() {
         for (JInternalFrame frame : desktopPane.getAllFrames()) {
             frame.dispose();
         }
     }
 
+    /**
+     * Cierra el JInternalFrame selecionado.
+     */
     public void cerrarSelectedInternalFrame() {
         for (JInternalFrame frame : desktopPane.getAllFrames()) {
             frame.dispose();
         }
     }
 
+    /**
+     * Organiza los JInternalFrames en el estilo cascada.
+     */
     public void cascada() {
         restartXY();
         for (JInternalFrame frame : desktopPane.getAllFrames()) {

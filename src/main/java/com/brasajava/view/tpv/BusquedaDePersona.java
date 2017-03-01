@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.brasajava.view.tpv;
 
 import com.brasajava.model.Persona;
@@ -14,13 +9,12 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
-import javax.swing.JTable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 /**
- *
- * @author Ricardo
+ * Esta clase representa la búsqueda de persona.
+ * @author Ricardo Maximino
  */
 public class BusquedaDePersona extends javax.swing.JDialog implements Internationalizable {
 
@@ -35,10 +29,17 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
     private TPV tpv;
 
     /**
-     * Creates new form Busqueda
+     * El único constructor para crear una instancia desta clase.
      *
-     * @param tpv
-     * @param context
+     * @param tpv del tipo com.brasajava.view.tpv.TPV.
+     * @param context del tipo org.springframework.context.ApplicationContext.
+     * 
+     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     * <ul>
+     * <li>org.springframework.context.MessageSource</li>
+     * <li>com.brasajava.util.ApplicationLocale</li>
+     * </ul>
+     * lista = new ArrayLista&lt;&gt;();
      */
     public BusquedaDePersona(TPV tpv, ApplicationContext context) {
         super(tpv, true);
@@ -51,40 +52,48 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
         setWithInternationalization();
     }
 
+    /**
+     * Retorna el valor de la variable lista.
+     * @return del tipo java.util.List&lt;com.brasajava.model.Persona&gt;.
+     */
     public List<Persona> getLista() {
         return lista;
     }
 
+    /**
+     * Configura el valor de la variable lista.
+     * @param lista del tipo java.util.List&lt;com.brasajava.model.Persona&gt;.
+     */
     public void setLista(List<Persona> lista) {
         this.lista = lista;
         setModelData();
     }
-    
 
-    public JTable getTabla() {
-        return tabla;
-    }
 
-    public void setTabla(JTable tabla) {
-        this.tabla = tabla;
-    }
-
+    /**
+     * Configura el valor de la variable cliente.
+     * @param cliente del tipo com.brasajava.model.Cliente.
+     */
     public void setCliente(boolean cliente) {
         this.cliente = cliente;
     }
-    
-    
-    private void setModelData(){
-        MiTableModel model = (MiTableModel)tabla.getModel();
-        model.setDatos(lista);
-        model.fireTableDataChanged();
-    }
 
+    /**
+     * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
+     * instacia única de la clase
+     * com.brasajava.util.ApplicationLocale.getLocale().
+     */
     @Override
     public void refreshLanguage() {
         setWithInternationalization();
         ((MiTableModel) tabla.getModel()).refreshLanguage();
         ((MiTableModel) tabla.getModel()).fireTableStructureChanged();
+    }
+    
+    private void setModelData(){
+        MiTableModel model = (MiTableModel)tabla.getModel();
+        model.setDatos(lista);
+        model.fireTableDataChanged();
     }
 
     private void setWithInternationalization() {

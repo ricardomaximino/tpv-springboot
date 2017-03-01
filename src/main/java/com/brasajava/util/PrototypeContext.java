@@ -16,6 +16,7 @@ import javax.swing.JComponent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
+
 /**
  * Estea clase implementa com.brasajava.util.interfaces.Internationalizable, y
  * esta clase actuará como un contexto the las instancias con el scope = "prototype,

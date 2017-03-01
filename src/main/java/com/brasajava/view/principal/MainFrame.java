@@ -1,10 +1,8 @@
 package com.brasajava.view.principal;
 
-import com.brasajava.view.producto.ProductoView;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import javax.swing.ImageIcon;
 
 /**
