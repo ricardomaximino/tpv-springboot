@@ -1,5 +1,6 @@
-package com.brasajava.view.menu.command;
+package com.brasajava.view.menu;
 
+import com.brasajava.view.principal.MainFrame;
 import com.brasajava.view.principal.MainFrame;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;

@@ -362,5 +362,4 @@ public abstract class Persona implements Serializable {
     public String toString() {
         return "Person{" + "nif=" + nif + ", nombre=" + nombre + ", primer apellido=" + primerApellido + " segungo apellido=" + segundoApellido +"}";
     }
-    
 }

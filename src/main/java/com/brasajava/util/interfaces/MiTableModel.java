@@ -1,4 +1,4 @@
-package com.brasajava.view.persona.tablemodel;
+package com.brasajava.util.interfaces;
 
 import com.brasajava.model.Persona;
 import com.brasajava.util.ApplicationLocale;

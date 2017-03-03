@@ -105,4 +105,5 @@ public class Contacto implements Serializable {
     public String toString() {
         return descripcion + ": " + contacto;
     }
+    
 }

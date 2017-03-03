@@ -9,7 +9,6 @@ import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.Item;
 import com.brasajava.util.PrototypeContext;
 import com.brasajava.util.interfaces.Internationalizable;
-import com.brasajava.view.persona.command.SavePersonaCommand;
 import java.awt.Component;
 import java.time.DateTimeException;
 import java.time.LocalDate;

@@ -182,4 +182,5 @@ public class Direccion implements Serializable {
     public String toString() {
         return "Direccion{pais=" + pais + " provincia=" + provincia + ", localidade=" + localidade + ", numero=" + numero + ", cp=" + cp + ", nota=" +  nota + '}';
     }
+    
 }

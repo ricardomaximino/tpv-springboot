@@ -4,7 +4,7 @@ import com.brasajava.model.Persona;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.Session;
 import com.brasajava.util.interfaces.Internationalizable;
-import com.brasajava.view.persona.tablemodel.MiTableModel;
+import com.brasajava.util.interfaces.MiTableModel;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;

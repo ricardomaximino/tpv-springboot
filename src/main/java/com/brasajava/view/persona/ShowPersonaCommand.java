@@ -1,5 +1,6 @@
-package com.brasajava.view.persona.command;
+package com.brasajava.view.persona;
 
+import com.brasajava.util.interfaces.MiTableModel;
 import com.brasajava.model.Cliente;
 import com.brasajava.model.Persona;
 import com.brasajava.model.Usuario;
@@ -7,7 +8,6 @@ import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.PrototypeContext;
 import com.brasajava.view.persona.FramePersona;
 import com.brasajava.view.persona.ListaPersona;
-import com.brasajava.view.persona.tablemodel.MiTableModel;
 import com.brasajava.view.principal.MainFrame;
 import java.util.ArrayList;
 import java.util.List;

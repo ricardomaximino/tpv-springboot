@@ -1,5 +1,6 @@
 package com.brasajava.view.persona;
 
+import com.brasajava.util.interfaces.MiTableModel;
 import com.brasajava.model.Cliente;
 import com.brasajava.model.Persona;
 import com.brasajava.model.Usuario;
@@ -8,8 +9,6 @@ import com.brasajava.service.ServicioUsuario;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.PrototypeContext;
 import com.brasajava.util.interfaces.Internationalizable;
-import com.brasajava.view.persona.command.ShowPersonaCommand;
-import com.brasajava.view.persona.tablemodel.MiTableModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.TableModel;

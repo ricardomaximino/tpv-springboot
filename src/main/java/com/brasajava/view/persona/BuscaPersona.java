@@ -1,4 +1,4 @@
-package com.brasajava.view.busqueda.command;
+package com.brasajava.view.persona;
 
 import com.brasajava.model.Cliente;
 import com.brasajava.model.Usuario;
@@ -6,8 +6,7 @@ import com.brasajava.service.ServicioCliente;
 import com.brasajava.service.ServicioPersona;
 import com.brasajava.service.ServicioUsuario;
 import com.brasajava.util.interfaces.Command;
-import com.brasajava.view.busqueda.FrameBusqueda;
-import com.brasajava.view.persona.command.ShowPersonaCommand;
+import com.brasajava.view.persona.ShowPersonaCommand;
 import java.time.Month;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Esta classe implementa la interfaz
- * com.brasajava.view.busqueda.command.Command y esta pensada para ejecutar una
+ * com.brasajava.view.persona.Command y esta pensada para ejecutar una
  * accion concreta al ejecutar el metodo execute(Object[] objs).
  *
  * @author Ricardo Maximino

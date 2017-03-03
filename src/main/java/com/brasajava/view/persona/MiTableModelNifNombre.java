@@ -1,5 +1,6 @@
-package com.brasajava.view.persona.tablemodel;
+package com.brasajava.view.persona;
 
+import com.brasajava.util.interfaces.MiTableModel;
 import com.brasajava.model.Persona;
 import com.brasajava.util.ApplicationLocale;
 import java.util.List;

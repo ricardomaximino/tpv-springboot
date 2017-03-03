@@ -1,4 +1,4 @@
-package com.brasajava.view.persona.command;
+package com.brasajava.view.persona;
 
 import com.brasajava.model.Cliente;
 import com.brasajava.model.Usuario;

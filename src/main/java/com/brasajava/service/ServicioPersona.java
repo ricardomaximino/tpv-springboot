@@ -131,5 +131,4 @@ public interface ServicioPersona<T> {
       * dao.cumpleañerosDelMes((parametro);
       */
      Iterable<T> cumpleañerosDelMes(Month mes);
-
 }

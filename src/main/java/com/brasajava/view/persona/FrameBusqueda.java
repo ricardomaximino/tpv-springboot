@@ -1,4 +1,4 @@
-package com.brasajava.view.busqueda;
+package com.brasajava.view.persona;
 
 import com.brasajava.util.Item;
 import com.brasajava.util.interfaces.Command;
