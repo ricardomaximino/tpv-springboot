@@ -48,6 +48,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setPreferredSize(new java.awt.Dimension(600, 400));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

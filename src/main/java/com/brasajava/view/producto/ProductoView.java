@@ -24,6 +24,7 @@ import org.springframework.context.MessageSource;
 
 /**
  * Esta clase representa el producto, donde se crea o se actualiza un producto.
+ *
  * @author Ricardo Maximino
  */
 public class ProductoView extends javax.swing.JInternalFrame implements Internationalizable {
@@ -46,11 +47,12 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
      * Único constructo para crear una instancia desta clase.
      *
      * @param context del tipo org.springframework.context.ApplicationContext.
-     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     * <p>
+     * Utilizando el context se pedirá una instancia de las clase:</p>
      * <ul>
      * <li>org.springframework.context.MessageSource</li>
      * <li>com.brasajava.util.ApplicationLocale</li>
-     * </ul> 
+     * </ul>
      */
     public ProductoView(ApplicationContext context) {
         this.context = context;
@@ -62,6 +64,7 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
 
     /**
      * Retorna el valor de la variable producto.
+     *
      * @return del tipo com.brasajava.model.Producto.
      */
     public Producto getProducto() {
@@ -70,9 +73,10 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
 
     /**
      * Configura el valor de la variable producto.
-     * @param producto del tipo com.brasajava.model.Producto.
-     * Al configurar el producto automaticamente se actualiza la interfaz gráfica
-     * con los datos del producto.
+     *
+     * @param producto del tipo com.brasajava.model.Producto. Al configurar el
+     * producto automaticamente se actualiza la interfaz gráfica con los datos
+     * del producto.
      */
     public void setProducto(Producto producto) {
         this.producto = producto;
@@ -80,8 +84,9 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
     }
 
     /**
-     * Añade un grupo listModel, en caso de que este grupo ya esté en el listModel
-     * se exibirá un mensaje adivirtiendo que yá existe.
+     * Añade un grupo listModel, en caso de que este grupo ya esté en el
+     * listModel se exibirá un mensaje adivirtiendo que yá existe.
+     *
      * @param grup del tipo com.brasajava.model.Grupo.
      */
     public void add(Grupo grup) {
@@ -93,8 +98,8 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
     }
 
     /**
-     * Override este metodo para que antes del dispose() se elimine la referencia
-     * en el prototypeContext.
+     * Override este metodo para que antes del dispose() se elimine la
+     * referencia en el prototypeContext.
      */
     @Override
     public void dispose() {
@@ -102,7 +107,7 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
         pc.remove(this);
         super.dispose();
     }
-    
+
     /**
      * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
      * instacia única de la clase
@@ -156,20 +161,22 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
         producto.setNombre(txtNombreProducto.getText());
         producto.setPrecioMasIva(parseBigDecimal(txtPrecioMasIva.getText()));
         producto.setPrecioSinIva(parseBigDecimal(txtPrecioSinIva.getText()));
+        for (Grupo g : producto.getGrupos()) {
+            g.getProductos().remove(producto);
+            context.getBean(ServicioGrupo.class).save(g);
+        }
         producto.getGrupos().clear();
 
-        if (!producto.getNombre().isEmpty()) {
-            this.producto = context.getBean(ServicioProducto.class).save(producto);
-            for (int i = 0; i < listModel.size(); i++) {
-                Grupo grupo = listModel.getElementAt(i);
-                producto.getGrupos().add(grupo);
-                if (!grupo.getProductos().contains(producto)) {
-                    grupo.getProductos().add(producto);
-                    context.getBean(ServicioGrupo.class).save(grupo);
-                }
+        for (int i = 0; i < listModel.size(); i++) {
+            Grupo grupo = listModel.getElementAt(i);
+            producto.getGrupos().add(grupo);
+            if (!grupo.getProductos().contains(producto)) {
+                grupo.getProductos().add(producto);
+                context.getBean(ServicioGrupo.class).save(grupo);
             }
-            setProductoFields();
         }
+        this.producto = context.getBean(ServicioProducto.class).save(producto);
+        setProductoFields();
     }
 
     private int parseInt(String txt) {
@@ -236,7 +243,7 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
             popUpMenuGrupos.show(this, evt.getX() + 45, evt.getY() + 315);
         }
     }
-    
+
     private void setWithInternationalization() {
         btnCancelar.setText(messageSource.getMessage("button_Cancel", null, applicationLocale.getLocale()));
         btnGuardar.setText(messageSource.getMessage("button_Save", null, applicationLocale.getLocale()));
@@ -565,7 +572,8 @@ public class ProductoView extends javax.swing.JInternalFrame implements Internat
                     Image image = new ImageIcon(getClass().getResource("/images/" + productoImage)).getImage().getScaledInstance(190, 170, Image.SCALE_SMOOTH);
                     lblMolduraProducto.setIcon(new ImageIcon(image));
                     lblMolduraProducto.setToolTipText(productoImage);
-                } catch (NullPointerException ex) {  }
+                } catch (NullPointerException ex) {
+                }
 
             }
         }

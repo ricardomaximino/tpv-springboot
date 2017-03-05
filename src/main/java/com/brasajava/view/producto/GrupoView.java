@@ -20,6 +20,7 @@ import org.springframework.context.MessageSource;
 
 /**
  * Esta clase representa el grupo donde se crea o actualiza un grupo.
+ *
  * @author Ricardo Maximino
  */
 public class GrupoView extends javax.swing.JInternalFrame implements Internationalizable {
@@ -34,6 +35,7 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
     private String message_YA_EXISTE;
     private String grupoImage;
 
+    int met = 0;
     private static final String GUARDAR = "GUARDAR";
     private static final String CANCELAR = "CANCELAR";
 
@@ -41,13 +43,14 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
      * Único constructor para crear una instancia desta clase.
      *
      * @param context del tipo org.springframework.context.ApplicationContext.
-     * 
-     * <p>Utilizando el context se pedirá una instancia de las clase:</p>
+     *
+     * <p>
+     * Utilizando el context se pedirá una instancia de las clase:</p>
      * <ul>
      * <li>org.springframework.context.MessageSource</li>
      * <li>com.brasajava.util.ApplicationLocale</li>
      * <li>com.brasajava.view.producto.ShowProductoGrupoCommand</li>
-     * </ul> 
+     * </ul>
      */
     public GrupoView(ApplicationContext context) {
         this.context = context;
@@ -60,6 +63,7 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
 
     /**
      * Retorna el valor de la variable grupo.
+     *
      * @return del tipo com.brasajava.model.Grupo.
      */
     public Grupo getGrupo() {
@@ -68,9 +72,11 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
 
     /**
      * Configura el valor de la variable grupo.
+     *
      * @param grupo del tipo com.brasajava.model.Grupo.
-     * <p>Al configurar esta variable automaticamente se actualizara la
-     * interfaz gráfica con el valor del grupo pasado por parametro.</p>
+     * <p>
+     * Al configurar esta variable automaticamente se actualizara la interfaz
+     * gráfica con el valor del grupo pasado por parametro.</p>
      */
     public void setGrupo(Grupo grupo) {
         this.grupo = grupo;
@@ -78,8 +84,9 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
     }
 
     /**
-     * Añade el producto pasado por parametro al tableModel, en caso de que
-     * este producto yá exista en el tableModel, se exibirá un mensaje adivirtiendo.
+     * Añade el producto pasado por parametro al tableModel, en caso de que este
+     * producto yá exista en el tableModel, se exibirá un mensaje adivirtiendo.
+     *
      * @param pro del tipo com.brasajava.model.Producto.
      */
     public void add(Producto pro) {
@@ -94,8 +101,8 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
     }
 
     /**
-     * Override este metodo para que antes del dispose() se elimine la referencia
-     * en el prototypeContext.
+     * Override este metodo para que antes del dispose() se elimine la
+     * referencia en el prototypeContext.
      */
     @Override
     public void dispose() {
@@ -129,9 +136,11 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
         txtNombreGrupo.setText(grupo.getNombre());
         txtDescripcionGrupo.setText(grupo.getDescripcion());
         ProductoTableModel model = (ProductoTableModel) tablaParaPruductoGrupo.getModel();
+        model.getListaDeProducto().clear();
         for (Producto p : grupo.getProductos()) {
             model.getListaDeProducto().add(p);
         }
+        model.fireTableDataChanged();
         ckbActivo.setSelected(grupo.isActivo());
         grupoImage = grupo.getImage();
 
@@ -157,10 +166,8 @@ public class GrupoView extends javax.swing.JInternalFrame implements Internation
             grupo.getProductos().add(p);
 
         }
-        if (!grupo.getNombre().isEmpty()) {
-            this.grupo = context.getBean(ServicioGrupo.class).save(grupo);
-            setGrupoFields();
-        }
+        this.grupo = context.getBean(ServicioGrupo.class).save(grupo);
+        setGrupoFields();
     }
 
     private ProductoTableModel getTableModel() {

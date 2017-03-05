@@ -21,11 +21,12 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
 /**
- * Esta clase representa un frame que posibilita pagar una cuenta abierta en
- * el tpv.
+ * Esta clase representa un frame que posibilita pagar una cuenta abierta en el
+ * tpv.
+ *
  * @author Ricardo Maximino
  */
-public class Pagar extends javax.swing.JDialog implements Internationalizable{
+public class Pagar extends javax.swing.JDialog implements Internationalizable {
 
     private boolean noPagaRapito;
     private final Cuenta cuenta;
@@ -37,13 +38,14 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
     private final MessageSource messageSource;
     private final ApplicationLocale applicationLocale;
     private final Session session;
+    private boolean fullprint;
 
     /**
      * El único constructor para instanciar esta clase.
      *
      * @param tpv del tipo com.brasajava.view.tpv.TPV.
      * @param context del tipo org.springframework.context.ApplicationContext.
-     * 
+     *
      * Utilizando context se pedirá una instancia de las clases:
      * <ul>
      * <li>org.springframework.context.MessageSource</li>
@@ -59,22 +61,22 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
         this.applicationLocale = context.getBean(ApplicationLocale.class);
         this.session = context.getBean(Session.class);
         //para facturas con una sola cuenta.
-        if(session.getFactura()!= null){
+        if (session.getFactura() != null) {
             this.factura = session.getFactura();
             this.cuenta = factura.getCuentas().get(0);
-        }else{
+        } else {
             this.factura = context.getBean(Factura.class);
             this.cuenta = session.getCuenta();
         }
         noPagaRapito = false;
         initComponents();
-        if(this.cuenta != null){
+        if (this.cuenta != null) {
             prepara();
-        }  
+        }
         activarCartera();
         setWithInternationalization();
     }
-    
+
     /**
      * Actualiza toda la interfaz gráfica con el idioma seleccionado en la
      * instacia única de la clase
@@ -111,7 +113,8 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
             hacerCuentas();
         }
     }
-    private void ticket(){
+
+    private void ticket() {
         JTextArea ta = new JTextArea();
         ta.setFont(new Font("monospaced", 1, 12));
         StringBuilder sb = tpv.prePrint();
@@ -119,7 +122,7 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
         int end = 0;
         String str = "";
         sb.append("=====================================");
-        
+
         //Total        
         sb.append("\n");
         sb.append("                                     ");
@@ -127,7 +130,7 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
         str = messageSource.getMessage("TOTAL", null, applicationLocale.getLocale());
         end = start + str.length();
         sb.replace(start, end, str);
-        
+
         switch (lblTotalValue.getText().length()) {
             case 4:
                 start = sb.length() - 4;
@@ -154,7 +157,7 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
                 sb.replace(start, end, str);
                 break;
         }
-        
+
         //entregado
         sb.append("\n");
         sb.append("                                     ");
@@ -162,7 +165,7 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
         str = messageSource.getMessage("lbl_Entregado", null, applicationLocale.getLocale());
         end = start + str.length();
         sb.replace(start, end, str);
-        
+
         switch (lblEntregadoValue.getText().length()) {
             case 4:
                 start = sb.length() - 4;
@@ -191,7 +194,7 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
         }
         sb.append("\n");
         sb.append("                 ====================");
-        
+
         //cambio
         sb.append("\n");
         sb.append("                                     ");
@@ -199,7 +202,7 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
         str = messageSource.getMessage("lbl_Cambio", null, applicationLocale.getLocale());
         end = start + str.length();
         sb.replace(start, end, str);
-        
+
         switch (lblCambioValue.getText().length()) {
             case 4:
                 start = sb.length() - 4;
@@ -233,25 +236,28 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
         str = messageSource.getMessage("message_AttendedYou", null, applicationLocale.getLocale()) + ": " + session.getUsuario().getNombre();
         end = start + str.length();
         sb.replace(start, end, str);
-        
-        
+
         MessageFormat header = new MessageFormat("TPV - BRASAJAVA SWING");
         MessageFormat footer = new MessageFormat("GRACIAS POR CONFIAR EN BRASAJAVA");
         ta.append(sb.toString());
         try {
-            ta.print(header, footer, false, null, null, false);
+            if (!fullprint) {
+                ta.print(header, footer, false, null, null, false);
+            } else {
+                ta.print(header, footer);
+            }
         } catch (PrinterException ex) {
 
         }
     }
-    
-    private void setWithInternationalization(){
-        lblCambio.setText(messageSource.getMessage("lbl_Cambio", null,applicationLocale.getLocale()));
-        lblEntregado.setText(messageSource.getMessage("lbl_Entregado", null,applicationLocale.getLocale()));
-        lblTotal.setText(messageSource.getMessage("TOTAL", null,applicationLocale.getLocale()));
-        
-        btnAceptar.setText(messageSource.getMessage("button_Accept", null,applicationLocale.getLocale()));
-        btnCancelar.setText(messageSource.getMessage("button_Cancel", null,applicationLocale.getLocale()));
+
+    private void setWithInternationalization() {
+        lblCambio.setText(messageSource.getMessage("lbl_Cambio", null, applicationLocale.getLocale()));
+        lblEntregado.setText(messageSource.getMessage("lbl_Entregado", null, applicationLocale.getLocale()));
+        lblTotal.setText(messageSource.getMessage("TOTAL", null, applicationLocale.getLocale()));
+
+        btnAceptar.setText(messageSource.getMessage("button_Accept", null, applicationLocale.getLocale()));
+        btnCancelar.setText(messageSource.getMessage("button_Cancel", null, applicationLocale.getLocale()));
     }
 
     /**
@@ -292,6 +298,11 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
 
         lblTotal.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblTotal.setText("TOTAL");
+        lblTotal.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblTotalMouseClicked(evt);
+            }
+        });
 
         lblCambio.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         lblCambio.setText("CAMBIO");
@@ -565,31 +576,39 @@ public class Pagar extends javax.swing.JDialog implements Internationalizable{
 
             //guardar no BD
             context.getBean(ServicioFactura.class).save(factura);
-            
-            
+
             factura.getCuentas().get(0).setReabrir(false);
-            if(session.getFactura() != null && session.getFactura().equals(factura)){
+            if (session.getFactura() != null && session.getFactura().equals(factura)) {
                 session.setFactura(null);
             }
-            
-            
+
             //imprimir
             this.setVisible(false);
             ticket();
-            
-            
+
             //Logar cliente abitual
-            
             tpv.crearCuenta();
-            this.dispose();        
+            this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, messageSource.getMessage("message_IsMissingSomeMoney", null,applicationLocale.getLocale()));
+            JOptionPane.showMessageDialog(this, messageSource.getMessage("message_IsMissingSomeMoney", null, applicationLocale.getLocale()));
         }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
     private void btn50EurosKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btn50EurosKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_btn50EurosKeyPressed
+
+    private void lblTotalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblTotalMouseClicked
+        if (evt.getClickCount() == 2) {
+            if (!fullprint) {
+                lblTotal.setFont(new java.awt.Font("Tahoma", Font.BOLD, 18));
+                fullprint = true;
+            } else {
+                lblTotal.setFont(new java.awt.Font("Tahoma", Font.PLAIN, 18));
+                fullprint = false;
+            }
+        }
+    }//GEN-LAST:event_lblTotalMouseClicked
 
     private void hacerCuentas() {
         cambio = entregado.subtract(cuenta.getTotal());

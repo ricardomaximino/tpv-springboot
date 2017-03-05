@@ -69,14 +69,12 @@ public class ShowProductoGrupoCommand {
     private void producto(Object obj) {
         Producto producto = (Producto) obj;
         ProductoView frame = prototypeContext.putProducto(producto);
-        frame.setProducto(producto);
         this.frame = frame;
     }
 
     private void grupo(Object obj) {
         Grupo grupo = (Grupo) obj;
         GrupoView frame = prototypeContext.putGrupo(grupo);
-        frame.setGrupo(grupo);
         this.frame = frame;
     }
 }

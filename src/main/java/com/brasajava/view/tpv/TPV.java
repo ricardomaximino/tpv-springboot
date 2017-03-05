@@ -796,7 +796,7 @@ public class TPV extends javax.swing.JFrame implements Internationalizable {
             cuenta.setNombre(nombre);
             cuenta.setAjustada(true);
         } else {
-            JOptionPane.showConfirmDialog(this, messageSource.getMessage("message_ThisNameHasBeenUsing", null, applicationLocale.getLocale()));
+            JOptionPane.showMessageDialog(this, messageSource.getMessage("message_ThisNameHasBeenUsing", null, applicationLocale.getLocale()));
         }
     }
 

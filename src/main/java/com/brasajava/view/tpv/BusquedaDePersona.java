@@ -92,7 +92,8 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
     
     private void setModelData(){
         MiTableModel model = (MiTableModel)tabla.getModel();
-        model.setDatos(lista);
+        model.getDatos().clear();
+        model.getDatos().addAll(lista);
         model.fireTableDataChanged();
     }
 
@@ -124,7 +125,7 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
             model.getDatos().addAll(lista);
         } else {
             for (Persona p : lista) {
-                if (p.getNombre().toUpperCase().contains(str.toUpperCase().subSequence(0, str.length()))) {
+                if (p.getNombre().toUpperCase().contains(str.toUpperCase())) {
                     model.getDatos().add(p);
                 }
             }
@@ -140,7 +141,7 @@ public class BusquedaDePersona extends javax.swing.JDialog implements Internatio
             model.getDatos().addAll(lista);
         } else {
             for (Persona p : lista) {
-                if (p.getNombre().toUpperCase().contains(txtNIF.getText().toUpperCase().subSequence(0, txtNIF.getText().length()))) {
+                if (p.getNif().toUpperCase().contains(txtNIF.getText().toUpperCase())) {
                     model.getDatos().add(p);
                 }
             }

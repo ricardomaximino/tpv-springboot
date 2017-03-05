@@ -1,7 +1,8 @@
 package com.brasajava.view.menu;
 
 import com.brasajava.view.principal.MainFrame;
-import com.brasajava.view.principal.MainFrame;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import org.springframework.stereotype.Component;
@@ -40,7 +41,8 @@ public class DesktopController {
      * Cierra el JInternalFrame selecionado.
      */
     public void cerrarSelectedInternalFrame() {
-        for (JInternalFrame frame : desktopPane.getAllFrames()) {
+        JInternalFrame frame = desktopPane.getSelectedFrame();
+        if(frame != null){
             frame.dispose();
         }
     }
@@ -50,8 +52,13 @@ public class DesktopController {
      */
     public void cascada() {
         restartXY();
+        List<JInternalFrame> list = new ArrayList<>();
         for (JInternalFrame frame : desktopPane.getAllFrames()) {
-            frame.setLocation(getPositionX(), getPositionY());
+            list.add(frame);
+            //frame.setLocation(getPositionX(), getPositionY());
+        }
+        for(int i = list.size();i>0;i--){
+            list.get(i-1).setLocation(getPositionX(), getPositionY());
         }
     }
 

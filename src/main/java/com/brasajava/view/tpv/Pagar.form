@@ -112,6 +112,9 @@
             </Property>
             <Property name="text" type="java.lang.String" value="TOTAL"/>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="lblTotalMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="lblCambio">
           <Properties>
