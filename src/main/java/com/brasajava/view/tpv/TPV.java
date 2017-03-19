@@ -1481,11 +1481,13 @@ public class TPV extends javax.swing.JFrame implements Internationalizable {
                     } else {
                         model.fireTableDataChanged();
                     }
-                    sumaTotal(model.getCuenta().getVentas());
+                    ///
+                    lblTotalValue.setText(sumaTotal(model.getCuenta().getVentas()).toString());
                 }
             } else {
                 v.setVenta(cantidad, v.getProducto());
                 fireDataChage(v);
+                lblTotalValue.setText(sumaTotal(model.getCuenta().getVentas()).toString());
             }
         }
         resetCantidad();
