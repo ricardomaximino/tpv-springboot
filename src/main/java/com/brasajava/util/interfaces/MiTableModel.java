@@ -2,7 +2,6 @@ package com.brasajava.util.interfaces;
 
 import com.brasajava.model.Persona;
 import com.brasajava.util.ApplicationLocale;
-import com.brasajava.util.interfaces.Internationalizable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JTable;

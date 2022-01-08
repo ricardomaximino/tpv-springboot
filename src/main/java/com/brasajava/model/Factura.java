@@ -42,7 +42,7 @@ public class Factura {
      * Único constructor para crear una instancia desta clase.
      */
     public Factura(){
-        cuentas = new ArrayList();
+        cuentas = new ArrayList<>();
         total = new BigDecimal("0.00");
         fecha = LocalDate.now();
     }

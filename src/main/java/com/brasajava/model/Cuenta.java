@@ -49,7 +49,7 @@ public class Cuenta {
      * Constructo para crear una instancia desta clase sin argumento.
      */
     public Cuenta() {
-        ventas = new ArrayList();
+        ventas = new ArrayList<>();
         total = new BigDecimal("0.00");
         fecha = LocalDate.now();
     }

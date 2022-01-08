@@ -1,18 +1,19 @@
 package com.brasajava.view.persona;
 
-import com.brasajava.util.interfaces.MiTableModel;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+
 import com.brasajava.model.Cliente;
 import com.brasajava.model.Persona;
 import com.brasajava.model.Usuario;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.PrototypeContext;
-import com.brasajava.view.persona.FramePersona;
-import com.brasajava.view.persona.ListaPersona;
+import com.brasajava.util.interfaces.MiTableModel;
 import com.brasajava.view.principal.MainFrame;
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
@@ -67,13 +68,13 @@ public class ShowPersonaCommand {
      * en el prototyeContext.</p>
      * 
      */
-    public void show(Object obj,Class clazz,String titleMessageKey) {
+    public void show(Object obj,Class<? extends Persona> clazz,String titleMessageKey) {
         
         //Persona
         if (obj instanceof Persona) {
             persona(obj,clazz,titleMessageKey);
         }else if(obj instanceof Iterable){
-            iterable(obj,clazz,titleMessageKey);
+            iterable((Iterable<? extends Persona>)obj, clazz, titleMessageKey);
         } 
         
         if (frame != null) {
@@ -88,7 +89,7 @@ public class ShowPersonaCommand {
         }
     }
 
-    private void persona(Object obj,Class clazz,String titleMessageKey) {
+    private void persona(Object obj,Class<?> clazz,String titleMessageKey) {
             Persona persona = (Persona)obj;
             
         if (persona instanceof Cliente) {
@@ -123,8 +124,7 @@ public class ShowPersonaCommand {
         }
     }
     
-    private void iterable(Object obj,Class clazz,String titleMessageKey){
-        Iterable iterable = (Iterable)obj;
+    private void iterable(Iterable<? extends Persona> iterable, Class<? extends Persona> clazz,String titleMessageKey){
         MiTableModel model = context.getBean("tableModelTodos",MiTableModel.class);
         ListaPersona frame = context.getBean(ListaPersona.class);
         List<Persona> lista = new ArrayList<>();

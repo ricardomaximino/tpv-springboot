@@ -1,13 +1,15 @@
 package com.brasajava.view.persona;
 
+import java.time.Month;
+
 import com.brasajava.model.Cliente;
+import com.brasajava.model.Persona;
 import com.brasajava.model.Usuario;
 import com.brasajava.service.ServicioCliente;
 import com.brasajava.service.ServicioPersona;
 import com.brasajava.service.ServicioUsuario;
 import com.brasajava.util.interfaces.Command;
-import com.brasajava.view.persona.ShowPersonaCommand;
-import java.time.Month;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +25,7 @@ import org.springframework.stereotype.Component;
 public class BuscaPersona implements Command {
     private final ApplicationContext context;
     private String titleMessageKey;
-    private Class clazz;
+    private Class<? extends Persona> clazz;
 
     /**
      * Este es el único constructor para instanciar esta classe.

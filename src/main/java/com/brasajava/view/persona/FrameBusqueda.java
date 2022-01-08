@@ -1,25 +1,27 @@
 package com.brasajava.view.persona;
 
-import com.brasajava.util.Item;
-import com.brasajava.util.interfaces.Command;
-import com.brasajava.util.ApplicationLocale;
-import com.brasajava.util.interfaces.GroupAndCommandActionName;
-import com.brasajava.util.interfaces.Internationalizable;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import com.brasajava.util.ApplicationLocale;
+import com.brasajava.util.Item;
+import com.brasajava.util.interfaces.Command;
+import com.brasajava.util.interfaces.GroupAndCommandActionName;
+import com.brasajava.util.interfaces.Internationalizable;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -406,14 +408,4 @@ public class FrameBusqueda extends javax.swing.JDialog implements Internationali
         model.addElement(diciembre);
         return model;
     }
-    
-
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        pack();
-    }// </editor-fold>//GEN-END:initComponents
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    // End of variables declaration//GEN-END:variables
 }

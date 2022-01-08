@@ -274,7 +274,6 @@ public class MenuBar extends JMenuBar implements Internationalizable {
     
     private void buscaPersona(ActionEvent e) {
         MiMenuItem menuItem = (MiMenuItem) e.getSource();
-        String grupo = menuItem.getGroup();
         context.getBean(menuItem.getCommandActionName(), Command.class).execute(new Object[]{menuItem});
     }
     

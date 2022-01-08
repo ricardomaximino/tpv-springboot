@@ -1,13 +1,14 @@
 package com.brasajava.view.persona;
 
+import javax.swing.JOptionPane;
+
 import com.brasajava.model.Cliente;
 import com.brasajava.model.Usuario;
 import com.brasajava.service.ServicioCliente;
 import com.brasajava.service.ServicioUsuario;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.interfaces.Command;
-import com.brasajava.view.persona.FramePersona;
-import javax.swing.JOptionPane;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 

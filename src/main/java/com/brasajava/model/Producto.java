@@ -38,7 +38,7 @@ public class Producto {
      * Único constructor para crear una instancia desta clase.
      */
     public Producto() {
-        grupos = new ArrayList();
+        grupos = new ArrayList<>();
     }
 
     /**

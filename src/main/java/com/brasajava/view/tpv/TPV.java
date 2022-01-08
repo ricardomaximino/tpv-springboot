@@ -1,5 +1,31 @@
 package com.brasajava.view.tpv;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.print.PrinterException;
+import java.math.BigDecimal;
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.AbstractButton;
+import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.table.TableModel;
+
 import com.brasajava.model.Cuenta;
 import com.brasajava.model.Factura;
 import com.brasajava.model.Grupo;
@@ -12,31 +38,7 @@ import com.brasajava.service.ServicioUsuario;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.util.Session;
 import com.brasajava.util.interfaces.Internationalizable;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.TextArea;
-import java.awt.event.ActionEvent;
-import java.awt.print.PrinterException;
-import java.math.BigDecimal;
-import java.text.MessageFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.swing.AbstractButton;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.TableModel;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 
@@ -111,9 +113,9 @@ public class TPV extends javax.swing.JFrame implements Internationalizable {
         this.usuario = session.getUsuario();
 
         //ButtonList
-        grupoButtonList = new ArrayList();
-        productoButtonList = new ArrayList();
-        cuentaButtonList = new ArrayList();
+        grupoButtonList = new ArrayList<>();
+        productoButtonList = new ArrayList<>();
+        cuentaButtonList = new ArrayList<>();
 
         //Map
         grupoMap = new HashMap<>();
@@ -858,8 +860,6 @@ public class TPV extends javax.swing.JFrame implements Internationalizable {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jButton32 = new javax.swing.JButton();

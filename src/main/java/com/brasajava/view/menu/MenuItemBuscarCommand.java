@@ -3,8 +3,6 @@ package com.brasajava.view.menu;
 import com.brasajava.util.ApplicationLocale;
 import com.brasajava.view.persona.FrameBusqueda;
 import com.brasajava.util.interfaces.Command;
-import com.brasajava.view.menu.MenuBar;
-import com.brasajava.view.menu.MiMenuItem;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
