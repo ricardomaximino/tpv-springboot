@@ -52,5 +52,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <finalName>tpv</finalName>
     </build>
 </project>
