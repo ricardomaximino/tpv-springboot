@@ -44,7 +44,7 @@ CREATE TABLE `clientes` (
   `segundo_apellido` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_ep7teqj7hbumyua1rquyddfce` (`nif`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,6 +53,7 @@ CREATE TABLE `clientes` (
 
 LOCK TABLES `clientes` WRITE;
 /*!40000 ALTER TABLE `clientes` DISABLE KEYS */;
+INSERT INTO `clientes` VALUES (1,_binary '','1234','ADMIN','135584','Rua Martim Alfonso','São Paulo','2º D','1234','Brasil','São Paulo','1964-01-09','2022-01-09',NULL,'1234','Antonio','antoniomataraso@hotmail.com','Freitas','Mataraso'),(2,_binary '','4321','ADMIN','80223657','Av. Princesa Isaura','Salvador','','4321','Brasil','Bahia','1975-05-05','2022-01-09',NULL,'4321','Maria','mmenezez@gmail.com','Menezes','da Silva'),(3,_binary '','6789','ADMIN','774123568','Av 3','Campinas','entre rua 24 e 25','4588','Brasil','São Paulo','1979-08-16','2022-01-09',NULL,'6789','Jose Carlos','josecmiranda_ze@yahoo.com.br','Miranda','Santos'),(4,_binary '','741','ADMIN','03241','Calle Gomes Olivar','Elche','1º A','71','España','Alicante','1996-02-26','2022-01-09',NULL,'741','Mauel','manolosempbahesta@hotmai.com','Sempere','Bayesta'),(5,_binary '','951','ADMIN','03354','Calle Lopez Hernandez','Alicante','planta baja','78','España','Alicante','1987-06-10','2022-01-09',NULL,'951','Maria Clara','marianieves@yahoo.es','Andino','Nieves');
 /*!40000 ALTER TABLE `clientes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,6 +80,7 @@ CREATE TABLE `clientes_contactos` (
 
 LOCK TABLES `clientes_contactos` WRITE;
 /*!40000 ALTER TABLE `clientes_contactos` DISABLE KEYS */;
+INSERT INTO `clientes_contactos` VALUES (1,1),(2,2),(3,3),(4,4),(5,5);
 /*!40000 ALTER TABLE `clientes_contactos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,7 +96,7 @@ CREATE TABLE `contactos` (
   `contacto` varchar(255) DEFAULT NULL,
   `descripcion` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,6 +105,7 @@ CREATE TABLE `contactos` (
 
 LOCK TABLES `contactos` WRITE;
 /*!40000 ALTER TABLE `contactos` DISABLE KEYS */;
+INSERT INTO `contactos` VALUES (1,'658412320','TELEFONO'),(2,'741258963','TELEFONO'),(3,'841365257','TELEFONO'),(4,'369852147','TELEFONO'),(5,'951357894','TELEFONO'),(6,'634 75 35 62','TELEFONO');
 /*!40000 ALTER TABLE `contactos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -123,7 +126,7 @@ CREATE TABLE `cuenta` (
   PRIMARY KEY (`id`),
   KEY `FK616fkl9vy6g31abajkald8urg` (`factura_id`),
   CONSTRAINT `FK616fkl9vy6g31abajkald8urg` FOREIGN KEY (`factura_id`) REFERENCES `factura` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,6 +135,7 @@ CREATE TABLE `cuenta` (
 
 LOCK TABLES `cuenta` WRITE;
 /*!40000 ALTER TABLE `cuenta` DISABLE KEYS */;
+INSERT INTO `cuenta` VALUES (1,_binary '','2022-01-09','2',3.50,1),(2,_binary '','2022-01-09','Antonio',3.50,2);
 /*!40000 ALTER TABLE `cuenta` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -154,7 +158,7 @@ CREATE TABLE `factura` (
   KEY `FK5jh2f7cvry6vwq6ats5otr065` (`usuario_id`),
   CONSTRAINT `FK5jh2f7cvry6vwq6ats5otr065` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `FKdrp2rxy2vals0xhwh7b8u378u` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -163,6 +167,7 @@ CREATE TABLE `factura` (
 
 LOCK TABLES `factura` WRITE;
 /*!40000 ALTER TABLE `factura` DISABLE KEYS */;
+INSERT INTO `factura` VALUES (1,_binary '','2022-01-09',3.50,3,1),(2,_binary '','2022-01-09',3.50,3,1);
 /*!40000 ALTER TABLE `factura` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -180,7 +185,7 @@ CREATE TABLE `grupo` (
   `image` varchar(255) DEFAULT NULL,
   `nombre` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -189,7 +194,7 @@ CREATE TABLE `grupo` (
 
 LOCK TABLES `grupo` WRITE;
 /*!40000 ALTER TABLE `grupo` DISABLE KEYS */;
-INSERT INTO `grupo` VALUES (1,_binary '','bebidas','agua.png','Bebidas');
+INSERT INTO `grupo` VALUES (1,_binary '','bebidas','agua.png','Bebidas'),(2,_binary '','Cafés','solo.png','Cafés');
 /*!40000 ALTER TABLE `grupo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,7 +221,7 @@ CREATE TABLE `grupo_producto` (
 
 LOCK TABLES `grupo_producto` WRITE;
 /*!40000 ALTER TABLE `grupo_producto` DISABLE KEYS */;
-INSERT INTO `grupo_producto` VALUES (1,1),(1,2);
+INSERT INTO `grupo_producto` VALUES (2,1),(1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),(1,10),(1,11);
 /*!40000 ALTER TABLE `grupo_producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -240,7 +245,7 @@ CREATE TABLE `producto` (
   `precio_mas_iva` decimal(19,2) DEFAULT NULL,
   `precio_sin_iva` decimal(19,2) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -249,7 +254,7 @@ CREATE TABLE `producto` (
 
 LOCK TABLES `producto` WRITE;
 /*!40000 ALTER TABLE `producto` DISABLE KEYS */;
-INSERT INTO `producto` VALUES (1,_binary '',100,10.00,'cafe','solo.png',0,0,'cafe',15.00,10.00),(2,_binary '',110,10.00,'coca-cola','coca-cola.png',0,0,'coca-cola',11.00,10.00);
+INSERT INTO `producto` VALUES (1,_binary '',1000,1.00,'Solo','solo.png',0,0,'Solo',1.00,0.80),(2,_binary '',110,0.70,'coca-cola','coca-cola.png',0,0,'coca-cola',1.50,1.20),(3,_binary '',0,0.70,'Coca-Cola Zero','coca-cola zero.png',0,0,'Coca-Cola Zero',1.50,1.20),(4,_binary '',100,0.50,'Agual M sin gás','agua.png',0,0,'Agual M sin gás',1.00,0.80),(5,_binary '',80,0.80,'Fanta Limon','fanta Limon.png',0,0,'Fanta Limon',1.50,1.20),(6,_binary '',80,0.80,'Fanta Naranja','fanta Naranja.png',0,0,'Fanta Naranja',1.50,1.20),(7,_binary '',80,0.80,'Fanta Uva','fanta Uva.png',0,0,'Fanta Uva',1.50,1.20),(8,_binary '',80,0.60,'Agua con gás','frizz.png',0,0,'Agua con gás',1.50,1.30),(9,_binary '',100,0.50,'Hit Manzana','hitManzana.png',0,0,'Hit Manzana',1.20,1.00),(10,_binary '',100,0.50,'Hit Uva','hitUva.png',0,0,'Hit Uva',1.20,0.80),(11,_binary '',100,0.50,'Hit Piña','hitPina.png',0,0,'Hit Piña',1.20,0.80);
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,7 +287,7 @@ CREATE TABLE `usuarios` (
   `segundo_apellido` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `UK_igfhcb3km5lfdcc9v0v3mdbbg` (`nif`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -291,6 +296,7 @@ CREATE TABLE `usuarios` (
 
 LOCK TABLES `usuarios` WRITE;
 /*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
+INSERT INTO `usuarios` VALUES (1,_binary '','159','ADMIN','032356','Calle Alicante','Alicante','','159','España','Alicante','1982-11-15','2022-01-09',NULL,'159','Ricardo Maximino','ricardomaximino@hotmail.com','Gonçalves','de Moraes');
 /*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -317,6 +323,7 @@ CREATE TABLE `usuarios_contactos` (
 
 LOCK TABLES `usuarios_contactos` WRITE;
 /*!40000 ALTER TABLE `usuarios_contactos` DISABLE KEYS */;
+INSERT INTO `usuarios_contactos` VALUES (1,6);
 /*!40000 ALTER TABLE `usuarios_contactos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -345,7 +352,7 @@ CREATE TABLE `venta` (
   CONSTRAINT `FKlostuvs99qor7x91k50ufof16` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`),
   CONSTRAINT `FKpittoyb1d8jt76tv8a17wh1ke` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`),
   CONSTRAINT `FKseswc41n24heexukpu7n14a5g` FOREIGN KEY (`cuenta_id`) REFERENCES `cuenta` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -354,6 +361,7 @@ CREATE TABLE `venta` (
 
 LOCK TABLES `venta` WRITE;
 /*!40000 ALTER TABLE `venta` DISABLE KEYS */;
+INSERT INTO `venta` VALUES (1,2,'2022-01-09',2.00,1,1,1,1),(2,1,'2022-01-09',1.50,1,1,8,1),(3,1,'2022-01-09',1.00,NULL,2,1,1),(4,1,'2022-01-09',1.50,NULL,2,2,1),(5,1,'2022-01-09',1.00,NULL,2,4,1);
 /*!40000 ALTER TABLE `venta` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -366,4 +374,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-01-08 20:03:40
+-- Dump completed on 2022-01-09  9:20:33

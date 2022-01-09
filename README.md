@@ -1,7 +1,7 @@
 # tpv-springboot
 TPV con swing y springboot
 
-I found an error running with MySQL 5.6, when I try to create a product with a product group it fail saying:
+I found an error when I try to create a product and set the group before save the product for the first time. The error messag say:
 
 
 [WARNING]
